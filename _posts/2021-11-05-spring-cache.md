@@ -139,7 +139,7 @@ public class GreetingController {
 
 完整代码：
 
-其他参考：[[SpringBoot 使用Caffeine 本地缓存](http://www.mydlq.club/article/56/)]，[[Caching Data with Spring](https://spring.io/guides/gs/caching)], [[A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial)]
+其他参考：[[Caching Data with Spring](https://spring.io/guides/gs/caching)], [[A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial)]
 
 # 3. 配置缓存管理器
 
