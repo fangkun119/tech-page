@@ -17,14 +17,12 @@ image:
 
 <details close markdown="block">
   <summary>
-    Table of contents
+    目录
   </summary>
   {: .text-delta }
 - TOC
 {:toc}
 </details>
-<!-- https://lwebapp.com/zh/docx-to-markdown -->
-
 ## 1. 介绍
 
 ES高级查询Query DSL
