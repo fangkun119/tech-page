@@ -2,9 +2,9 @@
 title: Spring Cache的使用及定制
 author: fangkun119
 date: 2021-11-08 19:50:00 +0800
-categories: [Java,Spring]
-tags: [spring, cache]
-pin: true
+categories: [Java, Spring]
+tags: [Spring, Cache]
+pin: false
 math: true
 mermaid: true
 image:

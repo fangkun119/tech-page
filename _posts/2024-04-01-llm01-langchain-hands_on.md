@@ -3,8 +3,8 @@ title: Langchain and A Quick Tour from Agent to RAG (PPT)
 author: fangkun119
 date: 2024-04-01 19:50:00 +0800
 categories: [LLM, Langchain]
-tags: [LLM, langchain]
-pin: true
+tags: [LLM, Langchain]
+pin: false
 math: true
 mermaid: true
 image:

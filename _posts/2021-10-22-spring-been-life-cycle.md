@@ -2,9 +2,9 @@
 title: Spring Bean生命周期及代码编写
 author: fangkun119
 date: 2021-10-22 15:06:00 +0800
-categories: [Java,Spring]
-tags: [spring]
-pin: true
+categories: [Java, Spring]
+tags: [Spring]
+pin: false
 math: true
 mermaid: true
 image:

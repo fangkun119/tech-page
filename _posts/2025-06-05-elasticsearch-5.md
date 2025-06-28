@@ -3,8 +3,8 @@ title: Elasticsearch参考5：深度分页
 author: fangkun119
 date: 2025-06-07 17:00:00 +0800
 categories: [中间件, Elasticsearch]
-tags: [elasticsearch]
-pin: true
+tags: [Elasticsearch]
+pin: false
 math: true
 mermaid: true
 image:

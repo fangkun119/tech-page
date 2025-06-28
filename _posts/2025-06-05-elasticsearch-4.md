@@ -3,8 +3,8 @@ title: Elasticsearch参考4：聚合操作
 author: fangkun119
 date: 2025-06-07 16:00:00 +0800
 categories: [中间件, Elasticsearch]
-tags: [elasticsearch]
-pin: true
+tags: [Elasticsearch]
+pin: false
 math: true
 mermaid: true
 image:

@@ -3,8 +3,8 @@ title: Elasticsearch参考9：Spring Boot 整合 ES8.X
 author: fangkun119
 date: 2025-06-10 18:00:00 +0800
 categories: [中间件, Elasticsearch]
-tags: [elasticsearch]
-pin: true
+tags: [Elasticsearch]
+pin: false
 math: true
 mermaid: true
 image:

@@ -3,8 +3,8 @@ title: Elasticsearch参考1：概念理解、常用操作及最佳实践
 author: fangkun119
 date: 2025-06-01 17:27:00 +0800
 categories: [中间件, Elasticsearch]
-tags: [elasticsearch]
-pin: true
+tags: [Elasticsearch]
+pin: false
 math: true
 mermaid: true
 image:

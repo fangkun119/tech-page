@@ -3,8 +3,8 @@ title: Elasticsearch参考2：高级查询 DSL
 author: fangkun119
 date: 2025-06-01 17:28:00 +0800
 categories: [中间件, Elasticsearch]
-tags: [elasticsearch]
-pin: true
+tags: [Elasticsearch]
+pin: false
 math: true
 mermaid: true
 image:

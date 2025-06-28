@@ -3,8 +3,8 @@ title: Elasticsearch参考8：ES与RMDB双写一致性
 author: fangkun119
 date: 2025-06-08 18:00:00 +0800
 categories: [中间件, Elasticsearch]
-tags: [elasticsearch]
-pin: true
+tags: [Elasticsearch]
+pin: false
 math: true
 mermaid: true
 image:
