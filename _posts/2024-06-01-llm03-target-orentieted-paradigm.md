@@ -13,6 +13,12 @@ image:
   alt: image
 ---
 
+代码：
+
+[https://github.com/fangkun119/java_proj_ref/tree/master/700_llm/90_sample_projects/target_orentieted_paradiam/](https://github.com/fangkun119/java_proj_ref/tree/master/700_llm/90_sample_projects/target_orentieted_paradiam/)
+
+PPT：
+
 ![slide screenshot](/imgs/llm/202406_target_orentieted_paradiam/traget_orentieted_paradiam_with_llm_01.jpg)
 
 ![slide screenshot](/imgs/llm/202406_target_orentieted_paradiam/traget_orentieted_paradiam_with_llm_02.jpg)

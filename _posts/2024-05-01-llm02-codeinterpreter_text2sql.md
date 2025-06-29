@@ -13,6 +13,12 @@ image:
   alt: image
 ---
 
+代码：
+
+[https://github.com/fangkun119/java_proj_ref/blob/master/700_llm/90_sample_projects/text_to_sql/iquery_agent_code.ipynb](https://github.com/fangkun119/java_proj_ref/blob/master/700_llm/90_sample_projects/text_to_sql/iquery_agent_code.ipynb)
+
+PPT：
+
 ![slide screenshot](/imgs/llm/202405_code_intptr/code_intepreter_03.jpg)
 
 ![slide screenshot](/imgs/llm/202405_code_intptr/code_intepreter_17.jpg)

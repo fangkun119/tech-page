@@ -13,6 +13,11 @@ image:
   alt: image
 ---
 
+代码：
+
+[https://github.com/fangkun119/java_proj_ref/tree/master/700_llm/01_langchain](https://github.com/fangkun119/java_proj_ref/tree/master/700_llm/01_langchain)
+
+PPT：
 
 ![slide_img](/imgs/llm/202404_langchain_hands_on/langchain_00.jpg)
 
