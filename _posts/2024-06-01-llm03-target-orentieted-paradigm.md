@@ -2,8 +2,8 @@
 title: Target Orentieted Paradigm with LLM (PPT) 
 author: fangkun119
 date: 2024-06-01 19:50:00 +0800
-categories: [LLM, code interpreter]
-tags: [LLM, code reading]
+categories: [LLM, Code Interpreter]
+tags: [LLM, Code Interpreter]
 pin: false
 math: true
 mermaid: true
