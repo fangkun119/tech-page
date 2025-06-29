@@ -13,16 +13,6 @@ image:
   alt: image
 ---
 
-{: .no_toc }
-
-<details close markdown="block">
-  <summary>
-    目录
-  </summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
 
 ![slide_img](/imgs/llm/202404_langchain_hands_on/langchain_00.jpg)
 
