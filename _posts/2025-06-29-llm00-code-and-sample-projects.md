@@ -2,7 +2,7 @@
 title: 大模型编程参考代码和项目 
 author: fangkun119
 date: 2025-06-29 15:50:00 +0800
-categories: [LLM, Catalog]
+categories: [LLM, 目录]
 tags: [LLM, Langchain, Langgraph, React Agent, Code Interpreter]
 pin: false
 math: true
