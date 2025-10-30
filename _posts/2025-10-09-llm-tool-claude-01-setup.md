@@ -2,7 +2,7 @@
 title: 大模型办公01：稳定灵活的Claude Code环境                                        
 author: fangkun119
 date: 2025-10-09 12:00:00 +0800
-categories: [大模型办公, Claude Code]
+categories: [大模型办公]
 tags: [大模型办公, Claude Code, 效率工具]
 pin: false
 math: true
@@ -192,11 +192,9 @@ export ANTHROPIC_API_KEY=sk-ant-oat01-... # (1) todo: 换成自己的API Key; (2
 
 官方文档：[https://platform.moonshot.cn/docs/guide/agent-support](https://platform.moonshot.cn/docs/guide/agent-support) (内有一小节介绍了如何让Claude Code使用Kimi）
 
-创建API Key：[https://platform.moonshot.cn/console/api-keys](https://platform.moonshot.cn/console/api-keys)
+API Key：[https://platform.moonshot.cn/console/api-keys](https://platform.moonshot.cn/console/api-keys)
 
-费用：[模型版本及价格](https://platform.moonshot.cn/docs/pricing/chat)，[充值促销](https://platform.moonshot.cn/docs/promotion)，[等级限速](https://platform.moonshot.cn/docs/pricing/limits)
-
-除了替换base url和auth token，还覆盖了model，从而让claude code不再使用Anthropic的模型
+费用：[计费规则](https://platform.moonshot.cn/docs/pricing/chat)，[充值](https://platform.moonshot.cn/console/account)，[促销](https://platform.moonshot.cn/docs/promotion)，[等级限速](https://platform.moonshot.cn/docs/pricing/limits)除了替换base url和auth token，还覆盖了model，从而让claude code不再使用Anthropic的模型
 
 ```bash
 # Linux/macOS 启动高速版 kimi-k2-turbo-preview 模型
@@ -217,9 +215,11 @@ claude
 
 #### (3) GLM 4.6的API Key
 
-官方文档：[https://docs.bigmodel.cn/cn/coding-plan/tool/claude](https://docs.bigmodel.cn/cn/coding-plan/tool/claude)（GLM套餐购买和促销：[https://bigmodel.cn/claude-code](https://bigmodel.cn/claude-code) ）
+文档：[https://docs.bigmodel.cn/cn/coding-plan/tool/claude](https://docs.bigmodel.cn/cn/coding-plan/tool/claude)
 
-创建API Key：[https://bigmodel.cn/usercenter/proj-mgmt/apikeys](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)
+充值促销：[https://bigmodel.cn/claude-code](https://bigmodel.cn/claude-code) 
+
+API Key：[https://bigmodel.cn/usercenter/proj-mgmt/apikeys](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)
 
 GLM 4.6所需要的环境变量
 
@@ -363,5 +363,4 @@ I'm running on the kimi-k2-turbo-preview model.
 ## 8 使用 Claude Code 提高工作效率
 
 接下来会写一些使用 Claude Code 提高工作效率的例子和操作步骤，链接到这里
-
 
