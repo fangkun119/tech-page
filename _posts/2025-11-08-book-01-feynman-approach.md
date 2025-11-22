@@ -59,16 +59,12 @@ image:
 这一方法论基于费曼的核心洞察："当你能够把高深的理论让几岁的小孩子都能听明白的时候，那么你就算是把这个知识学到位了。"
 
 ```mermaid
-graph TD
+graph LR
     A[确立目标] --> B[理解对象]
     B --> C[以教代学]
     C --> D[回顾反思]
     D --> E[简化吸收]
     E --> A
-
-    style A fill:#e1f5fe
-    style C fill:#f3e5f5
-    style E fill:#e8f5e8
 ```
 
 #### 五个步骤的详细解析：
@@ -254,16 +250,12 @@ graph TD
 #### 学习与成长的良性循环
 
 ```mermaid
-graph TD
+graph LR
     A[学习新知识] --> B[应用实践]
     B --> C[获得反馈]
     C --> D[深化理解]
     D --> E[能力提升]
     E --> A
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 #### 两种学习导向的对比
@@ -328,16 +320,12 @@ graph TD
 **正反馈循环的工作原理**：
 
 ```mermaid
-graph TD
+graph LR
     A[学习行为] --> B[获得进步]
     B --> C[产生成就感]
     C --> D[增强动机]
     D --> E[更多学习]
     E --> A
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 #### "学霸现象"背后的心理学机制
@@ -400,18 +388,15 @@ graph TD
 - **可扩展性**：为后续学习提供基础和桥梁
 
 **实施步骤**：
+
 ```mermaid
-graph TD
+graph LR
     A[选择突破点] --> B[深入学习]
     B --> C[实践应用]
     C --> D[建立优势]
     D --> E[获得反馈]
     E --> F[扩展学习]
     F --> A
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style F fill:#e8f5e8
 ```
 
 #### 连锁反应的典型案例
@@ -507,18 +492,15 @@ graph TD
 
 #### 科学规划的实施策略
 
-**分阶段规划法**：
+**分阶段规划法**：、
+
 ```mermaid
-graph TD
+graph LR
     A[长期愿景] --> B[中期目标]
     B --> C[短期计划]
     C --> D[每日行动]
     D --> E[定期评估]
     E --> B
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 **弹性调整机制**：
@@ -830,11 +812,6 @@ graph TD
     F --> G[阶段三: 创造融合]
     G --> H[知识内化完成]
     H --> I[准备对外输出]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style G fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 #### 复述技巧的进阶应用
@@ -929,22 +906,16 @@ graph TD
 
 #### 系统化学习的操作流程
 
-```mermaid
-graph TD
-    A[新知识输入] --> B[分类整理]
-    B --> C[筛选验证]
-    C --> D[归纳整合]
-    D --> E[建立连接]
-    E --> F[预设应用]
-    F --> G[教学输出]
-    G --> H[反馈修正]
-    H --> I[知识内化]
+**系统化学习包含以下八个关键步骤：**
 
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style G fill:#e8f5e8
-    style I fill:#f3e5f5
-```
+1. **新知识输入**：有选择性地获取高质量信息，建立初步认知
+2. **分类整理**：按照主题、领域、重要性进行归类，形成有序的知识结构
+3. **筛选验证**：识别和排除假知识、过时信息，保留核心有用的知识
+4. **归纳整合**：确立分析逻辑，形成思维导图，实现知识的深度整合
+5. **建立连接**：将新旧知识建立联系，形成个人化的知识网络
+6. **预设应用**：设想具体的应用场景，提高知识的可检索性和实用性
+7. **教学输出**：通过教学强化理解，检验知识的掌握程度
+8. **反馈修正**：根据他人反馈不断完善认知结构，实现知识的持续优化
 
 #### 知识管理的最佳实践
 
@@ -999,13 +970,6 @@ graph TD
 
     C1[教学 90%]
 
-    style A1 fill:#ffcccc
-    style A2 fill:#ffdddd
-    style A3 fill:#ffeeee
-    style B1 fill:#ddffdd
-    style B2 fill:#ccffcc
-    style C1 fill:#ccffcc
-
     D[低投入] --> E[中等投入] --> F[高投入]
 ```
 
@@ -1024,9 +988,7 @@ graph TD
 
 #### 企业培训的费曼模式
 
-**"一人学习，全员受益"的创新模式**：
-
-某企业的MBA培训实践案例：
+**"一人学习，全员受益"的创新模式（某企业的MBA培训实践案例）**：
 - **传统做法**：多人参加MBA培训，效果分散
 - **创新做法**：选拔一人参加，要求其回来全员教学
 - **压力机制**：讲明白企业报销，讲不明白个人承担
@@ -1034,20 +996,14 @@ graph TD
 
 **成功机制的深层分析**：
 
-```mermaid
-graph TD
-    A[学习压力] --> B[深度理解需求]
-    B --> C[教学准备过程]
-    C --> D[知识重构优化]
-    D --> E[简化表达能力]
-    E --> F[成功教学]
-    F --> G[个人能力提升]
-    G --> H[组织价值创造]
-
-    style A fill:#ffebee
-    style F fill:#e8f5e8
-    style H fill:#e3f2fd
-```
+1. **学习压力**：承担向全员教学的责任，形成必须深度理解的外部压力
+2. **深度理解需求**：为了能够教会他人，必须超越表面理解，达到深度掌握
+3. **教学准备过程**：系统梳理知识结构，准备教学材料和讲解方案
+4. **知识重构优化**：将学到的知识重新组织，形成个人化的知识体系
+5. **简化表达能力**：将复杂概念转化为简单易懂的语言，提炼知识精华
+6. **成功教学**：通过清晰表达让其他同事理解，验证掌握程度
+7. **个人能力提升**：在准备和教学过程中实现认知能力的质的飞跃
+8. **组织价值创造**：通过知识传递实现学习效果的最大化，提升整体团队能力
 
 **费曼教学法的核心价值**：
 1. **深度理解**：只有真正理解才能教会他人
@@ -1086,11 +1042,6 @@ graph TD
     H[公开承诺] --> I[质量要求]
     I --> J[深度理解]
     C --> H
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style F fill:#e8f5e8
-    style G fill:#f3e5f5
 ```
 
 **输出过程中的认知挑战**：
@@ -1271,11 +1222,6 @@ graph TD
 
     I[学习共同体] --> J[合作氛围]
     J --> K[共享认知]
-
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style H fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 #### 互动技巧的系统性训练
@@ -1337,11 +1283,6 @@ graph TD
     end
 
     B --> G
-
-    style A fill:#ffebee
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
-    style F fill:#e3f2fd
 ```
 
 **关键问题的深度分析**：
@@ -1435,11 +1376,6 @@ graph TD
     G --> H[能力内化]
 
     I[理解] --> J[记忆] --> K[应用] --> L[创造]
-
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style G fill:#e8f5e8
-    style H fill:#f3e5f5
 ```
 
 #### 学习社群的建设与管理
@@ -1487,11 +1423,6 @@ graph TD
     I --> A
 
     J[认知深化] --> K[方法优化] --> L[能力提升]
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style F fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 **争议性讨论的积极意义**：
@@ -1541,10 +1472,6 @@ graph LR
 
     D1[策略优化] --> D2[流程改进]
     D3[学习方法调整] --> D4[思维模式升级]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style D fill:#e8f5e8
 ```
 
 #### 投资领域的反思实践案例
@@ -1609,10 +1536,6 @@ graph LR
     C --> E[学习新知识]
     E --> F[更新知识体系]
     F --> G[验证应用效果]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style F fill:#e8f5e8
 ```
 
 - **时效性判断标准**：
@@ -1661,20 +1584,13 @@ graph LR
 
 **认知失调理论的应用**：当面对相互矛盾的观点时，大脑会产生认知失调状态，这种不适感会激发强烈的认知动机，促使我们重新审视和重构已有的认知结构。
 
-```mermaid
-graph TD
-    A[接触争议观点] --> B[产生认知失调]
-    B --> C[激发认知动机]
-    C --> D[信息搜集与分析]
-    D --> E[认知重构]
-    E --> F[形成新的理解]
-    F --> G[认知能力提升]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
-    style G fill:#f3e5f5
-```
+1. **接触争议观点**：接触到与自己既有认知相矛盾的新观点或信息
+2. **产生认知失调**：大脑出现不一致状态，产生心理不适感
+3. **激发认知动机**：不适感驱动强烈的求知欲，渴望解决认知冲突
+4. **信息搜集与分析**：主动寻找更多信息，深入分析不同观点的依据
+5. **认知重构**：重新组织已有的认知结构，整合新旧知识
+6. **形成新的理解**：建立更加全面、深入的知识认知框架
+7. **认知能力提升**：通过这一过程实现批判性思维和深度理解能力的提升
 
 #### 封闭式vs开放式问题的思维对比
 
@@ -1699,10 +1615,6 @@ graph LR
     C --> D[反思验证]
     D --> E[新知识生成]
     E --> A
-    
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 
@@ -1762,10 +1674,6 @@ graph TB
     subgraph "自下而上路径"
         D --> E --> F --> G
     end
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style H fill:#e8f5e8
 ```
 
 #### 批判性思维的五层修炼
@@ -1819,10 +1727,6 @@ graph LR
     C --> D[偏见检查]
     D --> E[权重分析]
     E --> F[综合判断]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 ```mermaid
@@ -1901,10 +1805,6 @@ graph LR
     A1[动力不足] --> A2[注意力分散] --> A3[学习效率低]
     B1[适度挑战] --> B2[专注集中] --> B3[学习效率高]
     C1[过度紧张] --> C2[认知阻塞] --> C3[学习效率低]
-
-    style B fill:#e8f5e8
-    style A fill:#ffcccc
-    style C fill:#ffcccc
 ```
 
 **常态学习vs突击学习的效果对比**：
@@ -1928,9 +1828,6 @@ graph TD
     C[动觉输入] --> D
     D --> E[深度编码]
     E --> F[强记忆痕迹]
-    
-    style D fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 ```mermaid
@@ -1989,11 +1886,6 @@ graph TD
     C1[实践75%] --> C2[教学90%]
 
     D1[知识内化] --> D2[能力提升] --> D3[智慧生成]
-
-    style A fill:#ffcccc
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
-    style D fill:#f3e5f5
 ```
 
 **具体实施策略**：
@@ -2044,9 +1936,6 @@ graph TD
     J --> K[灵活应用]
     K --> L[学习成就感]
     L --> H
-
-    style G fill:#ffcccc
-    style L fill:#e8f5e8
 ```
 
 **费曼的"大海中的鱼"比喻**：
@@ -2087,10 +1976,6 @@ graph LR
     B --> C[提取阶段]
     C --> D[再巩固阶段]
     D --> E[长期存储]
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
 ```
 
 ### 4.5 知识简化的科学方法与实践技巧
@@ -2154,31 +2039,20 @@ graph LR
 
 **商业模式简化的实践框架**：
 
-```mermaid
-graph TD
-    A[复杂商业模式分析] --> B[核心价值识别]
-    B --> C[盈利机制梳理]
-    C --> D[关键成功因素]
-    D --> E[一句话表达]
-    E --> F[投资人验证]
-    F --> G[模式简化完成]
-    
-    style A fill:#e1f5fe
-    style E fill:#e8f5e8
-    style G fill:#f3e5f5
-```
+1. **复杂商业模式分析**：深入分析原有商业模式的所有组成部分和运作机制
+2. **核心价值识别**：明确商业模式为客户解决的核心问题和创造的核心价值
+3. **盈利机制梳理**：梳理清楚收入的来源、成本结构和利润产生方式
+4. **关键成功因素**：识别商业模式成功运行的关键要素和核心竞争力
+5. **一句话表达**：用简洁明了的语言概括商业模式的本质和优势
+6. **投资人验证**：向潜在投资者或利益相关者讲解，验证理解深度
+7. **模式简化完成**：最终形成清晰、易懂、有说服力的商业模式表述
 
+**其中的简化标准如下 **
 
-
-```mermaid
-graph TD
-    subgraph "简化标准"
-        E1[谁：目标客户]
-        E2[什么：提供价值]
-        E3[如何：实现方式]
-        E4[为什么：核心优势]
-    end
-```
+1. **谁：目标客户** - 明确商业模式的核心服务对象是谁
+2. **什么：提供价值** - 明确为客户提供什么具体的产品或服务价值
+3. **如何：实现方式** - 明确通过什么方式实现价值的创造和传递
+4. **为什么：核心优势** - 明确为什么这个商业模式能够成功并持续发展
 
 ### 4.6 知识内化与实践应用的完整闭环
 
@@ -2194,10 +2068,6 @@ graph LR
     B --> C[工作记忆]
     C --> D[长期记忆]
     D --> E[知识内化]
-
-    style A fill:#e1f5fe
-    style D fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 #### 实践驱动学习（PBL）的系统化应用
@@ -2245,7 +2115,12 @@ graph LR
     D --> E[分享交流验证]
     E --> F[实践应用固化]
     F --> G[知识内化完成]
+```
 
+
+
+```mermaid
+graph LR
     subgraph "转化工具"
         B1[标杆学习]
         B2[最佳实践观察]
@@ -2259,10 +2134,6 @@ graph LR
         E1[同伴讨论]
         E2[导师指导]
     end
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style F fill:#e8f5e8
 ```
 
 #### 终身学习能力的构建
@@ -2304,20 +2175,6 @@ graph TD
     I --> J[实践验证]
     J --> K[新兴趣点]
     K --> A
-
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style H fill:#e8f5e8
-    style J fill:#f3e5f5
-
-    %% 主要阶段：输入-处理-输出循环
-    classDef inputStage fill:#e3f2fd,stroke:#2196f3
-    classDef processStage fill:#fff3e0,stroke:#ff9800
-    classDef outputStage fill:#e8f5e8,stroke:#4caf50
-
-    class A,B,C inputStage
-    class D,E,F,G processStage
-    class H,I,J,K outputStage
 ```
 
 #### 第一阶段：学习启动与基础构建
@@ -2369,11 +2226,6 @@ graph LR
     B --> C[智能检索]
     C --> D[关联分析]
     D --> E[知识输出]
-    
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
- 
 ```
 
 
@@ -2431,9 +2283,6 @@ graph TD
     C1[逻辑链条] --> C
     C2[数据支撑] --> C
     C3[对比分析] --> C
-
-    style B fill:#e8f5e8
-    style D fill:#fff3e0
 ```
 
 **100字分享的精炼技巧**：
@@ -2463,10 +2312,6 @@ graph LR
     D --> D1[跨界融合]
     D --> D2[问题重构]
     D --> D3[新的解决方案]
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style D fill:#e8f5e8
 ```
 
 #### 第三阶段：系统整合与教学输出
@@ -2515,10 +2360,6 @@ graph TD
     B1[频次统计] --> B
     B2[重要性评估] --> B
     B3[可行性分析] --> B
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 **步骤10：实践应用——知识价值的实现**
@@ -2577,11 +2418,6 @@ graph TD
     D --> D1[全面接收]
     D1 --> D2[认知重构]
     D2 --> D3[持续成长]
-
-    style C fill:#ffcccc
-    style D fill:#ccffcc
-    style C3 fill:#ffcccc
-    style D3 fill:#ccffcc
 ```
 
 **红灯思维的表现特征**：
@@ -2617,10 +2453,6 @@ graph TD
 
 ```mermaid
 graph LR
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
-    
     A[识别思维模式] --> B[挑战固定思维]
     B --> C[重构思维框架]
     C --> D[实践成长思维]
@@ -2672,10 +2504,6 @@ graph LR
     D --> D1[跨学科融合]
     D --> D2[方法论迁移]
     D --> D3[创新应用]
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style D fill:#e8f5e8
 ```
 
 **第三步：学习资源整合**
@@ -2707,18 +2535,12 @@ graph LR
 
 **信息过滤的ABC方法**：
 
-```mermaid
-graph TD
-    A[信息输入] --> B[相关性过滤：与目标相关；重要性]
-    B --> C[可靠性过滤：来源权威性；证据充分性]
-    C --> D[实用性过滤：应用价值；可操作性]
-    D --> E[时效性过滤：信息新鲜度；发展趋势]
-    E --> F[知识入库]
-
-    style A fill:#e1f5fe
-    style D fill:#e8f5e8
-    style F fill:#f3e5
-```
+1. **信息输入**
+2. **相关性过滤**：与目标相关；重要性
+3. **可靠性过滤**：来源权威性；证据充分性
+4. **实用性过滤**：应用价值；可操作性
+5. **时效性过滤**：信息新鲜度；发展趋势
+6. **知识入库**
 
 **第三步：结构化归纳与个人见解形成**
 
@@ -2764,10 +2586,6 @@ graph LR
     D1[现有知识] --> D
     D2[个人经历] --> D
     D3[未来规划] --> D
-
-    style A fill:#e1f5fe
-    style D fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 #### 学习目标的三个层次
@@ -2853,11 +2671,6 @@ graph TD
     J --> K[努力程度下降]
     K --> L[学习成果降低]
     L --> G
-
-    style A fill:#e8f5e8
-    style F fill:#e8f5e8
-    style G fill:#ffcccc
-    style L fill:#ffcccc
 ```
 
 **打破负向循环的策略**：
@@ -2940,9 +2753,6 @@ graph TD
     M --> N[学习成就感]
     N --> O[学习动力增强]
     O --> I
-
-    style F fill:#ffcccc
-    style N fill:#e8f5e8
 ```
 
 **知识焦虑的四大特征**：
@@ -2989,17 +2799,13 @@ graph TD
 **聚焦学习的实施框架**：
 
 ```mermaid
-graph TD
+graph LR
     A[领域确定] --> B[核心识别]
     B --> C[学习计划]
     C --> D[实践验证]
     D --> E[效果反馈]
     E --> F[重点调整]
     F --> B
-    
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 ```mermaid
@@ -3059,28 +2865,20 @@ graph LR
 **王阳明心学在现代学习中的应用**：
 
 ```mermaid
-graph TD
+graph LR
     A[知] --> B[行]
     B --> C[真知]
     C --> A
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
 ```
-
-
-
-
 
 **知行脱节的表现和原因**：
 
-| 表现形式     | 典型特征               | 产生原因           | 解决方法           |
-| ------------ | ---------------------- | ------------------ | ------------------ |
+| 表现形式     | 典型特征        | 产生原因      | 解决方法      |
+| -------- | ----------- | --------- | --------- |
 | **知而不行** | 理论知识丰富但行动力弱 | 害怕失败、缺乏动力 | 小步快跑、即时反馈 |
 | **行而不知** | 勤奋实践但缺乏理论指导 | 经验主义、方法缺乏 | 理论学习、方法优化 |
-| **知行相悖** | 理论与实践不一致       | 认知偏差、环境限制 | 反思调整、环境优化 |
-| **知行不深** | 理解和应用都停留在表面 | 缺乏深度思考       | 深度学习、刻意练习 |
+| **知行相悖** | 理论与实践不一致    | 认知偏差、环境限制 | 反思调整、环境优化 |
+| **知行不深** | 理解和应用都停留在表面 | 缺乏深度思考    | 深度学习、刻意练习 |
 
 #### 实践验证的系统性方法
 
@@ -3129,10 +2927,6 @@ graph TD
     C1[5-10%资金] --> C
     C2[单品种验证] --> C
     C3[纪律执行] --> C
-
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 **实践验证的关键要素**：
@@ -3192,10 +2986,6 @@ graph LR
     D1[工作绩效] --> D
     D2[生活质量] --> D
     D3[社会贡献] --> D
-
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 **终身学习的实践承诺**
@@ -3331,3 +3121,4 @@ graph LR
 | **规模化实践** | **逐步扩大投资规模**，在**不同市场环境**中验证投资体系       | **规模化投资成果和体系适应性分析** | 第9-12个月 |
 
 **效果**：**12个月**内建立**完整个人投资体系**，具备**独立判断能力**和**稳定盈利能力**，能在**不同市场环境**中保持**理性决策**
+
