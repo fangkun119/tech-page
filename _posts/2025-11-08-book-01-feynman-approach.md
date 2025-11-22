@@ -65,10 +65,6 @@ graph TD
     C --> D[回顾反思]
     D --> E[简化吸收]
     E --> A
-
-    style A fill:#e1f5fe
-    style C fill:#f3e5f5
-    style E fill:#e8f5e8
 ```
 
 #### 五个步骤的详细解析：
@@ -260,10 +256,6 @@ graph TD
     C --> D[深化理解]
     D --> E[能力提升]
     E --> A
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 #### 两种学习导向的对比
@@ -334,10 +326,6 @@ graph TD
     C --> D[增强动机]
     D --> E[更多学习]
     E --> A
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 #### "学霸现象"背后的心理学机制
@@ -408,10 +396,6 @@ graph TD
     D --> E[获得反馈]
     E --> F[扩展学习]
     F --> A
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style F fill:#e8f5e8
 ```
 
 #### 连锁反应的典型案例
@@ -515,10 +499,6 @@ graph TD
     C --> D[每日行动]
     D --> E[定期评估]
     E --> B
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 **弹性调整机制**：
@@ -830,11 +810,6 @@ graph TD
     F --> G[阶段三: 创造融合]
     G --> H[知识内化完成]
     H --> I[准备对外输出]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style G fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 #### 复述技巧的进阶应用
@@ -939,11 +914,6 @@ graph TD
     F --> G[教学输出]
     G --> H[反馈修正]
     H --> I[知识内化]
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style G fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 #### 知识管理的最佳实践
@@ -999,13 +969,6 @@ graph TD
 
     C1[教学 90%]
 
-    style A1 fill:#ffcccc
-    style A2 fill:#ffdddd
-    style A3 fill:#ffeeee
-    style B1 fill:#ddffdd
-    style B2 fill:#ccffcc
-    style C1 fill:#ccffcc
-
     D[低投入] --> E[中等投入] --> F[高投入]
 ```
 
@@ -1043,10 +1006,6 @@ graph TD
     E --> F[成功教学]
     F --> G[个人能力提升]
     G --> H[组织价值创造]
-
-    style A fill:#ffebee
-    style F fill:#e8f5e8
-    style H fill:#e3f2fd
 ```
 
 **费曼教学法的核心价值**：
@@ -1086,11 +1045,6 @@ graph TD
     H[公开承诺] --> I[质量要求]
     I --> J[深度理解]
     C --> H
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style F fill:#e8f5e8
-    style G fill:#f3e5f5
 ```
 
 **输出过程中的认知挑战**：
@@ -1271,11 +1225,6 @@ graph TD
 
     I[学习共同体] --> J[合作氛围]
     J --> K[共享认知]
-
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style H fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 #### 互动技巧的系统性训练
@@ -1337,11 +1286,6 @@ graph TD
     end
 
     B --> G
-
-    style A fill:#ffebee
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
-    style F fill:#e3f2fd
 ```
 
 **关键问题的深度分析**：
@@ -1435,11 +1379,6 @@ graph TD
     G --> H[能力内化]
 
     I[理解] --> J[记忆] --> K[应用] --> L[创造]
-
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style G fill:#e8f5e8
-    style H fill:#f3e5f5
 ```
 
 #### 学习社群的建设与管理
@@ -1487,11 +1426,6 @@ graph TD
     I --> A
 
     J[认知深化] --> K[方法优化] --> L[能力提升]
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style F fill:#e8f5e8
-    style I fill:#f3e5f5
 ```
 
 **争议性讨论的积极意义**：
@@ -1541,10 +1475,6 @@ graph LR
 
     D1[策略优化] --> D2[流程改进]
     D3[学习方法调整] --> D4[思维模式升级]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style D fill:#e8f5e8
 ```
 
 #### 投资领域的反思实践案例
@@ -1609,10 +1539,6 @@ graph LR
     C --> E[学习新知识]
     E --> F[更新知识体系]
     F --> G[验证应用效果]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style F fill:#e8f5e8
 ```
 
 - **时效性判断标准**：
@@ -1669,11 +1595,6 @@ graph TD
     D --> E[认知重构]
     E --> F[形成新的理解]
     F --> G[认知能力提升]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
-    style G fill:#f3e5f5
 ```
 
 #### 封闭式vs开放式问题的思维对比
@@ -1699,10 +1620,6 @@ graph LR
     C --> D[反思验证]
     D --> E[新知识生成]
     E --> A
-    
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 
@@ -1762,10 +1679,6 @@ graph TB
     subgraph "自下而上路径"
         D --> E --> F --> G
     end
-
-    style A fill:#e1f5fe
-    style D fill:#fff3e0
-    style H fill:#e8f5e8
 ```
 
 #### 批判性思维的五层修炼
@@ -1819,10 +1732,6 @@ graph LR
     C --> D[偏见检查]
     D --> E[权重分析]
     E --> F[综合判断]
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 ```mermaid
@@ -1901,10 +1810,6 @@ graph LR
     A1[动力不足] --> A2[注意力分散] --> A3[学习效率低]
     B1[适度挑战] --> B2[专注集中] --> B3[学习效率高]
     C1[过度紧张] --> C2[认知阻塞] --> C3[学习效率低]
-
-    style B fill:#e8f5e8
-    style A fill:#ffcccc
-    style C fill:#ffcccc
 ```
 
 **常态学习vs突击学习的效果对比**：
@@ -1928,9 +1833,6 @@ graph TD
     C[动觉输入] --> D
     D --> E[深度编码]
     E --> F[强记忆痕迹]
-    
-    style D fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 ```mermaid
@@ -1989,11 +1891,6 @@ graph TD
     C1[实践75%] --> C2[教学90%]
 
     D1[知识内化] --> D2[能力提升] --> D3[智慧生成]
-
-    style A fill:#ffcccc
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
-    style D fill:#f3e5f5
 ```
 
 **具体实施策略**：
@@ -2044,9 +1941,6 @@ graph TD
     J --> K[灵活应用]
     K --> L[学习成就感]
     L --> H
-
-    style G fill:#ffcccc
-    style L fill:#e8f5e8
 ```
 
 **费曼的"大海中的鱼"比喻**：
@@ -2087,10 +1981,6 @@ graph LR
     B --> C[提取阶段]
     C --> D[再巩固阶段]
     D --> E[长期存储]
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
 ```
 
 ### 4.5 知识简化的科学方法与实践技巧
@@ -2162,10 +2052,6 @@ graph TD
     D --> E[一句话表达]
     E --> F[投资人验证]
     F --> G[模式简化完成]
-    
-    style A fill:#e1f5fe
-    style E fill:#e8f5e8
-    style G fill:#f3e5f5
 ```
 
 
@@ -2194,10 +2080,6 @@ graph LR
     B --> C[工作记忆]
     C --> D[长期记忆]
     D --> E[知识内化]
-
-    style A fill:#e1f5fe
-    style D fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 #### 实践驱动学习（PBL）的系统化应用
@@ -2245,7 +2127,12 @@ graph LR
     D --> E[分享交流验证]
     E --> F[实践应用固化]
     F --> G[知识内化完成]
+```
 
+
+
+```mermaid
+graph LR
     subgraph "转化工具"
         B1[标杆学习]
         B2[最佳实践观察]
@@ -2259,10 +2146,6 @@ graph LR
         E1[同伴讨论]
         E2[导师指导]
     end
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style F fill:#e8f5e8
 ```
 
 #### 终身学习能力的构建
@@ -2304,20 +2187,6 @@ graph TD
     I --> J[实践验证]
     J --> K[新兴趣点]
     K --> A
-
-    style A fill:#e1f5fe
-    style E fill:#fff3e0
-    style H fill:#e8f5e8
-    style J fill:#f3e5f5
-
-    %% 主要阶段：输入-处理-输出循环
-    classDef inputStage fill:#e3f2fd,stroke:#2196f3
-    classDef processStage fill:#fff3e0,stroke:#ff9800
-    classDef outputStage fill:#e8f5e8,stroke:#4caf50
-
-    class A,B,C inputStage
-    class D,E,F,G processStage
-    class H,I,J,K outputStage
 ```
 
 #### 第一阶段：学习启动与基础构建
@@ -2369,11 +2238,6 @@ graph LR
     B --> C[智能检索]
     C --> D[关联分析]
     D --> E[知识输出]
-    
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
- 
 ```
 
 
@@ -2431,9 +2295,6 @@ graph TD
     C1[逻辑链条] --> C
     C2[数据支撑] --> C
     C3[对比分析] --> C
-
-    style B fill:#e8f5e8
-    style D fill:#fff3e0
 ```
 
 **100字分享的精炼技巧**：
@@ -2463,10 +2324,6 @@ graph LR
     D --> D1[跨界融合]
     D --> D2[问题重构]
     D --> D3[新的解决方案]
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style D fill:#e8f5e8
 ```
 
 #### 第三阶段：系统整合与教学输出
@@ -2515,10 +2372,6 @@ graph TD
     B1[频次统计] --> B
     B2[重要性评估] --> B
     B3[可行性分析] --> B
-
-    style A fill:#e1f5fe
-    style C fill:#fff3e0
-    style E fill:#e8f5e8
 ```
 
 **步骤10：实践应用——知识价值的实现**
@@ -2577,11 +2430,6 @@ graph TD
     D --> D1[全面接收]
     D1 --> D2[认知重构]
     D2 --> D3[持续成长]
-
-    style C fill:#ffcccc
-    style D fill:#ccffcc
-    style C3 fill:#ffcccc
-    style D3 fill:#ccffcc
 ```
 
 **红灯思维的表现特征**：
@@ -2617,10 +2465,6 @@ graph TD
 
 ```mermaid
 graph LR
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
-    
     A[识别思维模式] --> B[挑战固定思维]
     B --> C[重构思维框架]
     C --> D[实践成长思维]
@@ -2672,10 +2516,6 @@ graph LR
     D --> D1[跨学科融合]
     D --> D2[方法论迁移]
     D --> D3[创新应用]
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style D fill:#e8f5e8
 ```
 
 **第三步：学习资源整合**
@@ -2714,10 +2554,6 @@ graph TD
     C --> D[实用性过滤：应用价值；可操作性]
     D --> E[时效性过滤：信息新鲜度；发展趋势]
     E --> F[知识入库]
-
-    style A fill:#e1f5fe
-    style D fill:#e8f5e8
-    style F fill:#f3e5
 ```
 
 **第三步：结构化归纳与个人见解形成**
@@ -2764,10 +2600,6 @@ graph LR
     D1[现有知识] --> D
     D2[个人经历] --> D
     D3[未来规划] --> D
-
-    style A fill:#e1f5fe
-    style D fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 #### 学习目标的三个层次
@@ -2853,11 +2685,6 @@ graph TD
     J --> K[努力程度下降]
     K --> L[学习成果降低]
     L --> G
-
-    style A fill:#e8f5e8
-    style F fill:#e8f5e8
-    style G fill:#ffcccc
-    style L fill:#ffcccc
 ```
 
 **打破负向循环的策略**：
@@ -2940,9 +2767,6 @@ graph TD
     M --> N[学习成就感]
     N --> O[学习动力增强]
     O --> I
-
-    style F fill:#ffcccc
-    style N fill:#e8f5e8
 ```
 
 **知识焦虑的四大特征**：
@@ -2996,10 +2820,6 @@ graph TD
     D --> E[效果反馈]
     E --> F[重点调整]
     F --> B
-    
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 ```mermaid
@@ -3063,10 +2883,6 @@ graph TD
     A[知] --> B[行]
     B --> C[真知]
     C --> A
-
-    style A fill:#e1f5fe
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
 ```
 
 
@@ -3129,10 +2945,6 @@ graph TD
     C1[5-10%资金] --> C
     C2[单品种验证] --> C
     C3[纪律执行] --> C
-
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 **实践验证的关键要素**：
@@ -3192,10 +3004,6 @@ graph LR
     D1[工作绩效] --> D
     D2[生活质量] --> D
     D3[社会贡献] --> D
-
-    style A fill:#e1f5fe
-    style C fill:#e8f5e8
-    style E fill:#f3e5f5
 ```
 
 **终身学习的实践承诺**
