@@ -1,9 +1,9 @@
 ---
-title: 读书笔记：费曼学习法
+title: 书籍阅读：费曼学习法
 author: fangkun119
 date: 2025-11-08 12:00:00 +0800
-categories: [读书笔记, 方法技能]
-tags: [读书笔记, 方法既能, 效率工具, 学习方法]
+categories: [书籍阅读, 方法技能]
+tags: [书籍阅读, 方法技能, 学习方法]
 pin: false
 math: true
 mermaid: true
