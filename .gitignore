@@ -1,3 +1,6 @@
+# local image
+_posts/imgs
+
 # Bundler cache
 .bundle
 vendor
