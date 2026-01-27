@@ -65,7 +65,7 @@ image:
 
 Postman 请求集合见 [postman-workspace](https://github.com/fangkun119/postman-workspace)，本文使用以下请求进行测试：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/9d0bf9ecaf8340336782dc588028178c_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/9d0bf9ecaf8340336782dc588028178c_MD5.jpg" style="display: block;" align="left" alt="Postman测试集合">
 
 ## 2. 快速上手
 
@@ -97,7 +97,7 @@ Spring Cloud LoadBalancer执行流程如下，以`订单服务`调用`用户服�
 
 具体如下图所示：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/05c6941ffa5b9b1568b8f0fc79ae6a50_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/05c6941ffa5b9b1568b8f0fc79ae6a50_MD5.jpg" style="display: block;" align="left" alt="LoadBalancer工作流程图">
 
 通过客户端负载均衡机制，LoadBalancer无需额外部署负载均衡服务器，降低系统复杂度。
 
@@ -105,7 +105,7 @@ Spring Cloud LoadBalancer执行流程如下，以`订单服务`调用`用户服�
 
 在Spring Cloud Alibaba中，通过以下是三步可以快速配置LoadBalancer。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/9614d5a0a6431cc87bf9ea1ed32d0e33_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/9614d5a0a6431cc87bf9ea1ed32d0e33_MD5.jpg" style="display: block;" align="left" alt="LoadBalancer配置三步骤">
 
 #### (1) 引入Maven依赖
 
@@ -190,7 +190,7 @@ restTemplate.getForObject("http://tlmall-order/api/order", Order.class);
 
 包括两个微服务：用户服务（`tlmall-order`）和订单服务（`tlmall-order`）。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/5806b969456f1bb6978c1db8e0c430b1_MD5.jpg" style="display: block;" align="left" width="500">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/5806b969456f1bb6978c1db8e0c430b1_MD5.jpg" style="display: block;" align="left" width="500" alt="测试场景架构图">
 
 用户服务（`tlmall-user`）会调用订单服务（`tlmall-order`）获取用户的所有订单。
 
@@ -257,11 +257,11 @@ $ jps | grep -i nacos
 
 启动`tlmall-nacos-demo-order`和`tlmall-nacos-demo-user`两个微服务，可以看到他们的端口分别是8060和8050。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/417befe335bfb01dc4ed47cbfd316f51_MD5.jpg" style="display: block;" align="left" width="320">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/417befe335bfb01dc4ed47cbfd316f51_MD5.jpg" style="display: block;" align="left" width="320" alt="IDEA服务启动端口配置">
 
 用Postman向8050端口的用户服务发送请求，用户服务从订单服务获取会员所有订单并返回给Postman。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/f0a92039739306b6283dc0aa6f4f7a82_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/f0a92039739306b6283dc0aa6f4f7a82_MD5.jpg" style="display: block;" align="left" alt="Postman请求测试结果">
 
 ## 3. 内置负载均衡策略
 
@@ -328,11 +328,11 @@ public class TlmallUserApplication {
 
 权重用来让性能更好的实例承担更多请求。通过Nacos控制台配置 ，默认为等权重，如下图第4列。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/7d0dcbb0ef0a2061e4612dbde3330b20_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/7d0dcbb0ef0a2061e4612dbde3330b20_MD5.jpg" style="display: block;" align="left" alt="Nacos控制台实例列表">
 
 整个流程如下：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/be926a5f6741e9254c1ea66021de9169_MD5.jpg" width="800" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/be926a5f6741e9254c1ea66021de9169_MD5.jpg" width="800" style="display: block;" align="left" alt="NacosLoadBalancer选择流程">
 
 这样的好处是：
 
@@ -398,7 +398,7 @@ public class RandomLoadBalancerConfig {
 
 编写过程模仿`NacosLoadBalancerClientConfiguration`的 `nacosLoadBalancer`方法即可，只是我们不添加 `@Beaan`注解因此也就不需要`@ConditionalOnMissingBean`注解：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/432ae60aa9572cdf43353a55a8060b54_MD5.jpg" width="800" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/432ae60aa9572cdf43353a55a8060b54_MD5.jpg" width="800" style="display: block;" align="left" alt="NacosLoadBalancer配置类源码">
 
 **步骤 3**：在服务启动类上 `@LoadBalancerClients` 注解设定策略生效范围。
 
@@ -464,7 +464,7 @@ public interface AccountServiceFeignClient {
 
 环境拓扑如下，启动两个订单服务实例，端口分别是8060和8061，来验证各种配置下生效的策略。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/109634b9537172075f1172e56e74d9f1_MD5.jpg" width="400" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/109634b9537172075f1172e56e74d9f1_MD5.jpg" width="400" style="display: block;" align="left" alt="双实例部署拓扑图">
 
 首先创建第二个用户服务实例，步骤如下：
 
@@ -473,11 +473,11 @@ public interface AccountServiceFeignClient {
 
 配置如下，启动后订单服务两个实例的端口分别是`8060`和`8061`。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/88087deb53ce60cd5cdd048c1e9c0fee_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/88087deb53ce60cd5cdd048c1e9c0fee_MD5.jpg" style="display: block;" align="left" alt="IDEA VM Options配置">
 
 在Nacos控制台同样可以验证，两个实例均已注册。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/7d0dcbb0ef0a2061e4612dbde3330b20_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/7d0dcbb0ef0a2061e4612dbde3330b20_MD5.jpg" style="display: block;" align="left" alt="Nacos控制台实例列表">
 
 #### (2) NacosLoadBalancer策略演示
 
@@ -493,11 +493,11 @@ loadbalancer:
 
 在`NacosLoadBalancer.java` 下面这一行的位置打断点。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/bbd31702ca4117cc9f922c8e5436ca91_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/bbd31702ca4117cc9f922c8e5436ca91_MD5.jpg" style="display: block;" align="left" alt="NacosLoadBalancer断点位置">
 
 重启用户服务，用Postman发请求，观察` instance  `对象的`instanceId`字段，就能看出来再往哪个实例发请求。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/3a8eed6ccc298d359b17e1362f4ab159_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/3a8eed6ccc298d359b17e1362f4ab159_MD5.jpg" style="display: block;" align="left" alt="断点调试instanceId字段">
 
 连续发送多个请求，可以观察到，路由是随机的，这也是因为我们在Nacos控制台中给两个实例的权重是相同的。
 
@@ -533,11 +533,11 @@ public class TlmallUserApplication {
 
 在`RoundRobinLoadBalancer` 这一行的位置打断点。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/95a6f18180e856344823af0c2e66f574_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/95a6f18180e856344823af0c2e66f574_MD5.jpg" style="display: block;" align="left" alt="RoundRobinLoadBalancer断点位置">
 
 用Postman连续向用户服务发请求，观察内存栈中`instanceId` 字段，可以看到端口在8060和8061之间轮询。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/6c9b7a1b4b031e2f49b651f467549833_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/6c9b7a1b4b031e2f49b651f467549833_MD5.jpg" style="display: block;" align="left" alt="轮询策略调试结果">
 
 说明`Spring Cloud LoadBalancer`使用了`RoundRobinBalancer`轮询策略进行兜底。
 
@@ -587,11 +587,11 @@ public class TlmallUserApplication {
 
 在`RandomLoadBalancer` 的`choose`方法中打断点。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/277261f7e7b1ba19011b8b34da610d83_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/277261f7e7b1ba19011b8b34da610d83_MD5.jpg" style="display: block;" align="left" alt="RandomLoadBalancer断点位置">
 
 重启用户服务，使用Postman连续发送请求
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/46b39deb7f34369f6628fdc09f975196_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/46b39deb7f34369f6628fdc09f975196_MD5.jpg" style="display: block;" align="left" alt="随机策略Postman测试">
 
 从`serviceInstanceResponse.serviceInstance.innstancdId`中可以看出，是随机选取实例发送的。
 
@@ -605,11 +605,11 @@ Spring Cloud Load Balancer默认兜底策略是RoundRobinLoadBalancer。
 
 首先查阅[Spring Cloud LoadBalancer官方文档](https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html)，找到策略类`RandomLoadBalancer`和 `RoundRobinLoadBalancer` 。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/0d35437c937d187d3b7f44603d15bd2d_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/0d35437c937d187d3b7f44603d15bd2d_MD5.jpg" style="display: block;" align="left" alt="Spring Cloud官方文档">
 
 考虑到它的Bean都是自动装配的，那么通常有用于装配的Configuration类，搜索结果中前三个最接近。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/999e0df20bc8a4b16f4e3e554216f696_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/999e0df20bc8a4b16f4e3e554216f696_MD5.jpg" style="display: block;" align="left" alt="IDEA搜索配置类">
 
 在第三个即`LoadBalancerClientConfiguration`类中，找到如下代码，这里配置了负载均衡策略Bean。
 
@@ -659,11 +659,11 @@ public class RandomLoadBalancerConfig {
 
 前两个来自Spring Cloud Load Balancer，最后一个来自Nacos，具体如下图：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/f5780786de12037c5fd4c3578c202429_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/f5780786de12037c5fd4c3578c202429_MD5.jpg" style="display: block;" align="left" alt="LoadBalancer实现类查找">
 
 表示继承和接口实现关系的类图如下
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/5baad5cd44b8ca0d9f30536a26e90fa4_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/5baad5cd44b8ca0d9f30536a26e90fa4_MD5.jpg" style="display: block;" align="left" alt="LoadBalancer类图结构">
 
 #### (3) NacosLoadBalancer策略逻辑
 
@@ -807,7 +807,7 @@ flowchart LR
 
 模仿Spring Cloud Load Balancer内置的RandomLoadBalancer，编写自定义策略类IPHashLoadBalancer
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/6c4621f6c26f447f43cf4942885673fe_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/6c4621f6c26f447f43cf4942885673fe_MD5.jpg" style="display: block;" align="left" alt="RandomLoadBalancer源码参考">
 
 差别集中在`getInstanceResponse(List<ServiceInstance> instances)`方法，RandomLoadBalancer从参数`instances`中随机选一个实例，而`IPHashLoadBalancer`则根据请求IP来选择实例。
 
@@ -888,7 +888,7 @@ private static String extractIP(RequestAttributes attributes) {
 
 模仿`Spring Cloud Load Balancer`自带的`LoadBalancerClientConfiguration`中`reactorServiceInstanceLoadBalancer`方法，编写一个自定义配置类`IPHashLoadBalancerConfig`类。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/485e86e511dd5ad6055d7b715192dc59_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/485e86e511dd5ad6055d7b715192dc59_MD5.jpg" style="display: block;" align="left" alt="LoadBalancerClientConfiguration源码参考">
 
 自定义配置类代码如下。
 
@@ -944,20 +944,20 @@ loadbalancer:
 
 在自动定义策略类`IPHashLoadBalancer`中打断点如下
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/ba36f4a3ce43194c5401b0886ca9205e_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/ba36f4a3ce43194c5401b0886ca9205e_MD5.jpg" style="display: block;" align="left" alt="IPHashLoadBalancer断点位置">
 
 
 重启用户服务，用Postman向它发送请求，通过X-CLIENT-IP Header传入IP地址“10.231.52.62”
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/58e8752175c230a8095b28198d9b2f2b_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/58e8752175c230a8095b28198d9b2f2b_MD5.jpg" style="display: block;" align="left" alt="Postman设置请求头">
 
 可以看到代码走到了断点处，其中的ipAddress变量和Postman传入的相同
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/fedf86e392094f764f3ec024cce65cea_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/fedf86e392094f764f3ec024cce65cea_MD5.jpg" style="display: block;" align="left" alt="IP地址断点调试">
 
 取消断点，更换不同的X-CLIENT-IP进行测试，日志中都能够打印正确的IP
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/6efdfe7f572d190592773824f89e529b_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/6efdfe7f572d190592773824f89e529b_MD5.jpg" style="display: block;" align="left" alt="IP地址日志输出">
 
 ## 6. @LoadBalanced注解时序问题与解决方案
 
@@ -984,7 +984,7 @@ public RestTemplate restTemplate() {
 
 然而，启动阶段通过Spring Cloud Load Balancer调用下游，会返回`BeanCreationException`以及`caused by Connection refused`，日志如下。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/f4b4096a7bc5415592ac74863637ba0f_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/f4b4096a7bc5415592ac74863637ba0f_MD5.jpg" style="display: block;" align="left" alt="BeanCreationException错误日志">
 
 从日志看，`tlmall-user` 直接将 `http://tlmall-order/order/getOrder` 作为 URL 访问导致失败，而不是通过 Nacos 解析服务名后访问实例。
 
@@ -1006,7 +1006,7 @@ public RestTemplate restTemplate() {
 
 后续请求时，拦截器执行服务名解析和实例选择。具体过程如下：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/5e62ff9147e8fa1dc9f0652d19208aac_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/5e62ff9147e8fa1dc9f0652d19208aac_MD5.jpg" style="display: block;" align="left" alt="负载均衡注入流程图">
 
 接下来是代码阅读顺序
 
@@ -1031,14 +1031,14 @@ sequenceDiagram
 
 从 `@LoadBalanced` 代码开始，它是一个作为限定符的注解，用于标记需要负载均衡的 RestTemplate，供框架后续处理。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/8439e24a12c742950711bd93b830747b_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/8439e24a12c742950711bd93b830747b_MD5.jpg" style="display: block;" align="left" alt="@LoadBalanced注解源码">
 
 那么RestTemplate Bean被它标记，就说明在Bean初始化时，会有代码根据这个标记找到它并进行定制。
 #### (3) 自动配置类：LoadBalancerAutoConfiguration
 
 接下来寻找这些定制操作，和 `3.4`小节的思路一样，从自动配置找起。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/75f8230572b8946f3fac44f9426d28f3_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/75f8230572b8946f3fac44f9426d28f3_MD5.jpg" style="display: block;" align="left" alt="LoadBalancerAutoConfiguration源码">
 
 由于这是通用功能，应关注最顶层的三个配置类。在`LoadBalancerAutoConfiguration`中查找使用`@LoadBalanced`注解的代码，定位到`org.springframework.cloud.client.loadbalancer` 包的 `LoadBalancerAutoConfiguration`类。代码如下：
 
@@ -1161,7 +1161,7 @@ LoadBalancerInterceptor从URL中提取服务名（即Nacos中的Service ID，如
 
 查看源代码可知，`LoadBalancerClient`是一个接口，其实现类在Spring Cloud LoadBalancer包中只有`BlockingLoadBalancerClient`。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/0333888df908136697285288ac4a22d1_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/0333888df908136697285288ac4a22d1_MD5.jpg" style="display: block;" align="left" alt="LoadBalancerClient实现类查找">
 
 核心代码如下，其中`choose`方法根据服务名选择具体实例。
 
@@ -1263,7 +1263,7 @@ public interface SmartInitializingSingleton {
 
 `DefaultListableBeanFactory`类的`preInstantiateSingletons`方法末尾位置，它属于`spring-beans`这个包。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/00449d18ded62c67e38dfa4bf6cb8376_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/00449d18ded62c67e38dfa4bf6cb8376_MD5.jpg" style="display: block;" align="left" alt="DefaultListableBeanFactory源码">
 
 **步骤2**：阅读触发代码
 
@@ -1443,18 +1443,18 @@ public class UserService implements InitializingBean {
 
 给`LoadBalancerAutoConfiguration`的`SmartInitializingSingleton`中打断点
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/3bdb9b7c9565e782caca69aacdeb333b_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/3bdb9b7c9565e782caca69aacdeb333b_MD5.jpg" style="display: block;" align="left" alt="SmartInitializingSingleton断点位置">
 
 给`UserService`的`afterPropertiesSet()`方法打断点。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/d22f48d42b8627afb67faab05e0b9ee8_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/d22f48d42b8627afb67faab05e0b9ee8_MD5.jpg" style="display: block;" align="left" alt="afterPropertiesSet断点位置">
 
 使用Debug模式启动并请求用户服务，观察结果：
 
 - `UserService`的`afterPropertiesSet()`方法断点先被触发，说明第一个断点位置的定制化操作尚未执行
 - 断点处`RestTemplate`的拦截器列表（`interceptors`）为空，证实定制化操作未执行，无法将服务名转换为实例IP端口
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/693f2dfa77f712c285498e7d6b24c005_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/693f2dfa77f712c285498e7d6b24c005_MD5.jpg" style="display: block;" align="left" alt="拦截器列表为空断点验证">
 
 至此问题核心已定位：Bean初始化阶段，RestTemplate尚未注入负载均衡能力，无法解析服务名。
 
@@ -1462,7 +1462,7 @@ public class UserService implements InitializingBean {
 
 结合Spring Bean生命周期分析问题：
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/b2f82eb2f421455644f68ae01f85063b_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/b2f82eb2f421455644f68ae01f85063b_MD5.jpg" style="display: block;" align="left" alt="Spring Bean生命周期图">
 
 时序冲突根源如下：
 
@@ -1573,7 +1573,7 @@ Thread.sleep(30000);
 
 重启用户服务，可以看到在被阻塞的30秒，用户服务（`tlmall-user`）并未注册到 Nacos，不会过早暴露给上游。
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/50b69d2bbe03ceccbf3d4a2ddf8c4092_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/50b69d2bbe03ceccbf3d4a2ddf8c4092_MD5.jpg" style="display: block;" align="left" alt="Nacos控制台服务未注册">
 
 ##### 优缺点
 
@@ -1639,13 +1639,13 @@ flowchart LR
 
 步骤2：启动服务，在模拟慢速数据加载阶段，服务健康状态为 `false`
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/b37cb874b58ef97513d0a5f800c77c53_MD5.jpg" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/b37cb874b58ef97513d0a5f800c77c53_MD5.jpg" style="display: block;" align="left" alt="Nacos健康状态false">
 
 步骤3：等待服务完成启动数据加载
 
 步骤4：等待服务将健康状态设为 `true`
 
-<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/149d4b61d91d783e408cf8fb8ba1c2c3_MD5.jpg" width="800" style="display: block;" align="left">
+<img src="/imgs/spring-cloud-alibaba-04-loadbalancer/149d4b61d91d783e408cf8fb8ba1c2c3_MD5.jpg" width="800" style="display: block;" align="left" alt="Nacos健康状态true">
 
 ##### 优缺点
 
