@@ -38,7 +38,7 @@ image:
 - **快速入门**：配置中心搭建及基本使用方法
 - **配置隔离**：通过 Profile 实现多环境配置管理
 - **动态刷新**：配置热加载机制及常见问题处理
-- **插件扩展**：配置加密及自定义插件实现方法
+- **插件扩展**：官方和自定义插件的简介
 
 **前置知识**：建议先阅读 **《Spring Cloud Alibaba 02：完整 Demo 搭建》**，建立对 Spring Cloud Alibaba 的整体认知。本文聚焦 Nacos 配置中心的实战应用，对基础知识将不做过多展开。
 
@@ -1036,6 +1036,7 @@ Nacos提供了丰富的插件扩展机制，基于SPI（Service Provider Interfa
 | ------ | ---------------------------------------------------------------------------------- |
 | **代码** | [github.com/nacos-group/nacos-plugin](https://github.com/nacos-group/nacos-plugin) |
 | **文档** | [Nacos官方文档](https://nacos.io/docs/latest/plugin/auth-plugin/)                      |
+
 ## 6. 总结
 
 本文系统介绍 Spring Cloud Alibaba Nacos 配置中心实战应用，通过基础使用 + 配置隔离 + 动态刷新 + 扩展增强的完整闭环，帮助读者：
