@@ -2,7 +2,7 @@
 title: Spring Cloud Alibaba上手 02：MVP项目介绍
 author: fangkun119
 date: 2025-12-19 12:00:00 +0800
-categories: [微服务, Spring Cloud Alibaba, 快速上手]
+categories: [微服务, Spring Cloud Alibaba]
 tags: [微服务, Spring Cloud Alibaba]
 pin: false
 math: true
@@ -24,7 +24,7 @@ image:
 {:toc}
 </details>
 
-## 1. 文章概要
+## 1. 文档概要
 
 本文讲解 **Spring Cloud Alibaba MVP 实战项目**，涵盖以下知识模块：
 
