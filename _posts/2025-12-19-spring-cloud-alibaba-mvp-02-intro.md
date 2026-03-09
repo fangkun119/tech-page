@@ -1,7 +1,7 @@
 ---
 title: Spring Cloud Alibaba上手 02：MVP项目介绍
 author: fangkun119
-date: 2025-12-18 12:00:00 +0800
+date: 2025-12-19 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba, 快速上手]
 tags: [微服务, Spring Cloud Alibaba]
 pin: false
