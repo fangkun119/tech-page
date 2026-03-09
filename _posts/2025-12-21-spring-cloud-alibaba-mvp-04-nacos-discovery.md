@@ -42,10 +42,14 @@ image:
 
 ### 1.2 配套资源
 
+代码
+
 | 资源类型           | 说明                               | 链接                                                                                                                   |
 | -------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **项目源码**       | Spring Cloud Alibaba 2023 完整示例代码 | [github.com/fangkun119/spring-cloud-alibaba-2023-demo](https://github.com/fangkun119/spring-cloud-alibaba-2023-demo) |
 | **Postman 集合** | API 测试用例集合，便于快速验证功能              | [github.com/fangkun119/postman-workspace](https://github.com/fangkun119/postman-workspace)                           |
+
+环境搭建：《[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %})》
 
 ## 2. Nacos 服务注册与发现
 
