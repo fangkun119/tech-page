@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 10：SkyWalking
+title: Spring Cloud Alibaba上手 09：SkyWalking
 author: fangkun119
 date: 2025-12-27 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -50,7 +50,7 @@ image:
 
 #### (2) 环境搭建
 
-见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %})
+见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
 
 
 ## 2. SkyWalking 介绍
@@ -78,7 +78,7 @@ image:
 
 | 架构层次      | 核心组件               | 状态                                                                                                 |
 | --------- | ------------------ | -------------------------------------------------------------------------------------------------- |
-| **数据处理层** | OAP 服务器、数据存储、可视化看板 | 已在 [Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %}) 搭建完成 |
+| **数据处理层** | OAP 服务器、数据存储、可视化看板 | 已在 [Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %}) 搭建完成 |
 | **数据采集层** | Agent 探针、字节码注入     | 本章将实现接入                                                                                            |
 
 **本章重点：**

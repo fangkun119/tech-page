@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 06：Nacos配置中心
+title: Spring Cloud Alibaba上手 05：Nacos配置中心
 author: fangkun119
 date: 2025-12-23 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -48,7 +48,7 @@ image:
 | **项目源码**       | Spring Cloud Alibaba 2023 完整示例代码 | [github.com/fangkun119/spring-cloud-alibaba-2023-demo](https://github.com/fangkun119/spring-cloud-alibaba-2023-demo) |
 | **Postman 集合** | API 测试用例集合，便于快速验证功能              | [github.com/fangkun119/postman-workspace](https://github.com/fangkun119/postman-workspace)                           |
 
-环境搭建：《[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %})》
+环境搭建：《[Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})》
 
 ## 2. 配置中心的作用
 

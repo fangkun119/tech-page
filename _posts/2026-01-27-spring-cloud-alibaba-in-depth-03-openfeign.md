@@ -1,9 +1,9 @@
 ---
-title: Spring Cloud Alibaba 05：OpenFeign详解
+title: Spring Cloud Alibaba深入 03：OpenFeign
 author: fangkun119
 date: 2026-01-27 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
-tags: [微服务, Spring Cloud Alibaba]
+tags: [微服务, Spring Cloud Alibaba, OpenFeign]
 pin: false
 math: true
 mermaid: true

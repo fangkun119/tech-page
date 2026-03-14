@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 08：Sentinel
+title: Spring Cloud Alibaba上手 07：Sentinel
 author: fangkun119
 date: 2025-12-25 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -51,7 +51,7 @@ image:
 
 #### (2) 环境搭建
 
-见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %})
+见文档：[Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
 
 ## 2. Sentinel 功能
 

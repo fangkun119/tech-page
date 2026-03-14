@@ -1,9 +1,9 @@
 ---
-title: Spring Cloud Alibaba 07：Sentinel全面深入理解
+title: Spring Cloud Alibaba深入 05：Sentinel
 author: fangkun119
 date: 2026-03-07 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
-tags: [微服务, Spring Cloud Alibaba]
+tags: [微服务, Spring Cloud Alibaba, Sentinel]
 pin: false
 math: true
 mermaid: true

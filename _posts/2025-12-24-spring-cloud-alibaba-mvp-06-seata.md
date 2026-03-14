@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 07：Seata
+title: Spring Cloud Alibaba上手 06：Seata
 author: fangkun119
 date: 2025-12-24 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -50,7 +50,7 @@ image:
 
 #### (2) 环境搭建
 
-见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %})
+见文档：[Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
 
 本文使用Seata 2.0.0
 
@@ -86,7 +86,7 @@ image:
 
 **知识衔接：**
 
-[**Spring Cloud Alibaba上手 03：中间件环境 - 5. Seata 分布式事务**]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %}#5-seata-分布式事务) 已涵盖：
+[**Spring Cloud Alibaba上手 02：中间件环境 - 5. Seata 分布式事务**]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %}#5-seata-分布式事务) 已涵盖：
 
 | 知识模块 | 内容说明 |
 | ---- | ---- |
@@ -99,7 +99,7 @@ image:
 
 ### 2.3 原理回顾
 
-[**前置文档**]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %}#51-seata-at事务原理) 已详细讲解 **Seata AT 模式**，此处快速回顾核心要点。
+[**前置文档**]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %}#51-seata-at事务原理) 已详细讲解 **Seata AT 模式**，此处快速回顾核心要点。
 
 #### (1) 核心概念
 

@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 09：Spring Cloud Gateway
+title: Spring Cloud Alibaba上手 08：Spring Cloud Gateway
 author: fangkun119
 date: 2025-12-26 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -51,7 +51,7 @@ image:
 
 #### (2) 环境搭建
 
-见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-03-env %})
+见文档：[Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
 
 ## 2. 微服务网关的作用
 

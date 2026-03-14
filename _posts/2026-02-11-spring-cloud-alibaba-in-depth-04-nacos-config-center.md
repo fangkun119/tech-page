@@ -1,9 +1,9 @@
 ---
-title: Spring Cloud Alibaba 06：Nacos配置中心
+title: Spring Cloud Alibaba深入 04：Nacos配置中心
 author: fangkun119
 date: 2026-02-11 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
-tags: [微服务, Spring Cloud Alibaba]
+tags: [微服务, Spring Cloud Alibaba, Nacos]
 pin: false
 math: true
 mermaid: true

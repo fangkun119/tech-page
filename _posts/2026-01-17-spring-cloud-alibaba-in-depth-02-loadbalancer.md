@@ -1,9 +1,9 @@
 ---
-title: Spring Cloud Alibaba 04：LoadBalancer深入
+title: Spring Cloud Alibaba深入 02：LoadBalancer
 author: fangkun119
 date: 2026-01-17 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
-tags: [微服务, Spring Cloud Alibaba]
+tags: [微服务, Spring Cloud Alibaba, Spring Cloud LoadBalancer]
 pin: false
 math: true
 mermaid: true

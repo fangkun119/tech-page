@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 03：中间件环境
+title: Spring Cloud Alibaba上手 02：中间件环境
 author: fangkun119
 date: 2025-12-19 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -435,7 +435,7 @@ graph TD
 
 ##### 步骤1：下载 Seata
 
-**版本选择**：根据文档[《Spring Cloud Alibaba上手 02：MVP项目介绍》]({% post_url 2025-12-19-spring-cloud-alibaba-mvp-02-intro %}) 的版本规划，本 Demo 使用 **Seata 2.0.0**（也可调研使用更新的版本，功能更强）。
+**版本选择**：根据文档[《Spring Cloud Alibaba上手 02：MVP项目介绍》]({% post_url 2025-12-19-spring-cloud-alibaba-mvp-01-intro %}) 的版本规划，本 Demo 使用 **Seata 2.0.0**（也可调研使用更新的版本，功能更强）。
 
 **下载地址**：<https://seata.apache.org/release-history/seata-server/>
 
@@ -733,7 +733,7 @@ $ bash seata-server.sh stop
 
 ### 6.2 下载与安装
 
-**版本选择**：根据文档[《Spring Cloud Alibaba上手 02：MVP项目介绍》]({% post_url 2025-12-19-spring-cloud-alibaba-mvp-02-intro %}) 的版本规划，本 Demo 使用 **Sentinel 1.8.6**
+**版本选择**：根据文档[《Spring Cloud Alibaba上手 02：MVP项目介绍》]({% post_url 2025-12-19-spring-cloud-alibaba-mvp-01-intro %}) 的版本规划，本 Demo 使用 **Sentinel 1.8.6**
 
 **下载资源**：
 
@@ -863,7 +863,7 @@ INFO 2537 --- [nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : Compl
 
 ### 7.2 下载与准备
 
-**版本选择**：根据 [《Spring Cloud Alibaba上手 02：MVP项目介绍》]({% post_url 2025-12-19-spring-cloud-alibaba-mvp-02-intro%}) 的版本规划，本 Demo 使用 **SkyWalking 10.0.1**
+**版本选择**：根据 [《Spring Cloud Alibaba上手 02：MVP项目介绍》]({% post_url 2025-12-19-spring-cloud-alibaba-mvp-01-intro%}) 的版本规划，本 Demo 使用 **SkyWalking 10.0.1**
 
 **下载地址**：<https://skywalking.apache.org/downloads/>
 
