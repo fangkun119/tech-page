@@ -50,9 +50,13 @@ image:
 
 #### (2) 环境搭建
 
-见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
+[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
 
 本文使用Seata 2.0.0
+
+#### (3) 前置知识
+
+[Spring Cloud Alibaba上手 06：Seata]({% post_url 2025-12-24-spring-cloud-alibaba-mvp-06-seata %})
 
 ## 2. 基础知识回顾
 
