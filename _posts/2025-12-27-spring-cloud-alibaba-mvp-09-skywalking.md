@@ -1,5 +1,5 @@
 ---
-title: Spring Cloud Alibaba上手 09：SkyWalking
+title: Spring Cloud Alibaba上手 10：SkyWalking
 author: fangkun119
 date: 2025-12-27 12:00:00 +0800
 categories: [微服务, Spring Cloud Alibaba]
@@ -50,7 +50,7 @@ image:
 
 #### (2) 环境搭建
 
-见文档：[Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
+见文档：[Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %})
 
 
 ## 2. SkyWalking 介绍
@@ -78,7 +78,7 @@ image:
 
 | 架构层次      | 核心组件               | 状态                                                                                                 |
 | --------- | ------------------ | -------------------------------------------------------------------------------------------------- |
-| **数据处理层** | OAP 服务器、数据存储、可视化看板 | 已在 [Spring Cloud Alibaba上手 03：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %}) 搭建完成 |
+| **数据处理层** | OAP 服务器、数据存储、可视化看板 | 已在 [Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %}) 搭建完成 |
 | **数据采集层** | Agent 探针、字节码注入     | 本章将实现接入                                                                                            |
 
 **本章重点：**
@@ -88,6 +88,12 @@ image:
 <img src="/imgs/spring-cloud-alibaba-mvp-10-skywalking/ef7bb7c175e0ca1ebc4b7924e20c640d_MD5.jpg" style="display: block; width: 100%;" alt="SkyWalking架构">
 
 ## 3. 微服务整合
+
+### 3.1 前置工作
+
+**前置条件**：本文假定 **SkyWalking OAP** 服务和 **Web UI** 已配置完成并正常运行。**OAP** 与 **UI** 的搭建步骤请参考 [Spring Cloud Alibaba上手 02：中间件环境]({% post_url 2025-12-20-spring-cloud-alibaba-mvp-02-env %}#7-skywalking-链路追踪)中“SkyWalking-链路追踪”一章。
+
+### 3.2 整合概要
 
 **接入原理**：通过 **JVM 参数** 让微服务加载 **SkyWalking Agent JAR 包**，Agent 通过 **字节码增强** 技术采集调用链路数据，并发送至 **SkyWalking OAP 服务器** 进行存储和分析。
 
@@ -99,9 +105,11 @@ image:
 | **② 配置 JVM 参数** | 为每个微服务添加 JVM 启动参数 | 指定 Agent 路径、服务名称、OAP 地址 |
 | **③ 验证接入** | 启动微服务并访问 SkyWalking 控制台 | 链路追踪可视化 |
 
-### 3.1 准备 SkyWalking Agent JAR 包
+### 3.3 整合步骤
 
-**① 下载并解压 Agent**
+#### (1) 步骤1：准备 SkyWalking Agent JAR 包
+
+##### ① 下载并解压 Agent
 
 **SkyWalking Agent JAR 包** 来自官网，本项目使用 **版本 9.3.0**（下载方式见 3.7 节）。解压后目录结构如下：
 
@@ -116,7 +124,7 @@ x skywalking-agent/activations/apm-toolkit-kafka-activation-9.3.0.jar
 x skywalking-agent/licenses/LICENSE-asm.txt
 ```
 
-**② 修复 Spring Cloud Gateway 监控 Bug**
+##### ② 修复 Spring Cloud Gateway 监控 Bug
 
 **SkyWalking 9.3.0** 存在一个已知 Bug（[Issue #10509](https://github.com/apache/skywalking/issues/10509)）：**Gateway 插件默认未激活**，需手动将插件 JAR 包从 `optional-plugins` 目录拷贝至 `plugins` 目录。
 
@@ -128,9 +136,9 @@ $ /KendeMacBook-Air/ ken@KendeMacBook-Air.local:~/Code/mid-wares/skywalking-agen
 $ cp optional-plugins/apm-spring-cloud-gateway-4.x-plugin-9.3.0.jar plugins/
 ```
 
-### 3.2 配置 JVM 参数
+#### (2) 步骤2：配置 JVM 参数
 
-**① JVM 参数说明**
+##### ① JVM 参数说明
 
 为微服务添加 **JVM 启动参数**，需配置以下 **三项核心参数**：
 
@@ -140,7 +148,9 @@ $ cp optional-plugins/apm-spring-cloud-gateway-4.x-plugin-9.3.0.jar plugins/
 | **`-DSW_AGENT_NAME`** | 指定**微服务名称**（在 SkyWalking 控制台显示） | `tlmall-order` |
 | **`-DSW_AGENT_COLLECTOR_BACKEND_SERVICES`** | 指定 **SkyWalking OAP 服务器地址** | `tlmall-skywalking-server:11800` |
 
-**② 参数配置示例**（以**订单服务**为例）
+##### ② 参数配置示例（以订单服务为例）
+
+###### JVM参数
 
 ```
 -javaagent:/Users/ken/Code/mid-wares/skywalking-agent/skywalking-agent.jar
@@ -148,7 +158,7 @@ $ cp optional-plugins/apm-spring-cloud-gateway-4.x-plugin-9.3.0.jar plugins/
 -DSW_AGENT_COLLECTOR_BACKEND_SERVICES=tlmall-skywalking-server:11800
 ```
 
-**③ IDEA 配置 JVM 参数**
+###### IDEA 配置
 
 在 **IntelliJ IDEA** 中为每个微服务添加 JVM 参数（**Run → Edit Configurations → Add VM options**）：
 
@@ -161,11 +171,11 @@ $ cp optional-plugins/apm-spring-cloud-gateway-4.x-plugin-9.3.0.jar plugins/
 | **库存服务** | `-DSW_AGENT_NAME=tlmall-storage` | <img src="/imgs/spring-cloud-alibaba-mvp-10-skywalking/34237f861a04e5b3610c883f5d1334cb_MD5.jpg" style="display: block; width: 100%;" alt="tlmall-storage的JVM参数配置"> |
 | **账户服务** | `-DSW_AGENT_NAME=tlmall-account` | <img src="/imgs/spring-cloud-alibaba-mvp-10-skywalking/510e8846e51533212beff90b19cf63ad_MD5.jpg" style="display: block; width: 100%;" alt="tlmall-account的JVM参数配置"> |
 
-**配置要点：**
+##### ③ 配置要点
 
 > 所有微服务的 **`-javaagent`** 和 **`-DSW_AGENT_COLLECTOR_BACKEND_SERVICES`** 参数保持一致，仅 **`-DSW_AGENT_NAME`** 根据服务名称不同而变化。
 
-### 3.3 验证接入效果
+#### (3) 步骤3：验证接入效果
 
 **① 启动日志验证**
 
