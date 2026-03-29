@@ -79,7 +79,7 @@ image:
 | **度量聚合**  | 收集并展示服务、实例、端点的性能指标  |
 | **可视化**   | 将追踪数据与度量数据以仪表盘形式呈现  |
 
-官网：[http://skywalking.apache.org/](http://skywalking.apache.org/)
+官网：[https://skywalking.apache.org/](https://skywalking.apache.org/)
 
 #### (2) 为什么需要全链路追踪
 
@@ -120,7 +120,7 @@ image:
 
 SkyWalking 环境搭建需要下载两个组件：**OAP 服务**（可观测性分析平台）和 **Web UI**（可视化界面），两者打包在同一个发行包中，Agent 探针需要单独下载。
 
-下载地址：[http://skywalking.apache.org/downloads/](http://skywalking.apache.org/downloads/)
+下载地址：[https://skywalking.apache.org/downloads/](https://skywalking.apache.org/downloads/)
 
 > **版本信息**：参见[上文表格](#3-应用版本)
 
