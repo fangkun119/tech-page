@@ -39,6 +39,10 @@ image:
 
 本文从集群设计原理入手，依次讲解 Controller 选举、Leader Partition 选举、故障恢复与数据一致性保障，帮助读者理解 Kafka 集群如何协调多个 Broker 完成消息的可靠同步与故障恢复。
 
+本文核心提炼（[`Youtube`](https://youtu.be/quSV-f4yWew) `|` [`B站`](https://www.bilibili.com/video/BV1yGD5BMEAu/)）
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/quSV-f4yWew?si=kJ-u0UbRjXD-Bwtl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## 2. 集群工作概览
 
 Kafka 集群设计围绕两个目标：**高吞吐**和**可扩展**。理解这些设计的关键在于区分**两类数据**：
@@ -50,7 +54,7 @@ Kafka 集群设计围绕两个目标：**高吞吐**和**可扩展**。理解这
 
 **状态与业务数据分离**的设计是 Kafka 集群扩展的基础——新增 **Broker** 只需启动并注册到 **Zookeeper**，无需在节点间同步额外状态。
 
-> 备注：自 **Kafka 4.0（2025 年）**起，**KRaft 模式**彻底取代 **Zookeeper**，成为唯一的元数据管理方式，不再依赖外部组件。本文暂时仍以 **Zookeeper** 为例讲解，通过其直观的设计原理，理解集群工作机制的本质，后续会更新到 **KRaft**。
+> 备注：自 **Kafka 4.0（2025 年）**起，**KRaft 模式**彻底取代 **Zookeeper**，成为唯一的元数据管理方式，不再依赖外部组件。本文暂时仍以 **Zookeeper** 为例讲解，通过其直观的设计原理，理解集群工作机制的本质，会在后续文章《[Kafka深入05：功能扩展]({% post_url 2025-11-09-kafka-05-extension %})》中补充 **KRaft** 相关的内容。
 
 ## 3. Zookeeper 中的数据管理
 
@@ -71,7 +75,6 @@ Kafka 集群中，**Broker** 可以担任两类角色：
 | -------------------- | --------------------------------------------------- |
 | **Controller**       | 从集群中选举出的一个 **Broker**，负责管理分区和副本状态                   |
 | **Leader Partition** | 每个 **Partition** 的多个副本中选举出的 **Leader**，负责与客户端进行数据交互 |
-|                      |                                                     |
 
 下图展示了 Kafka 的整体集群结构（红色标识关键状态信息）：
 
@@ -89,7 +92,7 @@ Kafka 集群中，**Broker** 可以担任两类角色：
 
 关键节点：
 
-| Znode              | 说明                           |
+| Zookeeper节点      | 说明                           |
 | ------------------ | ---------------------------- |
 | **/brokers/ids**   | 记录集群中所有 **BrokerId**        |
 | **/brokers/topics** | 记录 **Topic** 的 **Partition** 分区信息 |
@@ -584,9 +587,6 @@ Topic: secondTopic      TopicId: DNNw-hXqQCOW61shM7zZ2Q PartitionCount: 4       
 | **截断依据的缺陷** | **新 Leader 截断日志时依赖的是本地滞后的 HW，而非旧 Leader 上最新的 HW** | **导致已同步数据被错误删除** |
 
 > 说明：这个问题在 **Kafka 0.11** 版本之前比较严重。引入 **Leader Epoch 机制**后，通过版本号追踪数据边界，避免了基于滞后的 **HW** 进行截断（详见下一节）。
-
-
-## 7. **HW** 一致性保障：**Epoch** 机制
 
 ### 7.2 **Epoch** 机制
 

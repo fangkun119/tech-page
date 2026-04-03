@@ -16,7 +16,7 @@ timezone:
 
 title: Kun's Notes # the main title
 
-tagline: 技术播客和读书心得 # it will display as the subtitle
+tagline: 技术笔记和读书心得 # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
   A minimal, responsive and feature-rich Jekyll theme for technical writing.
