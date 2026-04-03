@@ -39,6 +39,10 @@ image:
 
 本文从集群设计原理入手，依次讲解 Controller 选举、Leader Partition 选举、故障恢复与数据一致性保障，帮助读者理解 Kafka 集群如何协调多个 Broker 完成消息的可靠同步与故障恢复。
 
+本文核心提炼（[`Youtube`](https://youtu.be/quSV-f4yWew) `|` [`B站`](https://www.bilibili.com/video/BV1yGD5BMEAu/)）
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/quSV-f4yWew?si=kJ-u0UbRjXD-Bwtl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## 2. 集群工作概览
 
 Kafka 集群设计围绕两个目标：**高吞吐**和**可扩展**。理解这些设计的关键在于区分**两类数据**：
@@ -584,9 +588,6 @@ Topic: secondTopic      TopicId: DNNw-hXqQCOW61shM7zZ2Q PartitionCount: 4       
 | **截断依据的缺陷** | **新 Leader 截断日志时依赖的是本地滞后的 HW，而非旧 Leader 上最新的 HW** | **导致已同步数据被错误删除** |
 
 > 说明：这个问题在 **Kafka 0.11** 版本之前比较严重。引入 **Leader Epoch 机制**后，通过版本号追踪数据边界，避免了基于滞后的 **HW** 进行截断（详见下一节）。
-
-
-## 7. **HW** 一致性保障：**Epoch** 机制
 
 ### 7.2 **Epoch** 机制
 

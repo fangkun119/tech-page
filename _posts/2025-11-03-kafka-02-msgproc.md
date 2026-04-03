@@ -37,6 +37,11 @@ image:
 
 本文从**客户端使用**、**内部机制**、**生产实践**三个维度系统阐述 Kafka **消息发送与消费**的完整流程，帮助读者建立对 Kafka 客户端工作原理的完整认知。
 
+本文核心提炼（[`Youtube`](https://www.youtube.com/watch?v=NCFg0M2zn9k) `|` [`B站`](https://www.bilibili.com/video/BV1JrDVB8EPj)）：
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NCFg0M2zn9k?si=vUXy3qUR4d3UXFHy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
 ## 2. 客户端快速入门
 
 ### 2.1 API 架构与依赖管理
