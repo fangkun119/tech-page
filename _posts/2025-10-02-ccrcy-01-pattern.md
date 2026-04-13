@@ -1,5 +1,5 @@
 ---
-title: Java并发编程01(A)：设计模式   
+title: Java并发编程 01：设计模式   
 author: fangkun119
 date: 2025-10-02 12:00:00 +0800
 categories: [Java, Java 并发编程]
@@ -37,7 +37,7 @@ image:
 
 > 本文以**实践案例**为主线，通过**监控线程终止**、**自动保存**、**服务端并发处理**等典型场景，帮助读者掌握 Java 并发编程的设计模式与最佳实践。
 
-核心内容提炼([`Youtube`](https://youtu.be/_ERNAtzYTGM) `|` [`B站`](https://www.bilibili.com/video/BV13RQMBuEH9)):
+核心内容提炼（[`Youtube`](https://youtu.be/_ERNAtzYTGM) `|` [`B站`](https://www.bilibili.com/video/BV13RQMBuEH9)）:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/_ERNAtzYTGM?si=ezLGPNo4QqAcljlj" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
