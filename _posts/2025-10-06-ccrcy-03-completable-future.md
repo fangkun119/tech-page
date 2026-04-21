@@ -119,7 +119,7 @@ System.out.println(task.get());
 
 **Future 接口**提供了 **5 个方法**，可以分为**任务控制方法**和**结果获取方法**两类。
 
-<img src="imgs/ccrcy-03-completable-future/c8aee4be2a26c5c14ab3550cbc063369_MD5.jpg" style="display: block; width: 600px;" alt="Future API 方法">
+<img src="/imgs/ccrcy-03-completable-future/c8aee4be2a26c5c14ab3550cbc063369_MD5.jpg" style="display: block; width: 600px;" alt="Future API 方法">
 
 <!-- Future接口的5个方法分类图示：左侧显示任务控制方法（cancel取消任务、isCancelled判断是否取消、isDone判断是否完成），右侧显示结果获取方法（get()阻塞获取结果、get(timeout, unit)带超时的获取结果）。图中通过颜色和图标区分两类方法的功能，展示了Future接口用于异步任务控制与结果获取的核心API设计 -->
 
@@ -151,7 +151,7 @@ System.out.println(task.get());
 
 **FutureTask** 的一个关键特性是**双重身份**：它既可以作为 **Runnable** 传递给 **Thread** 或**线程池**执行任务，又可以作为 **Future** 获取 **Callable** 的**返回结果**。
 
-<img src="imgs/ccrcy-03-completable-future/5f30429e814b89dda004de43825e7ab3_MD5.jpg" style="display: block; width: 100%;" alt="FutureTask 双重身份">
+<img src="/imgs/ccrcy-03-completable-future/5f30429e814b89dda004de43825e7ab3_MD5.jpg" style="display: block; width: 100%;" alt="FutureTask 双重身份">
 
 <!-- FutureTask具有双重角色：既是Runnable可提交给线程池执行（生产者端），又是Future可供其他线程调用获取结果（消费者端）。它实现了异步任务的"提交-执行-结果获取"闭环，通过实现Runnable接口被Thread或ExecutorService执行，同时实现Future接口提供get()、isDone()等方法供调用者获取结果与阻塞等待。 -->
 
@@ -199,7 +199,7 @@ public class FutureTaskDemo {
 
 采用**同步方式**时，假设单个接口响应时间为 **50ms**，完成全部查询需要 **200-300ms**。通过 **Future** **并行执行**多个查询任务，**总耗时**降低至单个服务的响应时间，约 **50ms**。
 
-<img src="imgs/ccrcy-03-completable-future/bf4f94049dcee154da78a6e4e62b4c07_MD5.jpg" style="display: block; width: 100%;" alt="商品信息查询并行执行">
+<img src="/imgs/ccrcy-03-completable-future/bf4f94049dcee154da78a6e4e62b4c07_MD5.jpg" style="display: block; width: 100%;" alt="商品信息查询并行执行">
 
 <!-- 该图片展示了同步串行与并行执行的性能对比。左侧同步串行方式按顺序依次执行5个查询任务（商品基本信息、价格、库存、图片、销售状态），每个任务50ms，总耗时约250ms；右侧并行执行通过Future将5个查询任务同时执行，所有任务并行无需等待，总耗时降低至约50ms（单个任务的响应时间），性能提升5倍，体现了Future在商品信息查询场景中的并发优化价值 -->
 
@@ -273,7 +273,7 @@ public class FutureTaskDemo2 {
 
 **Future** 表示**异步计算**的结果，提供了 **`isDone()`** 检测计算状态、**`get()`** 获取计算结果等能力。处理**单个异步任务**时，**Future** 可以满足需求。但在**实际业务场景**中，**多个异步任务**之间往往存在**依赖**、**并行**或**聚合关系**，**Future** 在这些场景下存在**以下局限**：
 
-<img src="imgs/ccrcy-03-completable-future/350d9bc6b458c9ed5d92b2ca83822866_MD5.jpg" style="display: block; width: 100%;" alt="Future 的局限性">
+<img src="/imgs/ccrcy-03-completable-future/350d9bc6b458c9ed5d92b2ca83822866_MD5.jpg" style="display: block; width: 100%;" alt="Future 的局限性">
 
 <!-- 该图片展示了Java Future接口的四大核心局限性：1) 阻塞式获取结果 - get()方法会阻塞线程直到任务完成；2) 缺乏链式调用能力 - 无法在任务完成后自动触发后续操作；3) 无法组合多个任务 - 不支持多个Future之间的依赖、并行或聚合关系；4) 异常处理复杂 - 异常被包装在ExecutionException中，需要通过getCause()获取原始异常。这些局限性在实际业务场景中限制了Future的实用性，特别是在需要处理多个异步任务依赖关系时。 -->
 
@@ -312,7 +312,7 @@ try {
 
 **CompletableFuture** 在 **Future 接口**基础上进行了**扩展**，主要增强了以下**三大核心能力**：
 
-<img src="imgs/ccrcy-03-completable-future/13ce7ddbc9b37c8dc40f183c0394d200_MD5.jpg" style="display: block; width: 100%;" alt="CompletableFuture 能力增强">
+<img src="/imgs/ccrcy-03-completable-future/13ce7ddbc9b37c8dc40f183c0394d200_MD5.jpg" style="display: block; width: 100%;" alt="CompletableFuture 能力增强">
 
 <!-- CompletableFuture组件三大核心能力增强:1)声明式任务编排-支持AND/OR逻辑编排及组合式任务编排,解决传统Future只能处理单个任务的限制;2)链式流式调用-提供流式API支持任务结果传递与组合,实现更自然的异步调用链;3)内聚异常处理-通过统一异常处理策略,实现异常集中拦截与恢复,提升代码可维护性 -->
 
@@ -348,7 +348,7 @@ try {
 
 当一个任务的输出作为另一个任务的输入时，两个任务形成链式依赖关系。**`thenApply`** 和 **`thenCompose`** 用于编排这种依赖关系，实现任务间的结果传递。
 
-<img src="imgs/ccrcy-03-completable-future/4a2a57fbd5f54582c30aa8e03395e89e_MD5.jpg" style="display: block; width: 100%;" alt="依赖关系编排">
+<img src="/imgs/ccrcy-03-completable-future/4a2a57fbd5f54582c30aa8e03395e89e_MD5.jpg" style="display: block; width: 100%;" alt="依赖关系编排">
 
 <!-- CompletableFuture依赖关系编排对比示意图：左侧展示thenApply（同步转换），接收Function参数，将CompletableFuture<T>的结果同步映射为CompletableFuture<U>，适用于内部计算无需异步的场景；右侧展示thenCompose（链式异步展开），接收返回CompletionStage的Function参数，将CompletableFuture<T>的结果异步映射为新的CompletableFuture<U>，实现真正的异步依赖关系编排（类似FlatMap，支持异步任务的链式调用） -->
 
@@ -375,7 +375,7 @@ CompletableFuture<Integer> result2 = CompletableFuture
 
 当需要等待两个独立任务全部完成后再进行后续操作时，形成 **AND 聚合关系**。**`thenCombine`**、**`thenAcceptBoth`**、**`runAfterBoth`** 用于编排这种聚合关系，实现任务间的结果聚合。
 
-<img src="imgs/ccrcy-03-completable-future/a401e452fc39e03296dfe034fc918697_MD5.jpg" style="display: block; width: 100%;" alt="AND 聚合关系编排">
+<img src="/imgs/ccrcy-03-completable-future/a401e452fc39e03296dfe034fc918697_MD5.jpg" style="display: block; width: 100%;" alt="AND 聚合关系编排">
 
 <!-- AND 聚合关系编排：展示 CompletableFuture 中如何实现两个并行任务的 AND 聚合关系。图中显示两个任务（task1 和 task2）并行执行，需要等待两者全部完成后再进行后续操作。提供了三种方法：thenCombine（合并两个任务的结果并返回新值）、thenAcceptBoth（消费两个任务的结果但无返回值）、runAfterBoth（两个任务完成后执行操作，不访问结果）。 -->
 
@@ -409,7 +409,7 @@ CompletableFuture<Void> result3 = task1
 
 当两个任务并行执行，只需要任意一个完成即可继续时，形成 **OR 聚合关系**。**`applyToEither`**、**`acceptEither`**、**`runAfterEither`** 用于编排这种聚合关系，使用最先完成的任务结果。
 
-<img src="imgs/ccrcy-03-completable-future/051949bbf2988d2e3839f8d99f2fdf51_MD5.jpg" style="display: block; width: 100%;" alt="OR 关系编排">
+<img src="/imgs/ccrcy-03-completable-future/051949bbf2988d2e3839f8d99f2fdf51_MD5.jpg" style="display: block; width: 100%;" alt="OR 关系编排">
 
 <!-- 展示 CompletableFuture 的 OR 聚合关系编排：两个并行任务 task1 和 task2 同时执行，只需任意一个完成即可继续，使用最先完成任务的结果进行后续操作。适用于竞速场景，如从多个数据源获取数据，使用最快返回的结果。 -->
 
@@ -458,7 +458,7 @@ CompletableFuture<Void> result3 = task1
 
 当需要等待多个任务满足特定完成条件（任意一个或全部完成）时，形成并行关系。**`anyOf`** 和 **`allOf`** 用于编排这种并行关系，实现任务的批量等待。
 
-<img src="imgs/ccrcy-03-completable-future/a0811721de5453a470437ab5a77389de_MD5.jpg" style="display: block; width: 100%;" alt="并行关系">
+<img src="/imgs/ccrcy-03-completable-future/a0811721de5453a470437ab5a77389de_MD5.jpg" style="display: block; width: 100%;" alt="并行关系">
 
 <!-- CompletableFuture并行关系对比图：左侧展示allOf()方法，需要等待所有任务（任务1、任务2、任务3）全部完成才能继续执行；右侧展示anyOf()方法，只要有任意一个任务完成就可以继续执行。allOf适用于需要聚合多个异步结果的场景，anyOf适用于竞速场景或只需要任一结果的情况。 -->
 
@@ -577,7 +577,7 @@ System.out.println(result);
 
 **`join()`** 和 **`get()`** 方法用于获取 **CompletableFuture 异步任务**的**执行结果**。两者在**异常处理方式**上存在**核心差异**：
 
-<img src="imgs/ccrcy-03-completable-future/0b563f8281c2079861aaf1bc6dc59124_MD5.jpg" style="display: block; width: 100%;" alt="join() 与 get() 对比">
+<img src="/imgs/ccrcy-03-completable-future/0b563f8281c2079861aaf1bc6dc59124_MD5.jpg" style="display: block; width: 100%;" alt="join() 与 get() 对比">
 
 <!-- 本图对比了 CompletableFuture 中获取任务结果的两种方法：join() 和 get()。核心区别：1. **join() 方法**：抛出未检查异常（unchecked exception），编译器不强制要求显式处理异常，使用更简便。2. **get() 方法**：抛出已检查异常（checked exception，如 ExecutionException、InterruptedException），必须显式处理异常（捕获或声明抛出），异常处理更严格。选择建议：如果不需要对异常进行细粒度控制，使用 join() 代码更为简洁。 -->
 
@@ -594,7 +594,7 @@ System.out.println(result);
 
 **任务完成**或**抛出异常**时，可以通过**回调方法**进行处理。**`whenComplete`** 用于处理**正常结果**和**异常**，**`exceptionally`** 专门用于**异常恢复**。
 
-<img src="imgs/ccrcy-03-completable-future/0a627df5c0745e5173cb1c13e474d65a_MD5.jpg" style="display: block; width: 100%;" alt="结果处理回调方法">
+<img src="/imgs/ccrcy-03-completable-future/0a627df5c0745e5173cb1c13e474d65a_MD5.jpg" style="display: block; width: 100%;" alt="结果处理回调方法">
 
 <!-- 该图片展示了一个Java程序的运行结果，演示了CompletableFuture的结果处理回调方法。程序输出了两行结果：第一行显示"当前线程名称：main"，第二行显示"上抛异常信息：java.lang.NullPointerException"。这展示了whenComplete方法的使用，该方法可以处理任务完成后的结果和异常，能够获取到任务执行过程中抛出的异常信息，体现了CompletableFuture的异常处理机制。 -->
 
@@ -991,7 +991,7 @@ System.out.println("最终结果：" + result.get());
 
 某些场景下，只需要**多个任务**中的**任意一个**完成即可继续执行，无需等待**所有任务**。
 
-<img src="imgs/ccrcy-03-completable-future/12c276e259b56354ca59d81a7a6b8ff5_MD5.jpg" style="display: block; width: 100%;" alt="OR 聚合关系：任意完成">
+<img src="/imgs/ccrcy-03-completable-future/12c276e259b56354ca59d81a7a6b8ff5_MD5.jpg" style="display: block; width: 100%;" alt="OR 聚合关系：任意完成">
 
 <!-- CompletableFuture 的 OR 聚合关系示意图：展示了两个并行任务（Task 1 和 Task 2）竞争执行的场景。图中用蓝色箭头表示两个任务，绿色箭头表示"最快输出"，即任意一个任务先完成就立即使用其结果继续执行。右侧逻辑规则框说明了三种 OR 聚合方法：applyToEither（取最快结果进入转换函数）、acceptEither（取最快结果进入消费节点）、anyOf（N个任务竞争，绝对最快的决定最终Object结果）。这种机制适用于只需要任意一个任务完成即可继续执行的场景，无需等待所有任务完成。 -->
 
@@ -1242,7 +1242,7 @@ world
 与 **OR 关系**不同，某些场景需要等待**所有任务全部完成**后才能继续执行。
 
 
-<img src="imgs/ccrcy-03-completable-future/2ea0696dfbe07d4cafff03175b4f66ac_MD5.jpg" style="display: block; width: 100%;" alt="AND 聚合关系：全部完成">
+<img src="/imgs/ccrcy-03-completable-future/2ea0696dfbe07d4cafff03175b4f66ac_MD5.jpg" style="display: block; width: 100%;" alt="AND 聚合关系：全部完成">
 
 <!-- AND 聚合关系示意图：展示了三个任务（Task 1、Task 2、Task 3）通过 allOf() 方法进行 AND 聚合的场景。图中显示三个并行任务分别在不同时间点完成（t1、t2、t3），最终在所有任务都完成后才触发后续操作。这种聚合关系要求所有任务都必须成功完成，只有当最后一个任务在 t3 时刻完成时，整个聚合操作才算完成，体现了 CompletableFuture 中 allOf() 方法等待所有任务完成的特性。 -->
 
@@ -1377,7 +1377,7 @@ future1: true，future2: true
 
 华罗庚在《统筹方法》中用烧水泡茶说明**任务统筹**的价值。下图展示了经过优化的工序流程：
 
-<img src="imgs/ccrcy-03-completable-future/2e90f11e43cb254a19b6bc446e2451ba_MD5.jpg" style="display: block; width: 100%;" alt="烧水泡茶工序流程">
+<img src="/imgs/ccrcy-03-completable-future/2e90f11e43cb254a19b6bc446e2451ba_MD5.jpg" style="display: block; width: 100%;" alt="烧水泡茶工序流程">
 
 <!-- 该图展示了基于Future实现的并发任务协调机制：T1线程（烧水流程：洗水壶、烧开水、泡茶）和T2线程（洗茶流程：洗茶壶、洗茶杯、拿茶叶）并行执行，T1在"泡茶"步骤通过t2.get()阻塞等待T2的FutureTask完成，体现了Future模式下线程间依赖关系和阻塞等待的特点 -->
 
@@ -1514,7 +1514,7 @@ public class CompletableFutureDemo2 {
 
 上述代码思路汇总如下图
 
-<img src="imgs/ccrcy-03-completable-future/c39f8ca4bf8aa78c36cd85e470c66ebe_MD5.jpg" style="display: block; width: 100%;" alt="CompletableFuture 实现思路">
+<img src="/imgs/ccrcy-03-completable-future/c39f8ca4bf8aa78c36cd85e470c66ebe_MD5.jpg" style="display: block; width: 100%;" alt="CompletableFuture 实现思路">
 
 <!-- CompletableFuture 实现思路流程图：展示了异步任务的并行执行与组合模式。图中包含两个并行分支 T1 (Async) 和 T2 (ApplyTnc)，T1 分支处理洗水壶(1m)和烧开水(15m)两个步骤，T2 分支顺序执行洗茶壶(1m)、洗茶杯(2m)和拿茶叶(1m)三个步骤。两个分支通过 AND-Gate (thenCombine) 进行同步等待，只有当两个分支都完成后才能进入最终的泡茶阶段。该图形象地说明了 CompletableFuture 如何实现异步任务的并行编排和依赖组合，体现了并行处理提升效率、同步机制确保依赖关系的核心思想。 -->
 
