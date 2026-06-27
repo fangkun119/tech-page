@@ -2,8 +2,8 @@
 title: 工具配置 01：Claude Code 配置
 author: fangkun119
 date: 2025-10-09 12:00:00 +0800
-categories: [大模型办公, 工具配置]
-tags: [大模型办公, 工具配置，Claude Code]
+categories: [AI办公, 工具配置]
+tags: [AI办公, 工具配置，Claude Code]
 pin: false
 math: true
 mermaid: true

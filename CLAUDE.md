@@ -49,3 +49,8 @@ This project uses conventional commits enforced by commitlint. Commit messages s
 ```
 
 Types include: `feat`, `fix`, `perf`, `refactor`, `docs`, `style`, `test`, `build`, `ci`, `chore`, `revert`
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
