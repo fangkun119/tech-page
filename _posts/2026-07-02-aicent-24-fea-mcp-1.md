@@ -60,7 +60,7 @@ mindmap
 
 ## 1. MCP 要解决的根本问题
 
-<img src="imgs/aicent-24-fea-mcp-1/e11c006f8ce34fecbf9cf5d17f97a86b_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+<img src="imgs/aicent-24-fea-mcp-1/5bb028843b0fb7331684c635b3e1ac87_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
 ### 1.1 「能说不能做」是 Agent 落地的最后一道墙
 
