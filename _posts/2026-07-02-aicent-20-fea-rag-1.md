@@ -614,7 +614,7 @@ LIMIT 3;
 
 ### 7.5 Java/MyBatis-Plus 集成的坑
 
-<img src="20_核心功能_01_PPT_13.jpg" style="display: block; width: 800px;" alt="替换文字">
+<img src="imgs/aicent-20-fea-rag-1/9eaa651399a2aa1ef155ab8f722424e4_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
 跑通 SQL 之后，下一步是 Java 集成。提问模板原文如下：
 
