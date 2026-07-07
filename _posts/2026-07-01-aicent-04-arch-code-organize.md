@@ -58,7 +58,7 @@ flowchart TD
     Ch5 --\> Ch5d[5.4 沉淀进 CLAUDE.md]
 
     Ch4 -.可选.-> Ch5
-    Ch5 --\> Ch6[章6 总结与思考题]
+    Ch5 --\> Ch6[章6 总结与思考]
     Ch6 --\> End([产出: 架构决策 + CLAUDE.md 片段])
 -->
 
@@ -707,7 +707,7 @@ Claude Code 调整：SSE 连接超时设 120 秒，普通同步调用 60 秒。*
 
 收尾一段话（逐字保留）：到这里，CLAUDE.md 包含了项目概述（第 3 篇）和应用架构（本篇）。Claude Code 对代码怎么写、放在哪、外部调用怎么处理已经有了完整的约束。
 
-## 6. 总结、思考题与下一篇衔接
+## 6. 总结、思考与下一篇衔接
 
 <img src="imgs/aicent-04-arch-code-organize/099128f59737f88d91deafc4bc2d2609_MD5.jpg" style="display: block; width: 100%;" alt="替换文字">
 

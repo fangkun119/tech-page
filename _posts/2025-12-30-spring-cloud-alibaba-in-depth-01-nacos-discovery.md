@@ -327,7 +327,10 @@ Nocos注册中心的强大之处，在于：
 
 <img src="/imgs/spring-cloud-alibaba-03-nacos/33c0844b35082fc7af0355843a760551_MD5.jpg" width="500" align="left" alt="会员服务调用订单服务实验场景" />
 
-通过配置Nacos注册中心，来让两个服务都注册到默认的public命名空间![[imgs/spring-cloud-alibaba-03-nacos/a06fb4ff6fc57fea184cdbd85b9d6ab9_MD5.jpg]]
+通过配置Nacos注册中心，来让两个服务都注册到默认的public命名空间
+
+<img src="imgs/spring-cloud-alibaba-03-nacos/a06fb4ff6fc57fea184cdbd85b9d6ab9_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
 具体代码包括
 
 |          | 会员服务                                                                                                                                                                                                                                                                                       | 订单服务                                                                                                                                                                                                                                                                                  |

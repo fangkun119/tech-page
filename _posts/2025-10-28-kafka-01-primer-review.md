@@ -846,7 +846,7 @@ bin/kafka-server-start.sh -daemon config/server.properties
 
 下图展示了 Kafka 集群中 Topic、Partition、Broker 三者的协作关系：**Topic** 作为逻辑概念被划分为多个 **Partition**，这些 Partition 分布在不同的 **Broker** 节点上，每个 Partition 有 Leader 和 Follower 副本协同工作
 
-![[imgs/kafka-01-primer-review/df1cbd0096b4548f3dee9a098ffc14fb_MD5.jpg]]
+<img src="imgs/kafka-01-primer-review/df1cbd0096b4548f3dee9a098ffc14fb_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
 <!--
 Kafka 集群中 Topic、Partition、Broker 三者协作关系示意图：
