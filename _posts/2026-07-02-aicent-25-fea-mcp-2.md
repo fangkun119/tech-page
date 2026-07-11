@@ -69,7 +69,7 @@ flowchart TD
 
 <img src="imgs/aicent-25-fea-mcp-2/3e240faf2fc9caf8b7c8ede04f0d3cd5_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-接入外部能力前，第一个决策是：**用现成的 MCP Server，还是自建？** 判断标准只有一句话——看工具提供方是否已经为你做好了可直接使用的 Server。
+接入外部能力前，第一个决策是：**用现成的 MCP Server，还是自建？** <span style="color: red; font-weight: bold;">判断标准只有一句话——看工具提供方是否已经为你做好了可直接使用的 Server。</span>
 
 ### 2.1 决策两类情况
 
@@ -107,7 +107,7 @@ MCP Server 是一个独立部署的应用（本篇用 Spring Boot），与调用
 
 ### 3.2 黑盒性质：调用方不关心实现细节
 
-调用方只存一个 endpoint 地址，发标准 MCP 协议请求。Server 内部用 Java 还是 Python、查的是 MySQL 还是 Oracle，调用方一概不关心。**这就是标准化协议的核心价值——工具提供方换了，调用方一行代码不用改。**
+调用方只存一个 endpoint 地址，发标准 MCP 协议请求。Server 内部用 Java 还是 Python、查的是 MySQL 还是 Oracle，调用方一概不关心。<span style="color: red; font-weight: bold;">这就是标准化协议的核心价值——工具提供方换了，调用方一行代码不用改。</span>
 
 ### 3.3 开发者只需关心两件事
 
@@ -134,11 +134,11 @@ MCP Server 是一个独立部署的应用（本篇用 Spring Boot），与调用
 
 <img src="imgs/aicent-25-fea-mcp-2/a90a04a3431d989c192ab2649825c81b_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-**这是全篇最重要的方法论**：工具不是拍脑袋定的，而是从业务场景反推出来的。错误的顺序（先想"怎么实现"）会导致工具粒度失当、能力缺失或冗余。
+**这是全篇最重要的方法论**：<span style="color: red; font-weight: bold;">工具不是拍脑袋定的，而是从业务场景反推出来的。错误的顺序（先想"怎么实现"）会导致工具粒度失当、能力缺失或冗余。</span>
 
 ### 4.1 三步推导法
 
-正确顺序永远是"场景 → 能力 → 实现"：
+<span style="color: red; font-weight: bold;">正确顺序永远是"场景 → 能力 → 实现"</span>：
 
 **① 第一步：问"用户会说什么"**
 
@@ -181,7 +181,7 @@ MCP Server 是一个独立部署的应用（本篇用 Spring Boot），与调用
 
 <img src="imgs/aicent-25-fea-mcp-2/56190c142085baf8f60be4f4b8bc73b7_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-工具的消费者是 LLM，不是人，也不是纯程序。这一认知决定了工具设计有两类必须遵守的原则。
+<span style="color: red; font-weight: bold;">工具的消费者是 LLM，不是人，也不是纯程序。</span>这一认知决定了工具设计有两类必须遵守的原则。
 
 ### 5.1 返回值要"一鱼两吃"：程序字段 + LLM 字段分开
 
@@ -192,11 +192,11 @@ MCP Server 是一个独立部署的应用（本篇用 Spring Boot），与调用
 | `status` | 程序判断 | 英文枚举，供代码做分支控制 | `PROCESSING` |
 | `statusLabel` | LLM 直读 | 中文标签，LLM 直接说给用户，无需自己翻译 | "处理中" |
 
-**反模式**：只返回 `status=PROCESSING`，让 LLM 自己翻译——LLM 可能翻错或表述不一致。`statusLabel` 是 LLM 专门写给用户看的字段，必须与程序字段分开设计。
+**反模式**：<span style="color: red; font-weight: bold;">只返回 `status=PROCESSING`，让 LLM 自己翻译——LLM 可能翻错或表述不一致。</span>`statusLabel` 是 LLM 专门写给用户看的字段，必须与程序字段分开设计。
 
 ### 5.2 description 要说清"什么情况下调"
 
-工具的 `description` 不是功能说明，而是**触发条件说明**。LLM 据此决定是否调用、调用顺序。
+<span style="color: red; font-weight: bold;">工具的 `description` 不是功能说明，而是触发条件说明。</span>LLM 据此决定是否调用、调用顺序。
 
 | 工具 | 优秀 description 写法要点 |
 | --- | --- |
@@ -223,11 +223,11 @@ MCP Server 是一个独立部署的应用（本篇用 Spring Boot），与调用
 
 <img src="imgs/aicent-25-fea-mcp-2/8a45ec9f16fd47a74566e77cf6f251f7_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-MCP Server 的开发高度模板化——声明 schema、实现逻辑、注册协议，每个 Server 都是同一套路。做明白第一个，后续（库存 Server、工单 Server）只需换 schema 与业务逻辑。这种模板化任务正是 AI 编程助手提效最大的场景。
+<span style="color: red; font-weight: bold;">MCP Server 的开发高度模板化——声明 schema、实现逻辑、注册协议，每个 Server 都是同一套路。</span>做明白第一个，后续（库存 Server、工单 Server）只需换 schema 与业务逻辑。这种模板化任务正是 AI 编程助手提效最大的场景。
 
 ### 6.1 标准开发六步模板
 
-每个 MCP Server 都可以套用以下六步，**每步必须能独立验证**——出了问题立刻知道在哪一层找。
+每个 MCP Server 都可以套用以下六步，<span style="color: red; font-weight: bold;">每步必须能独立验证——出了问题立刻知道在哪一层找。</span>
 
 | 步骤 | 任务 | 验证方式 |
 | --- | --- | --- |
@@ -768,7 +768,7 @@ curl -N -X POST http://localhost:8080/api/v1/chat/sessions/2/messages \
 
 ### 14.2 MCP Server 开发高度模板化
 
-MCP Server 的开发非常模板化——声明 schema、实现逻辑、注册协议，每个 Server 都是同一个套路。做明白了退款 Server，库存 Server、工单 Server 只需要换 schema 和业务逻辑，其他完全一样。模板化任务正是 Claude Code 提效最大的场景，做明白第一个之后，后面让它照着批量生成。
+MCP Server 的开发非常模板化——声明 schema、实现逻辑、注册协议，每个 Server 都是同一个套路。做明白了退款 Server，库存 Server、工单 Server 只需要换 schema 和业务逻辑，其他完全一样。<span style="color: red; font-weight: bold;">模板化任务正是 Claude Code 提效最大的场景，做明白第一个之后，后面让它照着批量生成。</span>
 
 ### 14.3 工具设计的两个细节
 

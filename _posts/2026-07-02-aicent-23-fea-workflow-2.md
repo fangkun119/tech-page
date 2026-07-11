@@ -169,10 +169,10 @@ flowchart LR
 
 | 异常分支 | 具体场景 | 期望行为 |
 | --- | --- | --- |
-| 条件全不匹配 | CONDITION 节点所有条件都不命中 | 明确走 defaultTarget 还是直接结束 |
-| 目标节点不存在 | 边的 targetNodeKey 指向不存在的节点 | 抛异常，不空指针 |
-| 工作流有环 | A→B→A 形成死循环 | 50 步上限兜底终止 |
-| 节点调用失败 | LLM 节点调用失败 | node_run 和 run 都 FAILED，SseEmitter 推错误提示 |
+| 条件全不匹配 | CONDITION 节点所有条件都不命中 | <span style="color: red; font-weight: bold;">明确走 defaultTarget 还是直接结束</span> |
+| 目标节点不存在 | 边的 targetNodeKey 指向不存在的节点 | <span style="color: red; font-weight: bold;">抛异常，不空指针</span> |
+| 工作流有环 | A→B→A 形成死循环 | <span style="color: red; font-weight: bold;">50 步上限兜底终止</span> |
+| 节点调用失败 | LLM 节点调用失败 | <span style="color: red; font-weight: bold;">node_run 和 run 都 FAILED，SseEmitter 推错误提示</span> |
 
 ##### ③ 逐条问 AI，逐条验证
 
@@ -188,9 +188,9 @@ flowchart LR
 
 | 方法论 | 问题信号 | 关键动作 | 预期产出 |
 | --- | --- | --- | --- |
-| 技术调研先行 | 凭感觉拍方案 / 不知道有哪些选项 | 写清调研需求提示词；让 AI 调研不替你决策；落到"为什么不选" | 多维对比表 + 选型推理 |
-| 分步实现 | 想一次写完 / 只能整体验收 | 拆成可独立验证的块；块内再分步；接入已有系统也是独立一步 | 每步都能单独跑通、单独验收 |
-| 异常分支 review | 涉及状态流转/跳转/循环/分支 | 正常路径不花精力；列全异常分支清单；逐条问逐条验证 | 异常分支处理清单，条条经过验证 |
+| <span style="color: red; font-weight: bold;">技术调研先行</span> | 凭感觉拍方案 / 不知道有哪些选项 | 写清调研需求提示词；让 AI 调研不替你决策；落到"为什么不选" | 多维对比表 + 选型推理 |
+| <span style="color: red; font-weight: bold;">分步实现</span> | 想一次写完 / 只能整体验收 | 拆成可独立验证的块；块内再分步；接入已有系统也是独立一步 | 每步都能单独跑通、单独验收 |
+| <span style="color: red; font-weight: bold;">异常分支 review</span> | 涉及状态流转/跳转/循环/分支 | 正常路径不花精力；列全异常分支清单；逐条问逐条验证 | 异常分支处理清单，条条经过验证 |
 
 ### 1.5 项目落地 Check List
 
@@ -291,7 +291,7 @@ Claude Code 不会凭空解释，它先把现有代码读了一遍：`ChatServic
 
 #### (1) 食谱与厨师的比喻
 
-元数据与引擎的关系可以用比喻说清楚：食谱放在那里什么都不会发生，厨师拿到食谱才能把菜做出来。工作流配置就是食谱，本篇要实现的执行引擎就是厨师。
+元数据与引擎的关系可以用比喻说清楚：<span style="color: red; font-weight: bold;">食谱放在那里什么都不会发生，厨师拿到食谱才能把菜做出来</span>。工作流配置就是食谱，本篇要实现的执行引擎就是厨师。
 
 <img src="imgs/aicent-23-fea-workflow-2/f4c5bf624a5a8d34e8a07fa3407202ec_MD5.jpg" style="display: block; width: 800px;" alt="默认替换文字">
 
@@ -353,7 +353,7 @@ sequenceDiagram
     end
 -->
 
-关键设计点：执行引擎对外暴露的就是一个同步方法 `execute(workflowId, userMessage)`，返回 String。对 `ChatServiceImpl` 来说，调工作流和调 LLM 的接口形态一致——都是同步拿一个 String 回来，再走 SSE。这样原有流式逻辑、SseEmitter 转发、Redis 上下文管理一行都不用改。
+关键设计点：执行引擎对外暴露的就是一个同步方法 `execute(workflowId, userMessage)`，返回 String。对 `ChatServiceImpl` 来说，<span style="color: red; font-weight: bold;">调工作流和调 LLM 的接口形态一致</span>——都是同步拿一个 String 回来，再走 SSE。这样原有流式逻辑、SseEmitter 转发、Redis 上下文管理<span style="color: red; font-weight: bold;">一行都不用改</span>。
 
 ## 3. 第一步：技术调研与方案选型
 
@@ -405,21 +405,21 @@ Dify 持久化两层：`workflow_run`（整次执行）和 `workflow_node_execut
 
 ### 3.2 Hify 选型结论：轻量同步引擎 + VariablePool 模式
 
-Claude Code 的建议：Hify 选轻量同步引擎，参考 Dify 的 VariablePool 模式，不引入消息队列。
+Claude Code 的建议：<span style="color: red; font-weight: bold;">Hify 选轻量同步引擎，参考 Dify 的 VariablePool 模式，不引入消息队列</span>。
 
 #### (1) 排除理由：为什么不选另外三个
 
 ##### ① n8n 的 Redis Queue：过度工程化
 
-n8n 的 Redis Queue 是为多 Worker 水平扩展设计的。Hify 面向小规模团队，CLAUDE.md 里 Redis 只做缓存，引入消息队列属于过度工程化。
+n8n 的 Redis Queue 是为多 Worker 水平扩展设计的。Hify 面向小规模团队，CLAUDE.md 里 Redis 只做缓存，<span style="color: red; font-weight: bold;">引入消息队列属于过度工程化</span>。
 
 ##### ② Temporal 的事件溯源：解决的不是 Hify 的问题
 
-Temporal 解决的是"工作流中途崩溃后从断点恢复"，适合运行时间以小时 / 天计的工作流。Hify 的工作流是一次对话响应的一部分，最长几十秒，崩了直接报错重试就够了。
+Temporal 解决的是"工作流中途崩溃后从断点恢复"，适合运行时间以小时 / 天计的工作流。Hify 的工作流是一次对话响应的一部分，最长几十秒，<span style="color: red; font-weight: bold;">崩了直接报错重试就够了</span>。
 
 ##### ③ Dify 的代码沙箱：Hify 没有任意代码执行
 
-Dify 的代码沙箱（seccomp）是为隔离用户自定义代码节点。Hify 的节点类型是 LLM / CONDITION / API_CALL / KNOWLEDGE，没有任意代码执行，不需要沙箱。
+Dify 的代码沙箱（seccomp）是为隔离用户自定义代码节点。Hify 的节点类型是 LLM / CONDITION / API_CALL / KNOWLEDGE，<span style="color: red; font-weight: bold;">没有任意代码执行，不需要沙箱</span>。
 
 #### (2) 入选理由：为什么参考 Dify
 
@@ -478,15 +478,15 @@ ExecutionContext 对标 Dify 的 VariablePool。一次执行创建一个，从 S
 
 ##### ① key 格式
 
-`nodeKey.varName`，比如 `classify.intent`。
+<span style="color: red; font-weight: bold;">`nodeKey.varName`，比如 `classify.intent`</span>。
 
 ##### ② 读写规则
 
-节点只能写自己 nodeKey 下的变量，读可以读任意历史节点的输出。
+<span style="color: red; font-weight: bold;">节点只能写自己 nodeKey 下的变量，读可以读任意历史节点的输出</span>。
 
 ##### ③ 只增不改
 
-写入只增不改，历史输出不会被覆盖掉。
+<span style="color: red; font-weight: bold;">写入只增不改，历史输出不会被覆盖掉</span>。
 
 #### (2) Java 骨架
 
@@ -578,7 +578,7 @@ public interface NodeExecutor {
 
 #### (1) 把前三件事串起来
 
-WorkflowEngine 把线程池、ExecutionContext、NodeExecutor 体系串起来，再加上执行记录。骨架就是一个 while 循环：
+WorkflowEngine 把线程池、ExecutionContext、NodeExecutor 体系串起来，再加上执行记录。<span style="color: red; font-weight: bold;">骨架就是一个 while 循环</span>：
 
 ```java
 public String execute(Long workflowId, String userMessage) {
@@ -613,7 +613,7 @@ public String execute(Long workflowId, String userMessage) {
 
 #### (2) 复杂在哪里
 
-这就是执行引擎的全部本质。复杂的是每个 Executor 怎么实现、Context 怎么传、错误怎么处理，但骨架就是这几行。把骨架看懂，细节就是各组件的具体实现。
+<span style="color: red; font-weight: bold;">这就是执行引擎的全部本质</span>。复杂的是每个 Executor 怎么实现、Context 怎么传、错误怎么处理，<span style="color: red; font-weight: bold;">骨架就是这几行</span>。把骨架看懂，细节就是各组件的具体实现。
 
 ## 5. 第三步：后端分块实现与接入
 
@@ -821,7 +821,7 @@ CREATE TABLE workflow_node_run (
 
 ### 5.6 接入对话引擎：第四次增量开发
 
-这是对话引擎的第四次增量开发：第 16 篇基础链路、第 17 篇上下文、第 21 篇 RAG、本篇工作流。
+<span style="color: red; font-weight: bold;">这是对话引擎的第四次增量开发</span>：第 16 篇基础链路、第 17 篇上下文、第 21 篇 RAG、本篇工作流。
 
 #### (1) 修改点
 
