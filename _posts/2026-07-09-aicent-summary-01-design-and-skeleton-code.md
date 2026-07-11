@@ -2,8 +2,8 @@
 title: AI编程方法：核心摘要（上）- 项目顶层搭建
 author: fangkun119
 date: 2026-07-09 00:00:00 +0800
-categories: [AI编程, 方法论]
-tags: [AI编程, AI编程方法论]
+categories: [AI编程, AI编程方法]
+tags: [AI编程, AI编程方法]
 pin: false
 math: true
 mermaid: true
@@ -955,7 +955,7 @@ AI 不知道 GPT-4 一次响应要 10-20 秒，会按"普通 HTTP 调用"给 5s 
 
 **核心模式**：**咨询模式查漏 → 三档优先级 → 按依赖排序逐档验收 → 参数从需求推 → 三层隔离**。这套打法让你不仅搭好 Hify 基础组件，更积累一份可复用清单——三档优先级、每个组件解决什么问题、参数为什么这么设，你都心里有数。**下次开新项目，不管用不用 Claude Code，这套东西基本照搬。**
 
-### 3.4 端 UI 设计和基础组件
+### 3.4 前端 UI 设计和基础组件
 
 <img src="imgs/aicent-11-fe-base-ui/cover.jpg" style="display: block; width: 800px;" alt="替换文字">
 

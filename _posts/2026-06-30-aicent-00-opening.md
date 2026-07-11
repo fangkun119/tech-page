@@ -2,8 +2,8 @@
 title: AI编程方法 00：序言 - 用 AI 写简 Dify
 author: fangkun119
 date: 2026-06-30 18:00:00 +0800
-categories: [AI编程, 方法论]
-tags: [AI编程, AI编程方法论]
+categories: [AI编程, AI编程方法]
+tags: [AI编程, AI编程方法]
 pin: false
 math: true
 mermaid: true

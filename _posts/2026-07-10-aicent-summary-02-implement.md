@@ -2,8 +2,8 @@
 title: AI编程方法：核心摘要（中）- 功能开发
 author: fangkun119
 date: 2026-07-10 00:00:00 +0800
-categories: [AI编程, 方法论]
-tags: [AI编程, AI编程方法论]
+categories: [AI编程, AI编程方法]
+tags: [AI编程, AI编程方法]
 pin: false
 math: true
 mermaid: true

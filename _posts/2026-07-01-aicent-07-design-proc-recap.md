@@ -1,9 +1,9 @@
 ---
-title: AI编程方法 07：顶层设计 - 流程回顾
+title: AI编程方法 07：顶层设计 - 实操回顾
 author: fangkun119
 date: 2026-07-01 17:00:00 +0800
-categories: [AI编程, 方法论]
-tags: [AI编程, AI编程方法论]
+categories: [AI编程, AI编程方法]
+tags: [AI编程, AI编程方法]
 pin: false
 math: true
 mermaid: true

@@ -2,8 +2,8 @@
 title: AI编程方法 16：核心功能 - 对话引擎（上）链路和流式技术
 author: fangkun119
 date: 2026-07-02 09:00:00 +0800
-categories: [AI编程, 方法论]
-tags: [AI编程, AI编程方法论]
+categories: [AI编程, AI编程方法]
+tags: [AI编程, AI编程方法]
 pin: false
 math: true
 mermaid: true
