@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 21：高级功能 - RAG（下）客服手册和对话集成
+title: AI编程方法(1) 21：高级功能 - RAG（下）客服手册和对话集成
 author: fangkun119
 date: 2026-07-02 13:00:00 +0800
 categories: [AI编程, AI编程方法]

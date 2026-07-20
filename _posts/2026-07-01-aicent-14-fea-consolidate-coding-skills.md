@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 14：核心功能 - 用 Skill 沉淀编码流程
+title: AI编程方法(1) 14：核心功能 - 用 Skill 沉淀编码流程
 author: fangkun119
 date: 2026-07-01 23:00:00 +0800
 categories: [AI编程, AI编程方法]

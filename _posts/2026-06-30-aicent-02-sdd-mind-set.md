@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 02：认知构建 - SDD思想
+title: AI编程方法(1) 02：认知构建 - SDD思想
 author: fangkun119
 date: 2026-06-30 20:00:00 +0800
 categories: [AI编程, AI编程方法]

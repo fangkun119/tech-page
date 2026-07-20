@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 10：工程搭建 - 后端业务基础设施
+title: AI编程方法(1) 10：工程搭建 - 后端业务基础设施
 author: fangkun119
 date: 2026-07-01 20:00:00 +0800
 categories: [AI编程, AI编程方法]

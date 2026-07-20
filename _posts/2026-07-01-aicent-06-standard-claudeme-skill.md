@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 06：顶层设计 - 工程规范、CLAUDE.md和Skill
+title: AI编程方法(1) 06：顶层设计 - 工程规范、CLAUDE.md和Skill
 author: fangkun119
 date: 2026-07-01 16:00:00 +0800
 categories: [AI编程, AI编程方法]

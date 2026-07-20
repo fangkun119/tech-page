@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 29：测试部署 - 监控设施和排错
+title: AI编程方法(1) 29：测试部署 - 监控设施和排错
 author: fangkun119
 date: 2026-07-02 21:00:00 +0800
 categories: [AI编程, AI编程方法]

@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 12：工程搭建 - 流程回顾
+title: AI编程方法(1) 12：工程搭建 - 流程回顾
 author: fangkun119
 date: 2026-07-01 21:00:00 +0800
 categories: [AI编程, AI编程方法]

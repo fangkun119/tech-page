@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 00：序言 - 用 AI 写简 Dify
+title: AI编程方法(1) 00：序言 - 用 AI 写简 Dify
 author: fangkun119
 date: 2026-06-30 18:00:00 +0800
 categories: [AI编程, AI编程方法]

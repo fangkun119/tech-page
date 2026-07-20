@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 13：核心功能 - 模型管理
+title: AI编程方法(1) 13：核心功能 - 模型管理
 author: fangkun119
 date: 2026-07-01 22:00:00 +0800
 categories: [AI编程, AI编程方法]

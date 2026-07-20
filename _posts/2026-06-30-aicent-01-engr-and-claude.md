@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 01：认知构建 - 你是架构师AI是你的工程团队
+title: AI编程方法(1) 01：认知构建 - 你是架构师AI是你的工程团队
 author: fangkun119
 date: 2026-06-30 19:00:00 +0800
 categories: [AI编程, AI编程方法]

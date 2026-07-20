@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 27：测试部署 - 质量保证体系
+title: AI编程方法(1) 27：测试部署 - 质量保证体系
 author: fangkun119
 date: 2026-07-02 19:00:00 +0800
 categories: [AI编程, AI编程方法]

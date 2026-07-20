@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 24：高级功能 - MCP接入（上）协议和客户端
+title: AI编程方法(1) 24：高级功能 - MCP接入（上）协议和客户端
 author: fangkun119
 date: 2026-07-02 16:00:00 +0800
 categories: [AI编程, AI编程方法]

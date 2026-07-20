@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 03：顶层设计 - 定义产品
+title: AI编程方法(1) 03：顶层设计 - 定义产品
 author: fangkun119
 date: 2026-07-01 13:00:00 +0800
 categories: [AI编程, AI编程方法]

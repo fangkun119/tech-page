@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 20：高级功能 - RAG（上）向量数据库
+title: AI编程方法(1) 20：高级功能 - RAG（上）向量数据库
 author: fangkun119
 date: 2026-07-02 12:00:00 +0800
 categories: [AI编程, AI编程方法]

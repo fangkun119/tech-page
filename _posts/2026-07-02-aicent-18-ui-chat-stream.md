@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 18：核心功能 - 流式聊天
+title: AI编程方法(1) 18：核心功能 - 流式聊天
 author: fangkun119
 date: 2026-07-02 10:00:00 +0800
 categories: [AI编程, AI编程方法]

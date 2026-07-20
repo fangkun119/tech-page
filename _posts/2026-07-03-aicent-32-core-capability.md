@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 32：复盘进阶 - 核心能力聚焦
+title: AI编程方法(1) 32：复盘进阶 - 核心能力聚焦
 author: fangkun119
 date: 2026-07-03 00:00:00 +0800
 categories: [AI编程, AI编程方法]

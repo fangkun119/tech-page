@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 08：工程搭建 - 后端骨架和基础设施
+title: AI编程方法(1) 08：工程搭建 - 后端骨架和基础设施
 author: fangkun119
 date: 2026-07-01 18:00:00 +0800
 categories: [AI编程, AI编程方法]

@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 09：工程搭建 - 前端工程初始化
+title: AI编程方法(1) 09：工程搭建 - 前端工程初始化
 author: fangkun119
 date: 2026-07-01 19:00:00 +0800
 categories: [AI编程, AI编程方法]

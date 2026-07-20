@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 05：顶层设计 - 部署性能与数据设计
+title: AI编程方法(1) 05：顶层设计 - 部署性能与数据设计
 author: fangkun119
 date: 2026-07-01 15:00:00 +0800
 categories: [AI编程, AI编程方法]

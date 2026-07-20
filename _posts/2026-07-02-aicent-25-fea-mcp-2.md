@@ -1,5 +1,5 @@
 ---
-title: AI编程方法 25：高级功能 - MCP接入（下）实现服务
+title: AI编程方法(1) 25：高级功能 - MCP接入（下）实现服务
 author: fangkun119
 date: 2026-07-02 17:00:00 +0800
 categories: [AI编程, AI编程方法]
