@@ -35,8 +35,6 @@ aicent-v2-15-dev-career
 
 <img src="imgs/aicent-v2-15-dev-career/795267db001503a31b127fa8c9233d9c_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-<img src="imgs/aicent-v2-15-dev-career/795267db001503a31b127fa8c9233d9c_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
 你大概还记得刚入行那几年。一个并发 bug 啃到凌晨三点，官方文档逐行读到天亮，第一次在生产事故里手抖着敲 `tail -f`；提交的 PR 被 senior 在 code review 里一行行划红线，命名、边界条件、异常路径，一条都不放过。疼是真疼，可也就是在这些熬夜、卡壳、被挑刺的缝隙里，你一点点长出了对代码和系统的判断。老一代程序员把这叫「写着写着就会了」——环境逼你挣扎，挣扎长本事。
 
 今天，这条路对新一代正在关闭。AI 把上面所有「卡壳」都变成了可选项。一行提示词下去，能跑的代码、像样的测试、体面的注释，几秒就到。问题在于：一旦「挣扎」可选，在 deadline 和 KPI 的压力下，绝大多数人会跳过它。没人会主动给自己找罪受。
