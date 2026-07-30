@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 382" width="800">
+  <!-- 整体背景 -->
+  <rect width="800" height="382" fill="#ffffff"/>
+
+  <!-- 表头背景 -->
+  <rect x="0" y="0" width="800" height="38" fill="#ffc0cb"/>
+  <!-- 表头分隔线 -->
+  <line x1="0" y1="38" x2="800" y2="38" stroke="#d0d0d0" stroke-width="1"/>
+  <line x1="400" y1="0" x2="400" y2="382" stroke="#d0d0d0" stroke-width="1"/>
+
+  <!-- 表头文字 -->
+  <text x="200" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333333" font-family="sans-serif">决策</text>
+  <text x="600" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#333333" font-family="sans-serif">结论</text>
+
+  <!-- 行分隔线 -->
+  <line x1="0" y1="80" x2="800" y2="80" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="122" x2="800" y2="122" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="164" x2="800" y2="164" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="206" x2="800" y2="206" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="248" x2="800" y2="248" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="290" x2="800" y2="290" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="332" x2="800" y2="332" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="382" x2="800" y2="382" stroke="#d0d0d0" stroke-width="1"/>
+
+  <!-- 左右边框 -->
+  <line x1="0" y1="0" x2="0" y2="382" stroke="#d0d0d0" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="382" stroke="#d0d0d0" stroke-width="1"/>
+
+  <!-- 数据行左列 -->
+  <text x="30" y="64" font-size="15" fill="#333333" font-family="sans-serif">单机 vs 分布式部署</text>
+  <text x="30" y="106" font-size="15" fill="#333333" font-family="sans-serif">Skill 拆分粒度</text>
+  <text x="30" y="148" font-size="15" fill="#333333" font-family="sans-serif">故障注入</text>
+  <text x="30" y="190" font-size="15" fill="#333333" font-family="sans-serif">多语言 SDK 隔离</text>
+  <text x="30" y="232" font-size="15" fill="#333333" font-family="sans-serif">GitHub 提交方式</text>
+  <text x="30" y="274" font-size="15" fill="#333333" font-family="sans-serif">第一期通道</text>
+  <text x="30" y="316" font-size="15" fill="#333333" font-family="sans-serif">报告格式</text>
+  <text x="30" y="358" font-size="15" fill="#333333" font-family="sans-serif">Dashboard 后端</text>
+
+  <!-- 数据行右列 -->
+  <text x="430" y="64" font-size="15" fill="#333333" font-family="sans-serif">单机</text>
+  <text x="430" y="106" font-size="15" fill="#333333" font-family="sans-serif">1 个套件 + 多个 Tool</text>
+  <text x="430" y="148" font-size="15" fill="#333333" font-family="sans-serif">Chaosd 主 + tc 补</text>
+  <text x="430" y="190" font-size="15" fill="#333333" font-family="sans-serif">不用 Docker，本地版本管理</text>
+  <text x="430" y="232" font-size="15" fill="#333333" font-family="sans-serif">git push（Deploy Key）</text>
+  <text x="430" y="274" font-size="15" fill="#333333" font-family="sans-serif">仅 CLI</text>
+  <text x="430" y="316" font-size="15" fill="#333333" font-family="sans-serif">JSON + Markdown 双格式</text>
+  <text x="430" y="358" font-size="15" fill="#333333" font-family="sans-serif">静态页面 + GitHub 仓库</text>
+</svg>

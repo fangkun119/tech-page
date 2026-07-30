@@ -2,8 +2,8 @@
 title: 传统项目迁AI 29：自动测试 - 流程回顾
 author: fangkun119
 date: 2026-07-05 09:00:00 +0800
-categories: [AI编程, 传统项目迁AI]
-tags: [AI编程, 传统项目迁AI]
+categories: [AI编程, 传统项目AI编程]
+tags: [AI编程, 传统项目AI编程]
 pin: false
 math: true
 mermaid: true
@@ -29,45 +29,38 @@ aicmigr-29-autotest-06-process-recap
 传统项目迁AI 29：自动测试 - 流程回顾
 -->
 
+## 1. 一句话需求落地全景：从模糊到 7×24 跑起来
 
-**AI 编程实战 · 自动测试流程回顾：从一句话需求到 7×24 跑起来**
+### 1.1 传统流程为何失灵
 
-本篇是"自动测试"系列的收尾篇。系列前几篇把"接到一句话需求"到"7×24 系统跑起来"的所有动作逐段拆解过，本篇把它们连起来跑一遍——从 leader 给出"用 Hermes Agent 实现 7×24 混沌测试"这一句话，到完整设计文档、完整方案文档、5 个 Tool、Skill、业务层、真实运转。
+<img src="imgs/aicmigr-29-autotest-06-process-recap/70a0c4bf1e6280e526ed1ba8d31e05ad_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-本篇既是实操回顾，也附上完整的提示词清单用于指导实践。跑完之后，工程师的项目里就有了一次完整的"基于开源项目二次开发"的闭环。
+设想这样一个场景：leader 丢过来一句话——"用 Hermes Agent 给 RobustMQ 实现 7×24 不间断跑混沌测试的系统"，让你落地。
 
-还有一件事必须开篇就说：系列第 25 篇第二次翻译时做过一次反问，把"自研 Claude API tool use"路径砍掉，改成基于 Hermes 重写。这次反问留下了一条新的硬约束——任何方案文档跑出来之前，先反问"路径选对了吗"。本篇工作流的第二步就是这件事。
+传统工程师拿到这种需求会卡在哪？瀑布流程里写需求文档、画架构图、排开发计划那一套，碰到"AI Agent 7×24 自主跑混沌测试"就开始失灵。三个原因：
 
-**全文导读地图**
+- 需求模糊到只有一句话，没有可拆解的输入
+- 交付物不是一个 Web 服务，而是一个能自己起集群、注入故障、跑 SDK、出报告的 AI 系统
+- 怎么让 AI 按预期干活，不像调 REST API 那么直接
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/6e6fba37372fbb6f9298cc19f97e5ece_MD5.jpg" alt="全文导读地图">
+<span style="color: red; font-weight: bold;">这篇文章解决的就是这个问题：从一句话需求出发，一步步落地到一套能在生产环境 7×24 跑的 AI Agent 系统。</span>
 
-<!--
-flowchart TD
-    A["一句话需求<br>用 Hermes Agent 实现 7×24 混沌测试"] --\> B["第一次翻译<br>从一句话到设计文档"]
-    B --\> C["路径反问（硬约束）<br>自研 vs 用 Hermes"]
-    C --\> D["第二次翻译<br>基于 Hermes 重写方案"]
-    D --\> E["代码层<br>5 个 Tool + Skill 骨架"]
-    E --\> F["业务层<br>场景库 + 报告 + 配置 + 调度"]
-    F --\> G["跑通验证<br>/skills 加载 + P0 对话跑通 + 报告 push"]
--->
+### 1.2 最终产物全景图
 
-**两类读者怎么读这篇文档：**
+跑完整套流程，手里会有这些东西：
 
-- 初学 AI 编程工程师：通读第一部分建立方法论框架，再按第二部分场景一到场景四的顺序复现一遍，每个 review 重点都对照自查
-- 熟练 AI 编程工程师：直接看第 3 章 Check List 速查；遇到想回顾"为什么这么做"时回到第 2 章对应的方法论节，或第二部分对应场景
+| 产出 | 说明 |
+|------|------|
+| `docs/design.md` | 与技术栈无关的设计文档，相当于系统"宪法" |
+| `docs/solution.md` | 基于选定技术栈的方案文档，定义每个 Tool 的接口和约束 |
+| 5 个 Tool | `cluster.py`、`observability.py`、`client.py`、`chaos.py`、`report.py` |
+| 1 个 `SKILL.md` | 串起 5 个 Tool，告诉 Agent 按什么顺序调 |
+| 业务层 | 场景库 + 报告模板 + `config.yml` + Deploy Key + `cron.yml` |
+| GitHub 报告 | 每次 run 的测试报告自动 push 到公开仓库 |
 
-## 1. 工作流总览
+类比一下：这就像基于 Spring Boot 二次开发一个业务系统。Spring Boot 是框架（这里是 Hermes），业务代码是 Tool，启动配置是 Skill，测试用例是场景库，CI 流水线是 cron 调度。你不用从零造轮子，但要清楚在哪里接、怎么接。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/554819f1e92c932d465c86e16880ec67_MD5.jpg" alt="工作流总览">
-
-### 1.1 工作流的工程语境
-
-这套工作流要解决的问题很具体：工程师拿到 leader 的一句话需求（典型如"用 Hermes Agent 给 RobustMQ 实现 7×24 不间断跑混沌测试的系统"），需要把它落成一套能在生产环境跑起来的 AI Agent 系统。
-
-整个工作流横跨六个阶段：第一次翻译、路径反问、第二次翻译、代码层、业务层、跑通验证。前三个阶段是"想清楚做什么"，后三个阶段是"把它做出来并跑起来"。
-
-### 1.2 六阶段概览
+整套落地走六个阶段。<span style="color: red; font-weight: bold;">前三阶段"想清楚做什么"，后三阶段"把它做出来并跑起来"。</span>
 
 | 阶段 | 核心动作 | 关键产出 |
 |------|----------|----------|
@@ -78,154 +71,58 @@ flowchart TD
 | 业务层 | 场景库、报告模板、配置、调度 | scenarios + templates + config.yml + cron.yml |
 | 跑通验证 | 加载验证 + 对话跑通 + 报告 push | GitHub 上能看到报告 |
 
-### 1.3 阶段之间的依赖关系
+### 1.3 阶段与时间预算
 
-第一次翻译产出的设计文档与具体技术栈无关，是后续所有工作的"宪法"。路径反问决定第二次翻译的方向，第二次翻译产出的方案文档定义了代码层每个 Tool 的接口签名和硬约束。代码层是骨架，业务层把骨架填满，跑通验证确认整条链路活着。
+<img src="imgs/aicmigr-29-autotest-06-process-recap/4d5f92d216386c11429d6aab14bc4e64_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-## 2. 关键方法论
+前三阶段对应传统软件的需求评审 + 架构设计。区别在于：传统流程里评审对象是人和文档，这里评审对象是 AI 给出的展开结果。
 
-### 2.1 第一次翻译三步法：展开、反问补漏、整合成 PRD
+你可能会问：为什么不直接让 AI 一次写完设计文档？<span style="color: red; font-weight: bold;">因为 AI 不会主动告诉你它漏了什么。</span>一次写完的版本总有空洞，需要工程师拿着"完整设计文档该长什么样"的预期，一处处反问、补漏、整合。这就是后续要讲的"三步法"。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/d456804e2fc6765d3e53f9eda3c6d8d1_MD5.jpg" alt="第一次翻译三步法">
+中间还插一个硬约束——**路径反问**。这是整套工作流最值钱的工程教训：第一次翻译跑完后，先停下来反问"路径选对了吗"，别让 AI 顺着提问给一条"自研"路径，而忽略了你刚摸过的开源项目已经做了 80%。
 
-第一次翻译不是一次性写完设计文档，而是分三步走。
+后三阶段对应编码、集成、上线：
 
-#### (1) 展开阶段
-
-把一句话需求展开成完整的技术设计文档，这一步先别谈具体技术框架，把"为什么要做、做什么、不做什么、用什么思路、覆盖什么场景、产出什么"讲清楚。展开时让 AI 列出关键选择给工程师看，每个选择给两三个选项和影响，由工程师来拍。
-
-#### (2) 反问补漏阶段
-
-跑完展开阶段，设计文档总有几处空洞。工程师需要拿着"完整设计文档该长什么样"的预期去比对 AI 给的版本，差什么就反问什么。反问是"你这里漏了，补上"，不是追问——AI 不会主动告诉工程师它漏了什么。
-
-#### (3) 整合阶段
-
-把前两轮讨论的所有产出整合成一份完整的技术设计文档，至少覆盖七个维度：背景和目标、系统设计思路、工具集清单、场景库分级、SDK 矩阵、协议兼容性归因表、测试记录公开度决策。
-
-### 2.2 第二次翻译前的路径反问硬约束
-
-这条硬约束来自一次真实的工程翻车：系列第 25 篇第一次跑方案文档时，AI 顺着工程师的提问给了一条"自研 Claude API tool use"的路径，但工程师刚摸过的 Hermes 开源项目已经把这条路径里 80% 的工程都做了。
-
-#### (1) 反问的时机
-
-第一次翻译跑完之后、第二次翻译之前，停下来反问"路径选对了吗"。
-
-##### ① 反问的内容
-
-拿出第一次摸开源项目时得到的认知，对比"自研"和"用开源项目"两条路径，列出每条路径要做什么、工程量多大。
-
-##### ② 反问的产物
-
-这条教训要写进方案文档，让后续类似工作流的 AI 主动提醒工程师做反问。
-
-### 2.3 提示词三件事：接口签名、硬约束、已有依赖
-
-<img src="imgs/aicmigr-29-autotest-06-process-recap/aa8fa651236cffb2d9cc0fbea8c0d1fb_MD5.jpg" alt="提示词三件事">
-
-写代码层的提示词时，三件事缺一不可。
-
-| 维度 | 内容 | 缺失的后果 |
-|------|------|-----------|
-| 接口签名 | 函数签名、参数、返回值格式 | AI 编出不一致的调用约定 |
-| 硬约束 | fail-fast 规则、不能抛异常、不引入 Docker 等禁令 | AI 用默认值兜底，跑起来不对 |
-| 已有依赖 | 环境变量、配置文件、上下游 Tool | AI 自己重新发明已有的东西 |
-
-### 2.4 Tool 提示词重传约束、Skill 提示词重喂接口
-
-代码层有两类提示词，各有重传规则。
-
-#### (1) Tool 提示词的重传约束
-
-每个 Tool 的提示词要交代接口签名、硬约束、已有依赖三件事。如果某个 Tool 写出来跑不通，十有八九是这三件事里某一件没说清，回提示词补两句重跑就行。
-
-#### (2) Skill 提示词的重喂接口
-
-Skill 的任务是告诉 Agent 在 cron 触发或手动触发时按什么顺序调 Tool。这一步必须把 5 个 Tool 的接口签名全部贴给 AI——如果不贴，AI 会编出根本不存在的 Tool 调用，Skill 加载之后跑就报错。
-
-### 2.5 结构化产物用代码生成，JSON 不交给 LLM
-
-<img src="imgs/aicmigr-29-autotest-06-process-recap/383f2f9ece97260ace1fb2fc19f13b10_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-凡是结构化的东西都用代码生成，不要交给 LLM。
-
-#### (1) JSON 报告
-
-JSON 报告用 `json.dumps` 写，绝对不调 LLM 生成 JSON。LLM 生成 JSON 时格式漂移、字段缺失的概率远高于代码生成。
-
-#### (2) Markdown 报告
-
-Markdown 报告用 Jinja2 模板渲染，模板里不调 LLM，纯 Jinja2 语法。模板负责把结构固定下来，数据从 Python 传进来。
-
-### 2.6 关键决策点显式停下来等人工
-
-AI 不能替工程师拍四类决策：
-
-- 第一次翻译的关键选择（场景分级、报告公开度、SDK 矩阵）
-- 路径选择（自研 vs 用开源项目）
-- 方案文档的决策点 review
-- 业务层场景库的范围决策
-
-提示词里要显式写"停下来等工程师反馈"，不要让 AI 自作主张。
-
-## 3. 项目阶段 Check List
-
-<img src="imgs/aicmigr-29-autotest-06-process-recap/2faf2b2d51edfd84425f3204ae659371_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-下表把六个阶段拆成可裁剪的速查表。熟练工程师上手新项目时可以直接拿这张表逐项核对，不需要回到正文。
-
-| 阶段 | 必做硬性条目 | 必停决策点 | 必 review 的产出 |
-|------|--------------|-----------|-----------------|
-| 第一次翻译 | 设计文档六块全有（为什么／做什么／不做什么／思路／场景／产出） | 待拍板选择（≥3 个，每个带选项和影响） | 协议兼容性归因表是否写进文档 |
-| 路径反问 | 拿出开源项目认知对比自研路径 | 路径选择 | 工程量对比是否清晰 |
-| 第二次翻译 | 架构、Skill 设计、Tool 实现要点、场景库、触发、报告系统、决策记录 | 第 7 节决策记录 review | Skill 边界、故障注入选型、GitHub 凭据 |
-| 代码层 | 接口签名 + 硬约束 + 已有依赖 | Tool 跑不通时停下来报错 | 每个 Tool 单点验证（`hermes "调用 X"`） |
-| 业务层 | 第一个场景文件 + 模板 + config + Deploy Key + cron | 场景库接下来要写哪些 | 故障参数与 chaos.py 接口对齐、通过标准字段与 client.py 返回 JSON 对齐 |
-| 跑通验证 | `/skills` 和 `/tools` 加载、P0 对话跑通、报告 push | 报告未 push 成功时人工介入 | GitHub 仓库能看到本次 run 的报告 |
-
-### 3.1 阶段时间预算
+- **代码层**：5 个 Tool + Skill 骨架。AI 写代码最容易翻车的地方在提示词——接口签名、硬约束、已有依赖三件事说不清，写出来的 Tool 跑不通。
+- **业务层**：场景库、报告模板、配置、cron 调度。代码骨架长出来后，还要填上"测什么、怎么报、多久跑一次"，系统才能真正 7×24 跑。
+- **跑通验证**：加载、对话、push 三件事。后文还会给出一段"一键流程"提示词，让 Claude Code 自主跑完前面所有阶段，只在关键决策点停下来等你。
 
 | 阶段 | 时间预算 |
 |------|---------|
-| 场景一（第一次翻译） | 20-30 分钟 |
-| 场景二（Hermes 验证） | 20-30 分钟 |
-| 场景三（代码层） | 1.5-2 小时 |
-| 场景四（业务层） | 1 小时 |
-| 一键流程（全跑通） | 4-5 小时（含几次 review） |
+| 第一次翻译（含路径反问） | 20-30 分钟 |
+| Hermes 验证机制 | 20-30 分钟 |
+| 代码层（5 个 Tool + Skill） | 1.5-2 小时 |
+| 业务层 | 1 小时 |
 
-## 4. 实战演示总览
+这套预算的前提是 Hermes 已装好、对它有顶层认知。如果跳过准备直接上手，每一步都会卡。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/11bf2fa1a508f7f13904bcbae9cf6b2d_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+下一章先讲第一次翻译：怎么把这一句话展开成完整设计。
 
-第二部分把第一部分的方法论落到具体场景里。每个场景对应系列中的一篇，产出明确、review 点清晰。
+## 2. 第一次翻译：把一句话展开成完整设计
 
-### 4.1 四个场景的全局对照
+<img src="imgs/aicmigr-29-autotest-06-process-recap/150c1652754f280c5c6019611ea038ea_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-| 场景 | 对应系列篇目 | 核心产出 | 主要方法论 |
-|------|-------------|---------|-----------|
-| 场景一 第一次翻译 | 系列第 25 篇 | `docs/design.md` | 展开-反问-整合三步法 |
-| 场景二 Hermes 验证 | 系列第 26 篇 | Hello World Skill | 动手命令、验证加载机制 |
-| 场景三 代码层 | 系列第 27 篇 | 5 个 Tool + Skill 骨架 | 提示词三件事、Skill 重喂接口 |
-| 场景四 业务层 | 系列第 28 篇 | 场景库 + 报告 + 配置 + 调度 | 结构化用代码生成、P0/P1/P2 分级 |
+<img src="imgs/aicmigr-29-autotest-06-process-recap/0db2ecc85459c2a00caa1ce247ecc49b_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-### 4.2 实战前的准备
+第一次翻译的目标，是把一句话需求展开成一份与技术栈无关的完整设计文档——讲清楚"为什么做、做什么、不做什么、用什么思路、覆盖什么场景、产出什么"。这一步决定了后续所有提示词的方向，方向错了，后面写得再细都是白费。
 
-系列第 24-28 篇的准备工作都已经做完：第 26 篇把 Hermes 装好了、Claude Code 跑起来；第 24 篇建立了对 Hermes 的顶层认知；第 25 篇完成了方案文档（本篇会重新跑一份）。
+### 2.1 为什么不能让 AI 一次写完
 
-如果工程师跳过了前面直接看本篇，先回到系列第 26 篇跑一遍 Hello World，确保 Hermes 装好且能扩展。否则后面所有提示词的"基于 Hermes"都没有素材。
+你可能会问：直接让 AI 一次把设计文档写完不行吗？
 
-```bash
-cd hermes
-```
+答案是：它会给你一个看起来完整的版本，但总有几处空洞——场景没分级、报告对内对外没说清、SDK 矩阵不系统。问题不在写得不够多，而在 AI 不会主动承认漏了什么。它只会顺着你的提问往下走，你不问，它就不补。
 
-## 5. 场景一 第一次翻译：从一句话到完整设计文档
+所以这件事必须分三步：先展开、再反问补漏、最后整合成 PRD。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/1710f0eef13b1c990aed16631628f407_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+类比一下，这就像需求评审做三轮——第一轮把骨架搭出来，第二轮挑空洞，第三轮定稿。一轮定稿的评审没人敢签字，一轮写完的设计文档同理。
 
-对应系列第 25 篇，产出 `docs/design.md`（完整设计文档，与具体技术栈无关）。这个场景完整演示了第 2.1 节的"展开-反问-整合"三步法。
+### 2.2 三步法：展开、反问、整合
 
-### 5.1 第一步：展开一句话需求
+#### (1) 第一步：展开需求
 
-#### (1) 提示词原文
+展开阶段先别谈具体技术框架，把"为什么做、做什么、不做什么、用什么思路、覆盖什么场景、产出什么"讲清楚。让 AI 列出关键选择给你看，每个选择给两三个选项和影响，由你来拍。
+
+提示词原文：
 
 ```text
 帮我把这个一句话需求展开成完整的技术设计文档:用 AI Agent 给 RobustMQ
@@ -241,17 +138,19 @@ cd hermes
 不要复述,要展开。
 ```
 
-#### (2) review 重点
+review 重点：
 
 - 设计文档六块都有内容（为什么／做什么／不做什么／思路／场景／产出）
 - AI 列出来的"待拍板的选择"至少 3 个
 - 每个选择带选项和影响，不是空泛的"由你决定"
 
-### 5.2 第二步：反问补漏
+#### (2) 第二步：反问补漏
 
 跑完第一步，AI 给的设计文档总有几处空洞，把空洞挑出来反问。
 
-#### (1) 提示词原文
+反问是"你这里漏了，补上"，不是追问。AI 不会主动告诉你它漏了什么，你需要自己有一份"完整设计文档该长什么样"的预期，拿这份预期去比对 AI 给的版本，差什么就反问什么。预期从哪来？从工作经验里来。
+
+提示词原文：
 
 ```text
 你这版有几处空洞:
@@ -268,13 +167,11 @@ cd hermes
 别又冒新选择,把这版补完整。
 ```
 
-#### (2) review 重点
+#### (3) 第三步：整合成 PRD
 
-反问是"你这里漏了，补上"，不是追问。AI 不会主动告诉工程师它漏了什么，工程师需要自己有一份"完整设计文档该长什么样"的预期，拿这份预期去比对 AI 给的版本，差什么就反问什么。预期从哪来？从工作经验里来。
+把前两轮讨论的所有产出整合成一份完整的技术设计文档，能拿出去给社区评审。
 
-### 5.3 第三步：整合成正式 PRD
-
-#### (1) 提示词原文
+提示词原文：
 
 ```text
 基于前面两轮讨论,把所有产出整合成一份完整的技术设计文档,
@@ -292,23 +189,48 @@ cd hermes
 保存到 docs/design.md。
 ```
 
-#### (2) review 重点
+review 重点：协议兼容性归因表（不同 SDK 不一致／特定版本失败／全部失败 → 三种归因）有没有写进文档。这张表后面报告模板会反复用。
 
-协议兼容性归因表（不同 SDK 不一致 ／ 特定版本失败 ／ 全部失败 → 三种归因）有没有写进文档。这张表系列第 28 篇的报告模板会反复用。
+### 2.3 AI 不能替你拍的四类决策
 
-### 5.4 场景一收尾
+三步法走完，设计文档成型了，但有几类决策 AI 不能替工程师拍。<span style="color: red; font-weight: bold;">提示词里要显式写"停下来等工程师反馈"，让 AI 知道这些点不能自作主张：</span>
 
-跑完场景一，工程师手上有完整设计文档。这份文档跟具体技术栈无关。耗时 20-30 分钟。
+| 决策点 | 说明 |
+|--------|------|
+| 第一次翻译的关键选择 | 场景分级、报告公开度、SDK 矩阵 |
+| 路径选择 | 自研 vs 用开源项目 |
+| 方案文档决策点 review | Skill 边界、故障注入选型、GitHub 凭据 |
+| 业务层场景库范围 | 接下来要写哪些场景 |
 
-## 6. 场景二 跑通 Hermes 验证机制
+<span style="color: red; font-weight: bold;">不要让 AI 自作主张。AI 给的是 80 分初稿，工程师要做的是先判断方向对不对，不是埋头改成 95 分。方向错了，改得越细偏差越大。</span>
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/edbcee8893be7a31d836fc64fb8ce5df_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+光是补漏还不够，<span style="color: red; font-weight: bold;">第一次翻译跑完还要先反问一件事——路径选对了吗。</span>这是下一章的主题。
 
-对应系列第 26 篇。这一步是动手命令，不是 AI 提示词。目标是验证 Hermes 的加载机制真的活着，后面正式项目才能照同样的机制写。
+## 3. 路径反问：最值钱的硬约束
 
-### 6.1 安装 Hermes 并感受手感
+<img src="imgs/aicmigr-29-autotest-06-process-recap/771f2e0c17bc0bc11d4daa17c00c2dfb_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-#### (1) 安装命令
+<img src="imgs/aicmigr-29-autotest-06-process-recap/80c480889e8bcd1791e20db01150e980_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+整套工作流跑下来，最值钱的教训一句话：**第二次翻译前先反问"路径选对了吗"**。
+
+类比一下：跑长途前先看地图，而不是闷头踩油门。<span style="color: red; font-weight: bold;">油门踩得再狠，方向反了也是越开越远。</span>AI 时代的工程师最容易犯的就是这种错——代码层面 AI 帮你踩得很欢，但路径层面没人替你看地图。
+
+### 3.1 教训是什么：一次真实的工程翻车
+
+这条硬约束来自一次真实的工程翻车，整章只讲这一次。
+
+第一次跑方案文档时，AI 顺着提问给了一条"自研 Claude API tool use"的路径。但刚摸过的 Hermes 开源项目，已经把这条路径里 80% 的工程都做了——剩下的 20% 才是需要自己写的。<span style="color: red; font-weight: bold;">AI 不会主动告诉你这件事，它只会顺着你的提问方向走。</span>
+
+所以第一次翻译跑完之后、第二次翻译之前，必须停下来反问："路径选对了吗？"
+
+### 3.2 先验证 Hermes 能用
+
+第一次翻译跑完，手里有完整设计文档。下一步要做"路径反问"——对比自研 vs 用 Hermes。但你得先确认 Hermes 真能用、真能扩展，否则反问就成了空谈。
+
+这一步是动手命令，不是 AI 提示词。
+
+#### (1) 装 Hermes 并感受手感
 
 ```bash
 # 安装 Hermes
@@ -318,42 +240,97 @@ curl -fsSL https://res1.hermesagent.org.cn/install.sh | bash
 hermes
 ```
 
-#### (2) 对话示例
+对话示例：
 
 ```
 > 你能帮我做什么?
 > 帮我看看磁盘空间占用,列出最大的 5 个目录
 ```
 
-### 6.2 写最小 Skill 验证机制
+#### (2) 写最小 Skill 验证机制
 
-在 `~/.hermes/skills/hello-world/` 下新建 `SKILL.md`，写一个返回当前时间的 Skill。跑通就行，这一步只是验证 Hermes 真的能扩展，不是本篇的重点。
+在 `~/.hermes/skills/hello-world/` 下新建 `SKILL.md`，写一个返回当前时间的 Skill。跑通就行，这一步只是验证 Hermes 真的能扩展。
 
-### 6.3 review 重点与收尾
+`hermes /skills` 能看到 hello-world 出现在列表里，说明 Hermes 加载机制活着，后面正式项目就照同样的机制写。
 
-`hermes /skills` 能看到 hello-world 出现在列表里。能看到说明 Hermes 加载机制活着，后面正式项目就照同样的机制写。
+### 3.3 反问动作与产物
 
-跑完场景二，Hermes 验证完毕。耗时 20-30 分钟。
+<span style="color: red; font-weight: bold;">AI 给的方案不一定是最优的。AI 顺着工程师的提问给方案，但工程师刚摸过的那个开源项目，可能已经把方案里大部分工程都做了，不用自己撸。</span>
 
-## 7. 场景三 让代码长出来：5 个 Tool + Skill 骨架
+停下来之后做什么？三件事，把"反问"从一个口号变成可执行的动作：
 
-对应系列第 27 篇。产出 `~/.hermes/skills/robustmq-chaos-test/` 下的 5 个 Tool 和 1 个 `SKILL.md`。
+- 拿出第一次摸开源项目时得到的认知
+- 对比"自研"和"用开源项目"两条路径
+- 列出每条路径要做什么、工程量多大
 
-### 7.1 依赖顺序与共同原则
+反问的产物要落到三处，让经验沉淀成流程，而不是停在某个人的脑子里：
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/6a62aae5a89b352fa67a5b7767396a6b_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+| 产物 | 落点 |
+|------|------|
+| 写进方案文档 | 让后续类似工作流的 AI 主动提醒工程师做反问 |
+| 一键流程的"第零步反问" | 把反问从经验沉淀成流程 |
+| 工作流的硬约束阶段 | 路径反问作为六阶段之一强制执行 |
 
-按系列第 25 篇方案的依赖顺序：cluster → observability → client → chaos → report → SKILL。
+我的看法是：这件事之所以最值钱，<span style="color: red; font-weight: bold;">因为它不是"AI 写错了代码"，而是"AI 选错了方向"。代码错了可以 debug，方向错了改 100 遍也是错的。</span>
 
-每个 Tool 的提示词关键设计都是三件事：**接口签名、硬约束、已有依赖**（详见第 2.3 节）。下面每个 Tool 的提示词原文都会重传这三件事。
+### 3.4 AI 时代工程师最值钱的交付
 
-### 7.2 cluster.py：起停测试集群
+路径反问这件事，背后是 AI 时代工程师角色的根本转变。
 
-#### (1) 职责
+<span style="color: red; font-weight: bold;">一个工程师在 AI 时代能交付的最值钱的东西，不是写代码的能力，是把方向定准、把约束讲清楚、把模糊变具体的能力。</span>
 
-混沌测试 Skill 套件的第一个 Tool，负责在本地起停 RobustMQ 测试集群。
+<span style="color: red; font-weight: bold;">AI 给工程师一个 80 分的初稿，工程师要做的不是改成 95 分，是先判断初稿是不是建立在对的方向上。方向不对，改 100 遍也是错的。</span>
 
-#### (2) 提示词原文（提示词 4）
+这套工作流的每一步都在印证这件事：
+
+| 工作流环节 | 工程师守的方向 |
+|------------|----------------|
+| 第一次翻译的反问 | AI 展开的方向对不对 |
+| 路径反问 | AI 选的技术路径对不对 |
+| 每个 Tool 的 review | AI 写的接口和约束对不对 |
+| 跑通验证 | 整条链路的方向对不对 |
+
+<span style="color: red; font-weight: bold;">工程师守住方向感，AI 才能真正发挥威力。这是整套工作流想传递的核心。</span>
+
+方向定准之后，下一步就是让 Agent 长出 5 个 Tool——这是代码层的事。
+
+## 4. 代码层：让 Agent 长出 5 个 Tool
+
+<img src="imgs/aicmigr-29-autotest-06-process-recap/9c400a8089d4110fd79be381f04868c1_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+<img src="imgs/aicmigr-29-autotest-06-process-recap/a287618b9bf981567dbe46f987798905_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+代码层的目标，是按 `docs/solution.md` 的设计，让 AI 写出 5 个 Tool 和 1 个 Skill 骨架。这是整个工作流中篇幅最大的一章——提示词写得清不清，直接决定 Tool 跑不跑得通。
+
+### 4.1 提示词三件事：接口签名、硬约束、已有依赖
+
+写 Tool 的提示词时，三件事缺一不可。类比一下：这就像写函数前先定接口契约——函数签名、错误处理约定、依赖说明。把这三件事在提示词里说死，AI 就不会自己发明调用约定、用默认值兜底、或重造已有的轮子。
+
+| 维度 | 内容 | 缺失的后果 |
+|------|------|-----------|
+| 接口签名 | 函数签名、参数、返回值格式 | AI 编出不一致的调用约定 |
+| 硬约束 | fail-fast 规则、不能抛异常、不引入 Docker 等禁令 | AI 用默认值兜底，跑起来不对 |
+| 已有依赖 | 环境变量、配置文件、上下游 Tool | AI 自己重新发明已有的东西 |
+
+<span style="color: red; font-weight: bold;">如果某个 Tool 写出来跑不通，十有八九是这三件事里某一件没说清，回提示词补两句重跑就行。</span>
+
+写 Skill 的提示词时还有一条特殊约束——必须把 5 个 Tool 的接口签名全部贴给 AI。Skill 的任务是告诉 Agent 在 cron 触发或手动触发时按什么顺序调 Tool。如果不贴接口，AI 会编出根本不存在的 Tool 调用，Skill 加载之后跑就报错。
+
+### 4.2 依赖顺序
+
+按 `docs/solution.md` 的依赖顺序写：cluster → observability → client → chaos → report → SKILL。
+
+前一个是后一个的依赖：cluster 起集群，observability 在集群上打快照，client 在集群上跑 SDK，chaos 给集群注故障，report 整合所有结果。SKILL 最后写，串起 5 个 Tool。
+
+### 4.3 五个 Tool 的职责与提示词
+
+五个 Tool 同构，统一用"职责 + 提示词原文 + 三件事体现&review 重点"三段式呈现。提示词原文一字不改，硬约束一条不删。
+
+#### (1) cluster.py：起停测试集群
+
+职责：混沌测试 Skill 套件的第一个 Tool，负责在本地起停 RobustMQ 测试集群。
+
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/tools/cluster.py。
@@ -383,23 +360,21 @@ handler 函数签名 (args: dict, \*\*\_) -> str,失败返回 {"error": "..."}
 别抛异常,Agent 循环见到异常会中断。
 ```
 
-#### (3) 三件事体现
+三件事体现 & review 重点：
 
-- 接口签名：`action 支持 start / stop / status`、`handler 函数签名 (args: dict, **_) -> str`
-- 硬约束：不引入 Docker、`ROBUSTMQ_HOME` 没默认值是 fail-fast、失败返回 error 不抛异常
-- 已有依赖：`tempfile.mkdtemp`、`http://127.0.0.1:1883/health`、`ROBUSTMQ_HOME` 环境变量
+| 维度 | 体现 |
+|------|------|
+| 接口签名 | action 支持 start / stop / status、handler 函数签名 (args: dict, **_) -> str |
+| 硬约束 | 不引入 Docker、ROBUSTMQ_HOME 没默认值是 fail-fast、失败返回 error 不抛异常 |
+| 已有依赖 | tempfile.mkdtemp、http://127.0.0.1:1883/health、ROBUSTMQ_HOME 环境变量 |
 
-#### (4) review 重点
+review 重点：不引入 Docker、`ROBUSTMQ_HOME` 没默认值是 fail-fast、临时目录 stop 时清理、失败返回 error 不抛异常。这四条任何一条没做到，回提示词补一句重跑。
 
-不引入 Docker、`ROBUSTMQ_HOME` 没默认值是 fail-fast、临时目录 stop 时清理、失败返回 error 不抛异常。这四条任何一条没做到，回提示词补一句重跑。
+#### (2) observability.py：收集观测数据
 
-### 7.3 observability.py：收集观测数据
+职责：从 RobustMQ 集群收集观测数据，后面 chaos 故障注入和 client SDK 测试都会调它打快照。
 
-#### (1) 职责
-
-从 RobustMQ 集群收集观测数据，后面 chaos 故障注入和 client SDK 测试都会调它打快照。
-
-#### (2) 提示词原文（提示词 5）
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/tools/observability.py。
@@ -417,19 +392,13 @@ messages\_in / messages\_out / errors。
 snapshot 一次性收 logs + metrics 加时间戳,用于故障前后对比。
 ```
 
-#### (3) review 重点
+review 重点：snapshot 必须带时间戳、要能用于"故障前后对比"——这是后面判断自愈是否成功的依据。
 
-snapshot 必须带时间戳、要能用于"故障前后对比"——这是后面判断自愈是否成功的依据。
+#### (3) client.py：调度多语言 SDK
 
-### 7.4 client.py：调度多语言 SDK
+职责：调度多语言 SDK 跑测试。按 `solution.md` 决策不用 Docker 隔离，用本地版本管理工具切换。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/e62e32989fe74a04ddd5cc32544c7211_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-#### (1) 职责
-
-调度多语言 SDK 跑测试。按 `solution.md` 决策不用 Docker 隔离，用本地版本管理工具切换。
-
-#### (2) 提示词原文（提示词 6）
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/tools/client.py。
@@ -455,23 +424,21 @@ cluster\_endpoint。
 别用 Hermes 的 delegate 机制。
 ```
 
-#### (3) 三件事体现
+三件事体现 & review 重点：
 
-- 接口签名：`action 是 run`、参数清单、约定 JSON 字段
-- 硬约束：JSON 解析失败单独记 `script_format_error`、并发逻辑放 Python 不用 delegate
-- 已有依赖：`pyenv / gvm / rustup / sdkman / nvm`、`CLUSTER_ENDPOINT` 环境变量
+| 维度 | 体现 |
+|------|------|
+| 接口签名 | action 是 run、参数清单、约定 JSON 字段 |
+| 硬约束 | JSON 解析失败单独记 `script_format_error`、并发逻辑放 Python 不用 delegate |
+| 已有依赖 | pyenv / gvm / rustup / sdkman / nvm、CLUSTER_ENDPOINT 环境变量 |
 
-#### (4) review 重点
+review 重点：`script_format_error` 不能跟测试失败混算；并发用 Python `ThreadPoolExecutor` 不用 Hermes delegate。
 
-`script_format_error` 不能跟测试失败混算；并发用 Python `ThreadPoolExecutor` 不用 Hermes delegate。
+#### (4) chaos.py：故障注入与恢复
 
-### 7.5 chaos.py：故障注入与恢复
+职责：故障注入和恢复。按 `solution.md` 决策 Chaosd 主 + tc/kill 补。
 
-#### (1) 职责
-
-故障注入和恢复。按 `solution.md` 决策 Chaosd 主 + tc/kill 补。
-
-#### (2) 提示词原文（提示词 7）
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/tools/chaos.py。
@@ -492,19 +459,19 @@ Chaosd 端点配置在 ~/.hermes/skills/robustmq-chaos-test/config.yml 里
 读,don't hardcode。
 ```
 
-#### (3) 三件事体现
+三件事体现：
 
-- 接口签名：`action 支持 inject / recover`、返回字段
-- 硬约束：第一版只实现两种故障、其他返回 `not_implemented`、Chaosd 端点不 hardcode
-- 已有依赖：Chaosd HTTP API、`config.yml`
+| 维度 | 体现 |
+|------|------|
+| 接口签名 | action 支持 inject / recover、返回字段 |
+| 硬约束 | 第一版只实现两种故障、其他返回 `not_implemented`、Chaosd 端点不 hardcode |
+| 已有依赖 | Chaosd HTTP API、config.yml |
 
-### 7.6 report.py：生成报告并提交 GitHub
+#### (5) report.py：生成报告并 push GitHub
 
-#### (1) 职责
+职责：整合整轮测试结果，生成报告并提交到 GitHub。
 
-整合整轮测试结果，生成报告并提交到 GitHub。
-
-#### (2) 提示词原文（提示词 8）
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/tools/report.py。
@@ -526,23 +493,21 @@ action 是 generate\_and\_push,接收 run\_data dict。
 写新报告时清理 30 天前的本地临时文件。
 ```
 
-#### (3) 三件事体现
+三件事体现 & review 重点：
 
-- 接口签名：`action 是 generate_and_push`、返回字段、`run_passed` 判定逻辑
-- 硬约束：JSON 用 `json.dumps` 不调 LLM、Deploy Key 通过 `GIT_SSH_COMMAND` 指定、清理 30 天前临时文件
-- 已有依赖：Jinja2 模板、`config.yml`、`~/.ssh/test-reports-deploy`
+| 维度 | 体现 |
+|------|------|
+| 接口签名 | action 是 generate_and_push、返回字段、run_passed 判定逻辑 |
+| 硬约束 | JSON 用 `json.dumps` 不调 LLM、Deploy Key 通过 `GIT_SSH_COMMAND` 指定、清理 30 天前临时文件 |
+| 已有依赖 | Jinja2 模板、config.yml、~/.ssh/test-reports-deploy |
 
-#### (4) review 重点
+review 重点：`run_passed` 字段的判定逻辑（核心场景全过 + 非核心通过率 ≥ 75%）不能丢，这是 cron 跑完后看报告的第一眼指标。
 
-`run_passed` 字段的判定逻辑（核心场景全过 + 非核心通过率 ≥ 75%）不能丢，这是 cron 跑完后看报告的第一眼指标。
-
-### 7.7 SKILL.md 骨架：串起 5 个 Tool
-
-#### (1) 职责
+### 4.4 SKILL.md 骨架：串起 5 个 Tool
 
 5 个 Tool 写好后，Skill 的任务是告诉 Agent 在 cron 触发或手动触发时，按什么顺序调这些 Tool。
 
-#### (2) 提示词原文（提示词 9）
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/SKILL.md。
@@ -571,13 +536,9 @@ Tool 的接口签名见下面贴的接口表。直接照着调,别编不存在�
 \[贴 5 个 Tool parameters schema\]
 ```
 
-#### (3) review 重点（Skill 的灵魂）
+review 重点——Skill 的灵魂：Tool 接口完整喂给 AI。<span style="color: red; font-weight: bold;">如果不把 Tool 接口贴给 AI，AI 会编出根本不存在的 Tool 调用，Skill 加载之后跑就报错。</span>这一步的代码没有写到本篇里，Claude Code 跑出来的真实代码都放在 GitHub 仓库里，想看代码直接去仓库对应文件看。
 
-Tool 接口完整喂给 AI。如果不把 Tool 接口贴给 AI，AI 会编出根本不存在的 Tool 调用，Skill 加载之后跑就报错。
-
-这一步的代码没有写到本篇里，Claude Code 跑出来的真实代码都放在 GitHub 仓库里。读到哪个 Tool 想看代码，直接去仓库对应文件看。
-
-### 7.8 单点验证与场景三收尾
+### 4.5 单点验证：怎么知道每个 Tool 活着
 
 每个 Tool 写完后跑一次单点验证：
 
@@ -588,21 +549,38 @@ $ hermes
 
 Agent 真的去调了、返回结果回来，这个 Tool 就活着。某个 Tool 调不通也别慌，九成是 description 没写清楚或 parameters schema 不合法，回提示词改两句重跑就行。
 
-跑完场景三，代码层就齐了。耗时 1.5-2 小时。
+代码层骨架长出来后，还要填上测什么、怎么报、多久跑一次——业务层负责这件事。
 
-## 8. 场景四 填业务层
+## 5. 业务层：填上场景与报告
 
-对应系列第 28 篇。产出场景库、报告模板、`config.yml`、Deploy Key + GitHub 仓库、`cron.yml`。
+<img src="imgs/aicmigr-29-autotest-06-process-recap/32418dc99af4e01bddc32cd663013ced_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-### 8.1 第一个场景库文件
+<img src="imgs/aicmigr-29-autotest-06-process-recap/f4bbafe1468605e7c49c6c67a7ce226d_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/02ff6631f50d9c75c0212859c56cdb1f_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+5 个 Tool 写好了，骨架立起来了，但还跑不起来。缺的是业务层：测哪些场景、报告长什么样、多久跑一轮、报告 push 到哪。这一章把四块填完。
 
-#### (1) 产出说明
+### 5.1 铁律：结构化产物用代码生成，别交给 LLM
 
-在 `~/.hermes/skills/robustmq-chaos-test/scenarios/mqtt/` 下写第一个场景 `p0-broker-kill-leader.md`。格式是 Markdown，自然语言描述，Agent 读完知道按 SKILL.md 的"单场景五步"怎么调 Tool。
+这一章开讲前，先立一条贯穿到底的铁律：**凡是结构化的东西都用代码生成，不要交给 LLM**。
 
-#### (2) 提示词原文（提示词 10）
+你可能会问：让 LLM 顺手生成 JSON 不是更省事吗？不行。<span style="color: red; font-weight: bold;">LLM 生成 JSON 时格式漂移、字段缺失的概率远高于代码生成。</span>
+
+解决方案分两条路，按产物类型选：
+
+- JSON 报告用 `json.dumps` 写
+- Markdown 报告用 Jinja2 模板渲染，模板里不调 LLM，纯 Jinja2 语法
+
+模板负责把结构固定下来，数据从 Python 传进来。
+
+类比一下：<span style="color: red; font-weight: bold;">这就像传统项目里用 FreeMarker/Thymeleaf 渲染报表——模板定结构，数据走代码，不会让 LLM 去拼 HTML。</span>转型读者把这条映射套进来就懂了：Jinja2 模板 ≈ FreeMarker 模板，`report.py` 传的 `run_data` ≈ Controller 塞进 Model 的数据。
+
+### 5.2 第一个场景库文件
+
+场景库是一堆 Markdown 文件，每个文件描述一个故障场景。Agent 读完知道按 `SKILL.md` 的"单场景五步"怎么调 Tool。
+
+在 `~/.hermes/skills/robustmq-chaos-test/scenarios/mqtt/` 下写第一个场景 `p0-broker-kill-leader.md`。格式是 Markdown，自然语言描述。
+
+提示词原文：
 
 ```text
 帮我在 ~/.hermes/skills/robustmq-chaos-test/scenarios/mqtt/ 下
@@ -626,20 +604,20 @@ Agent 真的去调了、返回结果回来，这个 Tool 就活着。某个 Tool
 写完不要解释,我直接看文件。
 ```
 
-#### (3) review 重点
+review 重点：
 
 - 故障类型和参数跟 `chaos.py` 接口对得上
-- 通过标准的字段名（`exit_code` ／ `lost` ／ `p99_ms`）跟 `client.py` 返回的 JSON 对得上
+- 通过标准的字段名（`exit_code`／`lost`／`p99_ms`）跟 `client.py` 返回的 JSON 对得上
 
-第一个场景写完，套同样模板写其他场景。
+第一个场景写完，套同样模板写其他场景。场景库就是这样滚出来的——一份模板，N 份填空。
 
-### 8.2 报告 Jinja2 模板
+### 5.3 报告 Jinja2 模板
 
-#### (1) 产出说明
+报告模板负责把结构固定下来，数据从 `report.py` 传进来，模板里不调 LLM。这呼应了 5.1 的铁律：模板纯 Jinja2 语法。
 
-写 `~/.hermes/skills/robustmq-chaos-test/templates/report.md.j2`，Jinja2 模板。模板负责把结构固定下来，数据从 `report.py` 传进来，模板里不调 LLM。
+写 `~/.hermes/skills/robustmq-chaos-test/templates/report.md.j2`。
 
-#### (2) 提示词原文（提示词 11）
+提示词原文：
 
 ```text
 帮我写 ~/.hermes/skills/robustmq-chaos-test/templates/report.md.j2,
@@ -661,15 +639,11 @@ sdk\_results / passed)。
 模板长度控制在 80 行以内。
 ```
 
-#### (3) review 重点
+review 重点：底部那段"协议兼容性归因"是设计文档对应到报告的真实落点。如果三种归因都不命中，模板要标"待人工分析"——AI 在边界 case 上容易偷懒，这里要手动收一下。
 
-底部那段"协议兼容性归因"是本篇设计文档对应到报告的真实落点。如果三种归因都不命中，模板要标"待人工分析"——AI 在边界 case 上容易偷懒，这里要手动收一下。
+### 5.4 套件配置 config.yml
 
-### 8.3 套件配置 config.yml
-
-#### (1) 产出说明
-
-直接抄（按 `solution.md` 决策填值）：
+`config.yml` 定义 SDK 矩阵的三档分级和 GitHub 仓库信息。直接抄（按 `solution.md` 决策填值）：
 
 ```yaml
 # ~/.hermes/skills/robustmq-chaos-test/config.yml
@@ -694,17 +668,15 @@ github:
   branch: "main"
 ```
 
-#### (2) review 重点
+review 重点：P0 档刻意只放 2 个 SDK——P0 是基础保障线，跑得越快越好，大矩阵留给 P1／P2。
 
-P0 档刻意只放 2 个 SDK——P0 是基础保障线，跑得越快越好，大矩阵留给 P1／P2。
+### 5.5 GitHub Deploy Key + cron 调度
 
-### 8.4 GitHub Deploy Key + test-reports 仓库
+最后两件事：让报告能 push 到 GitHub 仓库，让套件能按 P0／P1／P2 三档自动跑。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/e8c4d7c929e34fae71e5c8a5994037b3_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+#### (1) Deploy Key 三步
 
-#### (1) 产出说明
-
-这一步是动手命令，不是 AI 提示词。三步搞定。
+这一步是动手命令，不是 AI 提示词。三步搞定：
 
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/test-reports-deploy \
@@ -720,15 +692,11 @@ GIT_SSH_COMMAND="ssh -i ~/.ssh/test-reports-deploy" \
   git commit -m "init" && git push
 ```
 
-#### (2) review 重点
+review 重点：勾 Allow write access 不能漏（默认是只读）。第三步 push 成功这一刻 Deploy Key 链路就活了。
 
-勾 Allow write access 不能漏（默认是只读）。第三步 push 成功这一刻 Deploy Key 链路就活了。
+#### (2) cron.yml 三档调度
 
-### 8.5 cron.yml 三档调度
-
-#### (1) 产出说明
-
-直接抄：
+调度配置直接抄：
 
 ```yaml
 jobs:
@@ -746,31 +714,37 @@ jobs:
   prompt: "按 P2 跑一轮完整 SDK 矩阵"
 ```
 
-#### (2) review 重点
+review 重点：P0 MQTT 和 mq9 错开 30 分钟避免资源冲突。频率配置直接来自 `design.md` 的 P0／P1／P2 分级。
 
-P0 MQTT 和 mq9 错开 30 分钟避免资源冲突。频率配置直接来自 `design.md` 的 P0／P1／P2 分级。
+业务层填完，最后一件事就是验证整条链路真的活着——这是下一章的主题。
 
-### 8.6 场景四收尾
+## 6. 跑通验证与一键流程
 
-跑完场景四，业务层就位。耗时 1 小时。
+<img src="imgs/aicmigr-29-autotest-06-process-recap/1073261ffcb985f63b709bfddf87b98c_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-## 9. 一键跑完整流程：让 Claude Code 自主执行
+前面五章把流程拆成一步步，是为了让你看清每一步的产出和 review 点。本章先讲怎么确认整条链路真的活了，再把整套流程压成一段可粘贴的提示词，让 Claude Code 自主跑完。
 
-<img src="imgs/aicmigr-29-autotest-06-process-recap/b9f945df6c9be07e974f6e66eea54cb8_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+### 6.1 跑通验证：怎么知道整条链路活了
 
-前面四个场景一个个跑，是为了让工程师看清每一步的产出和 review 点。真正上手之后，工程师会希望一次粘贴、Claude Code 自主跑完整流程，关键决策点停下来等判断。
+业务层填完，最后一件事：验证整套系统真的活着。三件事做完就算通：
 
-### 9.1 一键流程的设计意图与范围
+| 验证项 | 怎么做 | 通过标志 |
+|--------|--------|---------|
+| 加载验证 | `hermes /skills` 和 `/tools` | 5 个 Tool 和 Skill 都在列表里 |
+| 对话跑通 | 用对话跑一次 P0 场景，7 轮调用全部展示出来 | Agent 真的按 Skill 指定的顺序调 Tool，没报错 |
+| 报告 push | 看 GitHub 仓库 | 本次 run 的报告出现在仓库里 |
 
-#### (1) 设计意图
+报告没 push 成功时，人工介入。这一步是 cron 跑完后看报告的第一眼，失败必须停下来。
 
-把整套流程压成一段提示词，整段粘贴到 Claude Code，关键决策点会停下来等工程师输入。
+### 6.2 为什么需要一键流程
 
-#### (2) 范围说明
+前五章一个个跑，是为了让读者看清每一步的产出和 review 点。<span style="color: red; font-weight: bold;">真正上手之后，你会希望一次粘贴、让 Claude Code 自主跑完整流程，关键决策点停下来等你输入。</span>
 
-一键流程不管装 Hermes 和点 GitHub UI（这两件需要人动手）。它从"已经摸过 Hermes、Hermes 已装好"这一步开始，跑到"5 个 Tool ＋ Skill ＋ 业务层全部就位"结束，最后停下来等工程师跑验证。
+一键流程的设计意图：把整套流程压成一段提示词，整段粘贴到 Claude Code。它不管装 Hermes 和点 GitHub UI（这两件需要人动手），从"已经摸过 Hermes、Hermes 已装好"这一步开始，跑到"5 个 Tool + Skill + 业务层全部就位"结束，最后停下来等你跑验证。
 
-### 9.2 一键流程提示词原文
+一个类比：一键流程相当于传统项目里的 CI/CD 流水线——人定义好关键 gate，机器自己跑。差别在于，这里的 gate 不是 lint 和测试，而是路径选择、方案 review、场景库范围这类需要人脑拍板的决策点。
+
+### 6.3 一键流程提示词原文
 
 ```text
 我刚拿到一个新需求:[把 leader 的一句话需求填这里,比如"用 Hermes Agent
@@ -837,65 +811,17 @@ P0 MQTT 和 mq9 错开 30 分钟避免资源冲突。频率配置直接来自 `d
 跑完输出 summary.md,列每个产出文件 + 我应该重点 review 的地方。
 ```
 
-粘贴完等 Claude Code 跑。整个流程 4-5 小时（含几次 review）。工程师不在的时间它在跑，工程师回来的时间它停在那里等判断。
+粘贴完等 Claude Code 跑。整个流程 4-5 小时（含几次 review）。<span style="color: red; font-weight: bold;">工程师不在的时间它在跑，工程师回来的时间它停在那里等判断。</span>
 
-### 9.3 这段提示词的设计动机
+### 6.4 这段提示词的设计动机
 
-#### (1) 第零步"路径反问"摆在第零位强制等待
+这段提示词不是随便堆出来的，每一个设计点背后都有教训：
 
-这是这套工作流相比系列第 21 篇护栏的最关键差异。系列第 21 篇是"先点产品看现状"，本篇是"第一次翻译跑完先反问路径"。两个第零步都是一类硬约束，都来自一次真实翻车留下的工程教训。
+| 设计点 | 动机 |
+|--------|------|
+| 第零步"路径反问"摆在第零位强制等待 | 这是整套工作流最关键的差异。第一次翻译跑完先反问路径，而不是闷头写代码 |
+| 关键决策点显式让 AI 停下来 | 四类决策（场景分级、路径选择、方案 review、场景库范围）AI 不能替工程师拍 |
+| 所有硬约束都明确写进提示词 | 接口签名 + 硬约束 + 已有依赖、结构化产物用代码生成不交给 LLM，这些约束散落在前面几章，一键流程里必须全部明确写出来 |
+| summary.md 集中暴露 review 点 | AI 不能完全替工程师思考，但可以把"我不确定的地方"集中到 summary 让工程师重点看 |
 
-#### (2) 关键决策点显式让 AI 停下来
-
-第一次翻译的关键选择（场景分级、报告公开度、SDK 矩阵）、路径选择（自研 vs Hermes）、第 7 节决策点 review、业务层场景库决策，这四个决策点 AI 不能替工程师拍。
-
-#### (3) 所有硬约束都明确写进提示词
-
-接口签名 ＋ 硬约束 ＋ 已有依赖、Tool 提示词重传约束、Skill 提示词重喂接口、结构化的东西用代码生成不交给 LLM。这些约束散落在系列第 24-28 篇，一键流程里要全部明确写出来。
-
-#### (4) summary.md 集中暴露 review 点
-
-AI 不能完全替工程师思考，但可以把"我不确定的地方"集中到 summary 让工程师重点看。
-
-## 10. 小结与思考
-
-<img src="imgs/aicmigr-29-autotest-06-process-recap/810fccca6e8180896852677dc5aad09a_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-### 10.1 第六部分小结
-
-第六部分到这里结束。从系列第 24 篇摸 Hermes、第 25 篇两次翻译、第 26 篇 Hello World、第 27 篇让代码长出来、第 28 篇填业务层让系统活起来，整套"基于开源项目二次开发"的方法论全部跑完。
-
-### 10.2 最值钱的教训：第二次翻译前先反问"路径选对了吗"
-
-#### (1) 教训为什么值钱
-
-AI 顺着工程师的提问给的方案不一定是最优的，工程师刚摸过的那个开源项目，可能已经把方案里 80% 的工程都做了，不用自己撸。
-
-#### (2) 教训的产物
-
-这条教训已经写进系列第 25 篇方案文档，下次类似工作流 AI 会主动提醒工程师做反问。本篇的提示词清单和一键工作流里"第零步反问"也是这条教训的产物。
-
-### 10.3 工程师在 AI 时代能交付的最值钱的东西
-
-整门系列到这里也接近尾声。一个工程师在 AI 时代能交付的最值钱的东西，不是写代码的能力，是把方向定准、把约束讲清楚、把模糊变具体的能力。
-
-AI 给工程师一个 80 分的初稿，工程师要做的不是改成 95 分，是先判断初稿是不是建立在对的方向上。方向不对，改 100 遍也是错的。
-
-### 10.4 思考
-
-#### (1) 时间消耗自评
-
-跑完整套流程大约花了多少时间？
-
-#### (2) 最卡的是哪一步
-
-最卡工程师的是哪一步：
-
-- 摸 Hermes
-- 第一次翻译
-- 第二次翻译反问
-- 代码层 Tool 编写
-- 业务层场景库
-- 跑通验证
-
-把答案记下来，下一次跑类似工作流时优先复盘这一步。
+<span style="color: red; font-weight: bold;">回头看整套工作流，核心只有一件事：在 AI 时代守住方向感。</span>第一次翻译、路径反问、Tool review、跑通验证，每一步都是在问"方向对不对"。方向对了，AI 才能真正发挥威力。

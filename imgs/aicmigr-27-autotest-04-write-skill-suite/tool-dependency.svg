@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="570" viewBox="0 0 800 570">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7A90"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { rx: 8; stroke-width: 1.5; }
+    .name { font: bold 16px "PingFang SC", "Microsoft YaHei", sans-serif; fill: #2C3A4B; text-anchor: middle; }
+    .desc { font: 13px "PingFang SC", "Microsoft YaHei", sans-serif; fill: #5A6B7E; text-anchor: middle; }
+    .edge { stroke: #6B7A90; stroke-width: 1.6; fill: none; }
+  </style>
+
+  <!-- edges -->
+  <line class="edge" x1="340" y1="104" x2="228" y2="174" marker-end="url(#arrow)"/>
+  <line class="edge" x1="460" y1="104" x2="572" y2="174" marker-end="url(#arrow)"/>
+  <line class="edge" x1="400" y1="104" x2="400" y2="314" marker-end="url(#arrow)"/>
+  <line class="edge" x1="220" y1="242" x2="330" y2="314" marker-end="url(#arrow)"/>
+  <line class="edge" x1="580" y1="242" x2="470" y2="314" marker-end="url(#arrow)"/>
+  <line class="edge" x1="400" y1="382" x2="400" y2="454" marker-end="url(#arrow)"/>
+  <line class="edge" x1="220" y1="242" x2="220" y2="454" marker-end="url(#arrow)"/>
+  <line class="edge" x1="580" y1="242" x2="580" y2="454" marker-end="url(#arrow)"/>
+  <polyline class="edge" points="280,72 50,72 50,490 116,490" marker-end="url(#arrow)"/>
+
+  <!-- cluster.py -->
+  <rect class="box" x="280" y="40" width="240" height="64" fill="#FFF3E0" stroke="#E8A33D"/>
+  <text class="name" x="400" y="67">cluster.py</text>
+  <text class="desc" x="400" y="89">起停测试集群</text>
+
+  <!-- observability.py -->
+  <rect class="box" x="90" y="178" width="260" height="64" fill="#E3F2FD" stroke="#5B8DB8"/>
+  <text class="name" x="220" y="205">observability.py</text>
+  <text class="desc" x="220" y="227">从集群进程拿日志和 metrics</text>
+
+  <!-- client.py -->
+  <rect class="box" x="460" y="178" width="240" height="64" fill="#E3F2FD" stroke="#5B8DB8"/>
+  <text class="name" x="580" y="205">client.py</text>
+  <text class="desc" x="580" y="227">连集群跑 SDK 测试</text>
+
+  <!-- chaos.py -->
+  <rect class="box" x="280" y="318" width="240" height="64" fill="#E3F2FD" stroke="#5B8DB8"/>
+  <text class="name" x="400" y="345">chaos.py</text>
+  <text class="desc" x="400" y="367">在集群上注入故障</text>
+
+  <!-- report.py -->
+  <rect class="box" x="120" y="458" width="560" height="64" fill="#E8F5E9" stroke="#66A35C"/>
+  <text class="name" x="400" y="485">report.py</text>
+  <text class="desc" x="400" y="507">整合前四个 Tool 的产出</text>
+</svg>

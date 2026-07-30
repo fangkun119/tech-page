@@ -2,8 +2,8 @@
 title: 传统项目迁AI 19：项目开发 - 后端开发
 author: fangkun119
 date: 2026-07-04 19:00:00 +0800
-categories: [AI编程, 传统项目迁AI]
-tags: [AI编程, 传统项目迁AI]
+categories: [AI编程, 传统项目AI编程]
+tags: [AI编程, 传统项目AI编程]
 pin: false
 math: true
 mermaid: true
@@ -29,11 +29,107 @@ aicmigr-19-dev-03-backend-development
 传统项目迁AI 19：项目开发 - 后端开发
 -->
 
-## 1. 全文导读
+## 1. 方案到手，为什么不能让 AI 一把梭
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/b477404f5a59a01f6c9564f80736e488_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+方案审核通过，到了动手写代码这一步。开发者手里拿着一份定稿的改造方案，第一反应往往是：把方案丢给 Claude Code，让它一口气改完，跑通就行。
 
-本篇把"后端开发"拆成两部分组织：第一部分提炼方法论（参考手册风，可裁剪 Check List），让熟练工程师快速回顾改造执行的四个原则与七个步骤；第二部分以 prompt-version-diff 案例逐步复现七步落地（教材风，深入解释 why），让初学工程师系统掌握"AI 小步改 + 人严格 review + Characterization Test 兜底"这套老项目改造打法。读者可按下图定位章节。
+这一篇先劝住你。<span style="color: red; font-weight: bold;">同样的提示词，在新项目里跑得很好；在老项目里，几乎一定会翻车。原因不在 AI 能力，而在老项目的特殊性</span> —— 每一行被 AI 顺手改掉的代码背后，都可能挂着线上调用方。本章先把两个翻车风险讲透，再用两个贯穿全文的认知锚点，回答"为什么必须慢"。
+
+### 1.1 老项目改造最大的两个风险点
+
+执行阶段最大的风险来自 AI 的两个默认行为。单看都很合理，进了老项目就埋雷到生产。这两类坑不在提示词里硬约束，就会一路埋到线上。下面就是一个例子。
+
+<img src="imgs/aicmigr-19-dev-03-backend-development/c2976f933bdf5afb28366bd50545c185_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+#### (1) AI 爱"顺手"优化老代码
+
+场景很典型：你让 AI 在 Service 里加一个 `diffVersions` 方法，复用现有的 `getByPromptKeyAndVersion`。<span style="text-decoration: underline;">AI 改完一看，觉得老方法"可以重构得更优雅" —— 顺手调整了返回类型，或改了空值处理</span>。
+
+AI 为什么会这样做？因为它的训练目标是"写得更好"，不是"写得一样"。<span style="color: red; font-weight: bold;">没有硬约束时，它默认把每一处能改的地方都改成业界最佳实践。这种倾向在新项目里是优点，在老项目里就是事故源。</span>
+
+后果是链式的：<span style="color: red; font-weight: bold;">老方法的行为一变，所有调用方全部受影响</span>。调用方不在你这次改造的文件清单里，可能跨模块、跨服务，甚至是你根本不知道的下游脚本。<span style="color: red; font-weight: bold;">改造质量的差异，往往就藏在这种很细的细节里。</span>这也是为什么必须在每一步停下来，确认 AI 的每一处调整。
+
+#### (2) AI 爱"应该"写测试断言
+
+场景同样典型：AI 写 Characterization Test 时，盯着代码 `if (result == null) return Collections.emptyList()`，凭业务直觉补上 `assertNotNull(result)`。
+
+"应该"和"实际"在这里分道扬镳。<span style="color: red; font-weight: bold;">AI 看到方法签名带 Version、带返回值，脑补出"应该返回非空集合"；但真实业务数据完全可能让方法走到 null 分支</span> —— 代码写得清清楚楚，AI 却没跑过，只是"觉得应该是这样"。<span style="color: red; font-weight: bold;">于是断言全过只是假象，真实数据一跑，测试反而失败。</span>
+
+后果比第一种更隐蔽：<span style="color: red; font-weight: bold;">测试通过给了开发者虚假的安全感，以为现有行为被锁住了，其实锁的是 AI 的脑补。</span><span style="color: red; font-weight: bold;">这种偏差一旦流到后续步骤，AI 改坏了代码两星期后才被发现，定位成本极高</span>。
+
+### 1.2 新项目 vs 老项目：慢就是快
+
+<img src="imgs/aicmigr-19-dev-03-backend-development/2288f2e0110879eb7eac30779a1815bc_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+你可能会问：如果是新项目，同样的需求一个提示词 Claude Code 就能搞定，为什么要分这么多步？
+
+这是新项目和老项目的本质区别。把两者放在一张表里对比，差异立刻清晰：
+
+| 维度      | 新项目            | 老项目                                         |
+| ------- | -------------- | ------------------------------------------- |
+| 现有行为    | 没有，一切从零写       | 已在线上跑，每个方法背后都挂着调用方                          |
+| AI 翻车后果 | 改坏了重写一遍，影响范围可控 | 改坏了就是事故，调用方可能在你看不到的地方                       |
+| 安全网     | 不需要兜底，迭代试错成本低  | 必须步步为营，越细致越好                                |
+| 正确节奏    | 一个提示词一把梭       | <span style="color: red; font-weight: bold;">小步改</span> + <span style="color: red; font-weight: bold;">人严格 review</span> + <span style="color: red; font-weight: bold;">Characterization Test 兜底</span> |
+
+<span style="color: red; font-weight: bold;">老项目改造里，细致不是浪费时间。</span><span style="color: red; font-weight: bold;">出 bug 的处理时间、返工的回滚时间，比做的时候因为细致花掉的时间多得多</span>。<span style="color: red; font-weight: bold;">慢一点、按步骤来，反而比想象中更快——这是贯穿全文的基本盘。</span>
+
+既然不能一把梭，那该用什么打法？这里给出两个贯穿后续所有章节的认知锚点，先把它们和传统软件工程里熟悉的概念对齐：
+
+**① spec ≈ 接口契约**
+
+<span style="color: red; font-weight: bold;">AI 改代码必须严格对齐方案 spec，就像传统开发里实现必须对齐接口契约一样 —— 脱离 spec 自由发挥，哪怕代码更优雅，也是违约。</span>方案文档里每一条改造点、每一个字段定义，都是约束 AI 的"契约"。
+
+**② Characterization Test ≈ 回归测试基线 / 金标准**。
+
+改造前先跑一遍现有代码，把真实输入输出记下来作为断言；改造后再跑一遍，断言通过就证明现有行为没变。<span style="color: red; font-weight: bold;">这套测试不测代码"应该做什么"，而是锁住代码"现在实际做什么"</span>——<span style="color: red; font-weight: bold;">它就是老项目改造里的回归测试基线，是发现 AI 偷偷改坏行为的金标准</span>。
+
+两个锚点合在一起，回答了本章标题的问题：方案到手不能让 AI 一把梭，是因为 AI 既可能脱离"接口契约"自由发挥，也可能用脑补替换"回归测试基线"。后续四个原则、七步走框架，本质上就是围绕这两个锚点建立的防护网。
+
+方法论见下一章——四个原则 + 七步走框架。
+
+## 2. 让 AI 对齐验证锚点：四个原则与七步走
+
+第 1 章落下了两个锚点：spec 充当接口契约，Characterization Test 充当回归测试基线。锚点解决的是"拿什么验证"，但 <span style="color: red; font-weight: bold;">AI 在改造过程中不会自动对齐锚点 —— 它可能一次改一大片、可能在新结构上自创风格、可能改完不补测试。</span>要让它始终贴着锚点走，还需要一套执行方法论。
+
+本章是这套方法论的全景索引：四个原则定方向，七步走框架定动作。每一步的 why 留给实战章，这里只做速查。
+
+### 2.1 四个原则一览
+
+<img src="imgs/aicmigr-19-dev-03-backend-development/0e9f9b97220a2dd06b89fe5f8db86824_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+四个原则本质就一句话：<span style="color: red; font-weight: bold;">让 AI 走小步、走对方向、能验证</span>。它们贯穿后面每一步改造，是给两个锚点装上的"防护网"。
+
+| **原则**           | 一句话说明                                                                                                                    | 防什么坑                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| **小步执行**         | 按改造点分批：P01-P03 一批、P04-P05 一批、P06 一批，<span style="color: red; font-weight: bold;">每批跑通 review + commit 再下一批</span>        | 改完出错<span style="color: red; font-weight: bold;">不知是哪一步出错，回退</span>也不好回            |
+| **自主修复 + 3 次兜底** | 编译报错/测试失败/依赖冲突 AI 自己修自己重试，<span style="color: red; font-weight: bold;">连续 3 次同一错误必须停下来问人</span>                          | AI 在同一坑里反复试错，烧 token 还修不对，<span style="color: red; font-weight: bold;">越改越偏</span> |
+| **复用现有结构**       | <span style="color: red; font-weight: bold;">对齐项目既有代码风格</span>（`Result<T>`、JPA `@Table`、`StudioException`），不另起一套"业界最佳实践" | AI 写出<span style="color: red; font-weight: bold;">风格割裂的代码</span>，后期维护成本高           |
+| **补测试不补到位不算完成**  | 每个改造点跑完都要有<span style="color: red; font-weight: bold;">对应测试</span>，没测试的改造点不算 Done                                        | 改造点跑通但无测试，下次改坏无人知晓，<span style="color: red; font-weight: bold;">回归</span>靠人工                                                           |
+
+<span style="color: red; font-weight: bold;">四条原则不是平行清单，而是相互咬合</span>：小步执行让"出错可定位、回退可回滚"，给自主修复圈出安全边界；自主修复把人的精力留到 review，而不是替 AI 收拾试错；复用现有结构降低 review 难度，人能一眼看出"是否超出本批范围"；补测试不补到位不算完成则把每个小步的"完成"做成可验证的硬指标。
+
+四者合起来，正好对应到第 1 章的两个锚点上 —— 复用结构守住 spec（接口契约），补测试守住 Characterization Test（回归测试基线），小步与兜底则负责把这两条防线分摊到每一步。
+
+### 2.2 七步走框架与原则的对应
+
+<img src="imgs/aicmigr-19-dev-03-backend-development/3f364dc310280d956f2c105ba6d4a61f_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+四个原则如何落地？通过七步走。
+
+七步走是把四个原则拆成具体动作的执行链路：从锁住行为开始，到提交文档结束，每一步都明确调用哪条原则。
+
+| 步骤     | 动作                                                                                                                          | 主要应用的原则                     | 这一步在做什么                                 |
+| ------ | --------------------------------------------------------------------------------------------------------------------------- | --------------------------- | --------------------------------------- |
+| Step 1 | <span style="color: red; font-weight: bold;">锁住改造前的行为</span>（Characterization Test）                                         | 补测试不补到位不算完成                 | 改造前先记录待复用方法的实际行为，建立"行为不变"的硬指标基线         |
+| Step 2 | 建 <span style="color: red; font-weight: bold;">DTO</span>（P01-P03）                                                          | 小步执行 / 复用现有结构               | 按方案第一批改造点建 DTO，字段、注释、lombok 风格与方案和项目对齐  |
+| Step 3 | 实现 <span style="color: red; font-weight: bold;">Service</span>（P04-P05）                                                     | 小步执行 / 复用现有结构 / 补测试不补到位不算完成 | 实现 Service，复用老方法不重构，跑 Step 1 测试作为兜底     |
+| Step 4 | 加 <span style="color: red; font-weight: bold;">Controller</span>（P06）                                                       | 小步执行 / 复用现有结构               | 对外暴露接口，走全局异常处理，不自行 try-catch            |
+| Step 5 | 补<span style="color: red; font-weight: bold;">单元测试</span> + <span style="color: red; font-weight: bold;">curl 验证</span>返回结构 | 补测试不补到位不算完成                 | Mockito 单元测试验证逻辑 + 真实 curl 验证 HTTP 返回结构 |
+| Step 6 | 跑通 <span style="color: red; font-weight: bold;">mvn test 全套</span>                                                          | 自主修复 + 3 次兜底 / 补测试不补到位不算完成  | 完整跑一次 `-fae`，3次修复失败后AI由人接入，最终保证 0 失败    |
+| Step 7 | <span style="color: red; font-weight: bold;">提交</span> + 文档自动更新                                                                                                                 | 复用现有结构                      | 把落地事实回灌 docs/，反映实际结构而非照抄方案预期            |
+
+下面这张总览图就是这条链路的可视化导航——Step 1 到 Step 7 的动作、对应的原则，一眼可见。七步的具体提示词、AI 产出与 review 重点，在实战章逐一展开。
 
 <img src="imgs/aicmigr-19-dev-03-backend-development/f24e9bcf94014aa8369711004014384f_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 <!--
@@ -43,226 +139,53 @@ aicmigr-19-dev-03-backend-development
 内容：Step 1 锁住改造前的行为（Characterization Test）→ Step 2 建 DTO（P01-P03）→ Step 3 实现 Service（P04-P05）→ Step 4 加 Controller（P06）→ Step 5 补单元测试 + curl 验证返回结构 → Step 6 跑通 mvn test 全套 → Step 7 提交 + 文档自动更新。整条链路贯穿四个原则：小步执行、自主修复 + 3 次兜底、复用现有结构、补测试不补到位不算完成。
 -->
 
-- 初学工程师：建议先读第一部分建立"四个原则 + 七步走"的框架，再按第二部分 Step 1-7 逐步复现，每步对照提示词与 review 重点理解 why。
-- 熟练工程师：可直接看第 3 章方法论详解表格和第 4 章可裁剪 Check List，第二部分按需查阅。
+## 3. 实战：Prompt 版本 Diff 的后端落地
 
-## 2. 总览：方案到手 ≠ 可以让 AI 一把梭
+方法论讲了四个原则和七步走，但读者真正卡住的地方不是记不住原则，而是不知道每一步具体长什么样：提示词该怎么写？AI 产出是什么形态？review 要盯哪里？这一章用一条真实案例把七步完整跑一遍，每一步的提示词原文、AI 产出、终端输出、review 重点全部展开，照着就能复现。
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/b588449ece4cb2ddd1fbf6d95b7c4554_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+案例选自方案文档 `prompt-version-diff-solution.md` 里的 P01-P06 六个后端改造点。目标是把 Prompt 版本对比的"计算职责"从前端下沉到后端：
 
-### 2.1 后端改造的真实风险面
+- 新增 `GET /api/prompt/version/diff` 接口
+- 由后端 `PromptVersionService.diffVersions` 统一拉取两个版本、算字段级差异、一次性返回结构化的 `PromptVersionDiffResult`。
 
-第 18 篇跑完，开发者手上有一份审核过的改造方案，终于到了动手写代码这一步。这一篇做后端，对应方案里的 P01-P06：建 DTO、实现 Service、加 Controller、补集成测试、跑通 mvn test。
+用传统软件工程的话说，相当于把一段散落在前端的行为收拢成一个有契约保证的后端服务。这次改造刻意不动数据库 schema，`prompt_version` 表保持原样，所有逻辑都在应用层。
 
-这一篇的提示词会写得比较细，约束比较多。原因是：本篇就是让 AI 完成后端接口的开发，越详细的提示词和约束效果越好。建议读者多琢磨提示词的内容和思路。
+### 3.1 测试代码位置与两个关键约束
 
-在执行阶段，最大的风险来自 AI 的两个默认行为：
+<img src="imgs/aicmigr-19-dev-03-backend-development/52aa10404e9a8d717b24539cbb6300af_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+为了防止阅读后文时、对一些决策不理解，本节先补充两块背景信息。
 
-#### (1) AI 爱"顺手"优化老代码
+#### (1) 测试代码位置
 
-开发者让 AI 加一个方法，AI 顺手把现有方法重构了。这种改动单看都合理，但只要现有行为变了，所有调用方都受影响——这句话其实很细节，也是 AI 经常会犯的问题。在真实的老项目改造中，改造质量的差异或者改出问题，往往都来自于这种很细的细节。这就是为什么前面花了那么多时间在整理文档和上下文，并且让开发者停下来花时间去确认、调整。
+**为什么测试要加在 server-start 而不是 server-core？**
 
-#### (2) AI 爱凭"应该"写测试断言
+因为 `PromptVersionServiceImpl` 和 `StudioException` 都在 server-start 模块下，而 server-core 并不依赖 server-start，根本访问不到这两个类。测试加到 server-core，编译都过不了。这是老项目带来的现实约束。看起来是路径选择问题，实际上决定了后面 Step 1 和 Step 5 所有测试的写法和落点。
 
-AI 写测试时断言全过，但根本没跑过现有代码。AI 经常会用业务直觉补断言——比如看代码 `if (result == null) return Collections.emptyList()`，凭直觉写 `assertNotNull(result)`，但实际跑代码可能因为业务数据导致返回 null，于是测试反而失败。这是隐性偏差在第 15 篇讲过的内容，这一篇是它在真实改造里的具体表现。
+#### (2) 关键约束
 
-两类坑不在提示词里硬约束，就会一路埋到生产。这一篇的核心思路是：AI 小步执行 + 开发者严格 review + Characterization Test 兜底。七步跑下来，后端代码可运行、有测试覆盖、不破坏现有行为，commit 后等前端联调（第 20 篇）。
+正式动手前还有第二个约束同样关键，直接决定改造能不能安全落地。
 
-### 2.2 为什么不能"一个提示词搞定"
+##### ① P05 要复用 `getByPromptKeyAndVersion`
 
-读者可能会有疑问：如果是新项目，这个需求一个提示词就搞定了，Claude Code 能跑得很好。为什么要分这么多步？
+方案文档的影响范围分析已经确认：`getByPromptKeyAndVersion` 只有 `log.info`，没有 metrics 副作用，不需要抽取 `getVersionInternal`。P05 实现时直接调用这个老方法即可。
 
-这就是新项目开发和老项目开发的区别。老项目开发需要步步为营，一步一步来，越细致越好。读者可能进一步追问：这么细不是很浪费时间吗？这其实要回到本系列最开始的命题——出 bug 处理的时间、返工的时间，比做的时候因为细致花的时间多得多。
+但"复用"二字背后藏着一个坑 —— AI 看到"复用老方法"会本能地想顺手把它重构得更优雅：改个返回类型、加个参数、调整空值处理。这些改动单看都合理，一旦现有行为变了，所有调用方都会被波及。
 
-所以老项目改造，慢就是快。别急，细致点，按照流程步骤来，反而会觉得真的很快，比想象中快。本篇的提示词很详细，不是为了让读者觉得繁琐，而是为了让读者体验到一个细致的提示词带来的效果——提示词宁多勿少，读者在实际项目中可以精简。
+这就是 <span style="color: red; font-weight: bold;">Characterization Test（特征化测试）必须在动手前先写的原因</span>。它相当于给老方法拍一张"行为快照"，用一套断言把 `getByPromptKeyAndVersion` 的现有行为锁死，后面任何一步只要这套测试红了，立刻知道行为被动了。与传统回归测试的差别在于：回归测试断言"应该是什么"，特征化测试断言"现在实际是什么"——哪怕现在实现里有 bug，也先锁住，改造只保证行为不变，不顺手修 bug。
 
-## 3. 方法论核心：四个原则 + 七步走
+##### ② 项目没有 Testcontainers，测试只能 Mockito + 加在 server-start
 
-### 3.1 改造前必须锁住现有行为
+项目当前没有 Testcontainers 基础设施（数据库Docker容器等），不能用 `@SpringBootTest` 配真实 DB。所有测试都得走 `@ExtendWith(MockitoExtension.class)` + Mockito mock Mapper 这条路。
 
-第 15 篇讲过 Characterization Test：不是测代码"应该做什么"，是锁住代码"现在实际做什么"。这一篇是它在真实改造里第一次落地。
+这条约束也是老项目带来的现实约束，它贯穿 Step 1 和 Step 5 的提示词，也是前面强调测试必须落在 server-start 的根因。
 
-为什么改造前必须锁现有行为？以这一篇的案例为例：第 18 篇的方案里 P05（实现 diffVersions）要复用 `getByPromptKeyAndVersion`。复用就意味着 AI 可能"顺手"动这个老方法——比如改个返回类型、加个参数、调整空值处理。这些改动单看都合理，但只要现有行为变了，所有调用方都受影响。
+两个约束记下来，下面进入 Step 1。
 
-锁现有行为的做法很简单：改造前先跑一次现有代码，把它的实际输入输出记下来，作为测试断言。改造后再跑一遍，断言通过就说明现有行为没变。这一步是必选项——没有 Characterization Test 兜底，AI 改坏了可能得两周后才发现。
+### 3.2 Step 1：锁住改造前的行为（Characterization Test）
 
-### 3.2 改造执行的四个原则
+这一步的作用：动手改之前，先给 `getByPromptKeyAndVersion` 加 Characterization Test，锁住它的现有行为，<span style="color: red; font-weight: bold;">建立改造前后"行为不变"的硬指标</span>。这是特征化测试技术在真实改造里的第一次落地，也是后面所有步骤的兜底机制。
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/79436246804e2f80d500e7a6f0376648_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-四个原则贯穿后面的七步，本质是一句话：让 AI 走小步、走对方向、能验证。
-
-| 原则 | 含义 | 反例（不遵守会怎样） |
-|---|---|---|
-| 小步执行 | AI 默认会一口气把 P01-P06 全改完。明确要求 AI 按改造点分批：P01-P03 一批、P04-P05 一批、P06 一批，每批跑通了 review + commit 再下一批。 | 改完出错不知道是哪一步出的，回退也不好回。 |
-| 自主修复 + 3 次兜底 | 改造过程中编译报错、测试失败、依赖冲突都是常态。AI 要能自己修、自己重试，但连续 3 次同一错误必须停下来问人（第 13 篇讲过这个机制，这里直接复用）。 | AI 在同一坑里反复试错，烧 token 还修不对，越改越偏。 |
-| 复用现有结构 | Spring AI Alibaba Admin 有自己的代码风格：统一返回结构 `Result<T>`、JPA `@Table` 风格、`StudioException` 异常处理体系。明确要求"对齐项目现有风格"。 | AI 按业界最佳实践写一套和项目不一致的代码，风格割裂，后期维护成本高。 |
-| 补测试不补到位不算完成 | 每个改造点跑完都要有对应的测试，没有测试的改造点不算 Done。 | 改造点跑通但无测试，下次改坏无人知晓，回归只能靠人工。 |
-
-### 3.3 七步走详解
-
-<img src="imgs/aicmigr-19-dev-03-backend-development/384e2d1f6c54dc1cdec49dc1c39d1d05_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-#### (1) Step 1：锁住改造前的行为（Characterization Test）
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 在动手改之前，先用 Characterization Test 锁住待复用方法（如 `getByPromptKeyAndVersion`）的现有行为，建立改造前后行为不变的硬指标。 |
-| 做什么 | 先读待复用方法的实现，记录它实际做的事；用 Mockito mock 依赖，按"实际跑出来是什么"写断言；覆盖正常返回 + 异常路径两类场景。 |
-| AI 如何思考 | AI 默认会凭"应该是什么"补断言（业务直觉），而不是凭"实际是什么"写。提示词必须明确禁止凭直觉写断言。 |
-| 关注点 | 测试覆盖场景要与待复用方法的真实分支对齐，不要凭假设加场景（比如方法不做状态过滤，就不要加"状态过滤"场景）。 |
-| review 重点 | 打开测试文件看 `assertEquals(...)` 里的预期值——看到 `assertEquals(100, ...)` 这种值，追问"100 这个值是从哪来的？是跑现有代码跑出来的，还是猜的？"。 |
-| 技巧 | 测试加在能访问到待测类的模块下（如 server-start），原因要写进提示词让 AI 不困惑；明确给出跑测试的 mvn 命令。 |
-
-这一步是第 15 篇心法在真实改造里的第一次落地，也是后面所有步骤的兜底机制。如果 Characterization Test 失败，立刻知道行为变了。
-
-#### (2) Step 2：建 DTO（P01-P03）
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 锁住现有行为后，第一批改造是把方案里的 DTO 类建出来，为 Service/Controller 提供类型基础。 |
-| 做什么 | 按方案文档（如 solution.md 第 7 节最终决策）建 DTO；字段名、类型、注释与方案对齐；加 lombok 注解（`@Data @Builder @NoArgsConstructor @AllArgsConstructor`）对齐项目现有 DTO 风格。 |
-| AI 如何思考 | AI 会默认按业界最佳实践写字段命名和 null 处理，可能与项目既有 DTO 风格（如 createTime 用 epoch ms）不一致。 |
-| 关注点 | 严格按方案的最终决策（如 D1 null 视同空字符串等）；不要顺手改其他文件；只做这一批 DTO，不要继续做下一批。 |
-| review 重点 | 字段是不是和方案文档对得上（打开方案改造点表格 + 决策点，逐字段对照）；git status 看是否只动了应该动的文件。 |
-| 技巧 | 提示词最后一句必须明确"只做 P01-P03，不要继续 P04-P05"——这是关键约束，挡住 AI 一口气改完的倾向。 |
-
-#### (3) Step 3：实现 Service（P04-P05）
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 第二批改造是 Service 接口和实现，复用待复用方法（如 `getByPromptKeyAndVersion`），不能重构它。 |
-| 做什么 | 按方案设计：调 Mapper 两次 → 校验 → 内存比较关键字段 → 组装返回；null 处理用方案约定的语义（如 `nullToEmpty`）；异常用项目的异常体系（如 `StudioException` + INVALID_PARAM/NOT_FOUND 错误码）。 |
-| AI 如何思考 | AI 看到"复用老方法"会想顺手把它重构得更优雅。提示词必须明确"不要重构 X 任何细节，只调用它"。 |
-| 关注点 | 实现完跑一遍 Step 1 的 Characterization Test，确认现有行为没偏移；有失败立刻 stop 让人介入判断。 |
-| review 重点 | git diff 看实现类，应该只有新增方法，原方法一行不动；null 处理对不对（`a != null ? a : ""` 后再 `Objects.equals` 比较，而不是 `a == null && b == null`）；Characterization Test 全过。 |
-| 技巧 | 提示词让 AI 跑 Step 1 的 Characterization Test 作为兜底，有失败就 stop——这是把"行为不变"做成硬指标的关键设计。 |
-
-#### (4) Step 4：加 Controller（P06）
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 第三批改造是 Controller 接口，对外暴露新功能。 |
-| 做什么 | 加 GET 接口；入参全部 `@RequestParam` + `@NotBlank` 校验；正常路径走项目统一的返回结构（如 `Result.success(data)`）；异常处理走全局 `@RestControllerAdvice`，不在 Controller 里 try-catch。 |
-| AI 如何思考 | AI 倾向在 Controller 里自己 try-catch + 包装错误响应。提示词必须明确禁止，让它走全局异常处理。 |
-| 关注点 | 接口路径不与现有路径冲突；不要重构 Controller 现有的其他接口；跑一遍 mvn test 确认全部通过；用 curl 跑新接口看返回结构对不对。 |
-| review 重点 | 接口签名和方案描述完全一致；git diff 看应该只有新增方法 + 一行 import；curl 返回结构与方案接口契约对得上（这一步人来跑最稳）。 |
-| 技巧 | 提示词明确"只做 P06，不要继续做集成测试，那是下一步"——分批约束在每一步都要重复。 |
-
-#### (5) Step 5：补单元测试 + curl 验证返回结构
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 新接口跑通后，分两部分验证：Service 层单元测试验证逻辑正确，curl 验证真实 HTTP 响应结构对得上接口契约。 |
-| 做什么 | 单元测试用 `@ExtendWith(MockitoExtension.class)` + Mockito mock Mapper（注意 mock 范围对——mock Mapper，不要 mock 被测的 Service 自身）；覆盖方案文档里的关键边界（如 E01/E02/E04 + happy path）；curl 用真实数据库里已有的两个版本手动跑。 |
-| AI 如何思考 | AI 容易直接 `when(...).thenReturn(mock对象)`，然后凭直觉写断言，而不是先想"这个 mock 会让被测方法实际算出什么"。 |
-| 关注点 | 单元测试和 curl 不能互相替代——单元测试发现不了 JSON 字段名拼错、类型序列化异常这类问题；断言凭"实际跑出来是什么"写。 |
-| review 重点 | 看到断言追问"这个值是跑出来的还是猜的"；边界场景齐全；mock 范围对；curl 这步不要让 AI 代劳——AI 报告"接口跑通了"不可信，自己眼睛看到 JSON 结构才算验证完。 |
-| 技巧 | 项目没有 Testcontainers 基础设施时，不要用 `@SpringBootTest` + 真实 DB，用 Mockito；测试模块要选对（能访问到 Service 和异常类的那一个）。 |
-
-curl 验证要重点盯三件事：data 字段存在（不是 null）；diffs 下三个字段都有（template / variables / modelConfig）；changed 是 boolean，valueA / valueB 是字符串（不是 null）。
-
-#### (6) Step 6：跑通 mvn test 全套
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 所有后端改造点跑完后，最后跑一遍完整 mvn test，确认整体没问题。 |
-| 做什么 | 跑完整测试（含新增的测试模块）；输出全部测试结果（通过 / 失败 / 跳过各多少）；失败的列出来，但不要让 AI 试图修，只汇报。 |
-| AI 如何思考 | AI 看到 failing test 会自己上手修，可能把测试改成"全过"而不是修代码。提示词必须明确"不要修，只汇报"。 |
-| 关注点 | 失败数为 0（任何失败都不能进下一步）；Step 1 的 Characterization Test 全过（证明现有行为没被破坏）；总测试数 = 改造前基线 + 新增。 |
-| review 重点 | 总数不对（比如基线 14 + 新增 6 = 20），说明有测试被意外删了或跳过了；Step 1 测试和改造前完全一致。 |
-| 技巧 | 让 AI 用 `-fae`（fail at end）跑全套，把所有模块的失败都暴露出来，不要一个失败就停。 |
-
-#### (7) Step 7：提交 + 文档自动更新
-
-| 维度 | 内容 |
-|---|---|
-| 目标 | 把改造方案落地的事实回灌到 docs/，让活资产闭环。 |
-| 做什么 | 更新 api-list（把"开发中"改为"已上线（后端）"，入参返回结构按实际实现校对）；更新 data-model（新 DTO 的字段如有 review 中调整过的，同步更新，注意嵌套关系）；更新 solution（在每条改造点后面标注实际 commit hash 和文件路径，方便回溯）。 |
-| AI 如何思考 | AI 容易照抄方案里的预期描述（比如"新增 dto/DiffItem.java"），但实际实现可能把 DiffItem 做成顶层 DTO 的静态内部类——文档要反映实际结构，不是照抄方案。 |
-| 关注点 | 实际执行的细节要核对（比如 DiffFields 是 PromptVersionDiffResult 的内部类，不是独立顶层类）；docs/data-model 要把嵌套关系写清楚，不然会以为要新建四个文件（实际只有三个）。 |
-| review 重点 | 输出每份文件的改动 diff；标注的实际 commit hash 和文件路径要可回溯。 |
-| 技巧 | 文档标注要反映实际结构，不要照抄 solution.md 里的预期描述——这一步呼应本系列前面挖的 docs-auto-sync Skill，可以直接调用 Skill 跑这一步。 |
-
-## 4. 可裁剪 Check List
-
-<img src="imgs/aicmigr-19-dev-03-backend-development/e9d6c002236ae1724215bdf24c20b3f1_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-### 4.1 改造前准备 Check List（动手前）
-
-- [ ] 改造方案已审核定稿，每条改造点对应明确的代码改动
-- [ ] 已识别需要复用的现有方法（如 `getByPromptKeyAndVersion`）
-- [ ] 待复用方法已写 Characterization Test，断言基于"实际跑出来"
-- [ ] Characterization Test 全过，建立了"行为不变"的硬指标基线
-- [ ] 改造点已按依赖关系分批（如 P01-P03 / P04-P05 / P06 三批）
-- [ ] 测试模块路径已确认（能访问到待测类和异常类的那一个）
-- [ ] 项目测试基础设施已确认（有无 Testcontainers 决定能否用真实 DB）
-
-### 4.2 改造执行 Check List（每批 commit 前必查）
-
-- [ ] AI 是否只改了这一批的改造点（git status / git diff 看文件清单）
-- [ ] 是否顺手重构了现有方法（让 AI 撤销）
-- [ ] 新增代码是否对齐项目现有风格（统一返回结构、异常体系、命名约定）
-- [ ] null 处理是否符合方案最终决策（如 `nullToEmpty` 语义）
-- [ ] 新增方法是否有对应测试覆盖（没测试不算 Done）
-- [ ] 断言是否凭"实际跑出来"写（review 时盯着 assertEquals 追问来源）
-- [ ] Step 1 的 Characterization Test 是否全过（行为没偏移）
-- [ ] mock 范围是否对（mock Mapper，不 mock 被测 Service 自身）
-- [ ] 边界场景是否齐全（关键边界 E01/E02/E04 + happy path 都有）
-- [ ] curl 验证是否由人来做（不轻信 AI 报告"接口跑通了"）
-- [ ] mvn test 全套失败数为 0
-- [ ] 总测试数 = 改造前基线 + 新增（无测试被意外删除或跳过）
-
-### 4.3 文档回灌 Check List（提交后）
-
-- [ ] api-list.md：新增接口已更新状态（"开发中" → "已上线（后端）"）
-- [ ] api-list.md：入参和返回结构按实际实现校对
-- [ ] data-model.md：新 DTO 字段如有 review 调整，已同步
-- [ ] data-model.md：嵌套关系（如静态内部类）已写清楚
-- [ ] solution.md：每条改造点已标注实际 commit hash 和文件路径
-- [ ] solution.md：文档反映实际结构，未照抄方案预期描述
-- [ ] CLAUDE.md：项目级约束已补入（个案决策留在 solution.md）
-
-### 4.4 防翻车 Check List（贯穿全程）
-
-- [ ] 每个提示词都明确写"不要重构现有方法"
-- [ ] 每步 commit 前 git diff 看一遍，超出范围的改动一律撤销
-- [ ] Characterization Test 作为最后兜底
-- [ ] 提示词里写硬话："不要凭'应该是什么'写断言，凭'实际跑出来是什么'写"
-- [ ] review 时看到 `assertEquals(...)` / `assertTrue(...)` 就追问"这个值/判断从哪来的"
-- [ ] 测试失败时先怀疑测试，不要先怀疑代码（基于"实际"的断言失败是信号）
-
-## 5. 案例背景：Prompt 版本 Diff 的后端落地
-
-<img src="imgs/aicmigr-19-dev-03-backend-development/85a3ad4a055af38fc0daa6a7fa60b0f9_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-### 5.1 本篇案例的起点
-
-本篇接续第 18 篇的方案文档 `prompt-version-diff-solution.md`，把 P01-P06 这六个后端改造点在 Spring AI Alibaba Admin 项目里逐步落地。这一篇对应方案里的"动手写代码"环节，跑通后等待第 20 篇做前端联调。
-
-改造目标回顾：把 Prompt 版本对比的"计算职责"从前端下沉到后端，新增 `GET /api/prompt/version/diff` 接口，由后端 `PromptVersionService.diffVersions` 统一拉取两个版本内容、计算字段级差异，并以结构化的 `PromptVersionDiffResult` 一次性返回。这次改造刻意不动数据库 schema——`prompt_version` 表保持原样，所有逻辑都在应用层完成。
-
-### 5.2 本篇案例的两个关键约束点
-
-#### (1) P05 要复用 `getByPromptKeyAndVersion`
-
-第 18 篇方案的影响范围分析已经确认：`getByPromptKeyAndVersion` 只有 `log.info`，没有 metrics 副作用，不需要抽取 `getVersionInternal`。这意味着 P05 实现时直接调用这个老方法即可——但也意味着 AI 有"顺手优化"这个老方法的风险，必须用 Characterization Test 锁住。
-
-#### (2) 测试基础设施的限制
-
-项目当前没有 Testcontainers 基础设施，不能用 `@SpringBootTest` + 真实 DB。所有测试都得用 `@ExtendWith(MockitoExtension.class)` + Mockito mock Mapper。这个约束决定了 Step 1 和 Step 5 的测试写法，也决定了测试加在哪个模块——`PromptVersionServiceImpl` 和 `StudioException` 都在 server-start，server-core 没有依赖 server-start，无法访问这些类，所以测试必须加在 server-start 模块下。
-
-## 6. 七步走实战复现
-
-本节以 prompt-version-diff 为样本，逐步复现后端改造的七步落地。每一节都会引用原始提示词与 AI 的真实产出片段（测试输出、接口签名、测试报告），并着重解释"为什么这样提问""为什么产出长这样""review 时该盯哪些点"，而非简单罗列步骤。
-
-### 6.1 Step 1：锁住改造前的行为（Characterization Test）
-
-<img src="imgs/aicmigr-19-dev-03-backend-development/5360d708238fd4b6437b1f0292a207f5_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-动手前先给 `getByPromptKeyAndVersion` 加 Characterization Test。这一步是第 15 篇心法在真实改造里的第一次落地，也是后面所有步骤的兜底机制。
-
-提示词：
+#### (1) 提示词
 
 ```
 我要改造 PromptVersionServiceImpl，在改之前需要先用 Characterization Test
@@ -284,23 +207,15 @@ curl 验证要重点盯三件事：data 字段存在（不是 null）；diffs �
 跑完汇报：测试覆盖了哪些场景、断言基于的实际值是什么、跑通的状态。
 ```
 
-这个提示词很细——基本只有理解上一节课获得的改造点，才能理解这个提示词的意思。建议读者详细琢磨。老项目改造需要的是细心、细节和经验，而这些就是在琢磨中训练出来的。
+这条提示词细到几乎只有<span style="color: red; font-weight: bold;">读过方案文档的人才能完整理解</span>。<span style="color: red; font-weight: bold;">这种密度不是啰嗦，是老项目改造的必需品</span>。可以把提示词类比成给新人的需求说明单 —— 边界写得越死，新人（AI）越没有脑补空间。关键约束有三条，每一条都对应 AI 的一个隐性偏差：
 
-为什么这个提示词要写得这么细？关键约束有三条，每一条都对应 AI 的一个隐性偏差：
+| 提示词硬约束                   | 挡住的 AI 隐性偏差                                                                                                                       | 不写会怎样                       |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| <span style="color: red; font-weight: bold;">"不要凭'应该'写断言，凭'实际'写"</span>      | AI 看代码会自动脑补<span style="color: red; font-weight: bold;">应该</span>的行为，<span style="color: red; font-weight: bold;">凭业务直觉补断言</span> | 测试全过但根本没验证现有代码，改造后行为变了也测不出来 |
+| <span style="color: red; font-weight: bold;">"不要凭假设加'状态过滤'场景"</span>         | AI 看到方法名带 Version 就想加<span style="color: red; font-weight: bold;">分页、排序、状态过滤等凭空脑补的"常见场景"</span>                                   | 凑出一堆跑不通的多余测试，反而模糊真正的行为基线    |
+| <span style="color: red; font-weight: bold;">"测试加在 server-start，路径给出"</span> | AI 不知道模块依赖方向，会<span style="color: red; font-weight: bold;">乱放位置</span>                                                            | 测试被加到 server-core，编译都过不了    |
 
-#### (1) "不要凭'应该是什么'写断言"对应 AI 的业务直觉偏差
-
-AI 看代码会自动脑补"应该"的行为，凭业务直觉补断言。这条硬话每次写测试相关提示词都要加，是挡住 AI 用"应该"代替"实际"的第一道关。
-
-#### (2) "不要凭假设加'状态过滤'场景"对应 AI 的过度覆盖倾向
-
-AI 看到方法名带 Version 就想加状态过滤、分页、排序等"常见场景"，但这个方法实际不做状态过滤。提示词显式禁止，避免 AI 凑出多余的、跑不通的测试。
-
-#### (3) "测试加在 server-start 模块下"对应 AI 的路径迷茫
-
-如果不给具体路径和原因，AI 可能把测试加到 server-core，结果编译不过——因为 server-core 不依赖 server-start。提示词把"为什么加在这里"写清楚，AI 一次就能加对位置。
-
-产出：2 个 Characterization Test，全部通过。实际跑出来的两个场景和断言依据：
+#### (2) 产出（断言依据，全部通过）
 
 ```
 场景 1（版本存在）：mock Mapper 返回一个 PromptVersionDO，调用后拿到 PromptVersionDetail。断言依据 fromDO 的实际转换逻辑：createTime 由 LocalDateTime 经系统时区转 epoch ms，previousVersion 为 null 时返回 null（不是空字符串）。
@@ -311,35 +226,46 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.573 s
 BUILD SUCCESS
 ```
 
-为什么这两个断言值得细看？因为它们都不是 AI 凭直觉写的：
+有了之前的铺垫后，效果明显。这三条断言都值得细看，因为它们都不是 AI 凭直觉写的：
 
-- `createTime` 由 `LocalDateTime` 经系统时区转 epoch ms——这个转换逻辑是 `fromDO` 里实际写的，AI 是读了源码才知道的，不是猜的。
-- `previousVersion` 为 null 时返回 null（不是空字符串）——这是 AI 容易凭直觉写成空字符串的地方，但实际行为是返回 null，断言必须反映实际。
-- `errMsg == "Prompt版本不存在: no-key@v99"`——消息格式是从源码读出来的，包含具体的 key 和 version，不是 AI 凭模板猜的。
+- `createTime` 由 `LocalDateTime` 经系统时区转 epoch ms 是 `fromDO` 里实际写的转换逻辑
+- `previousVersion` 为 null 时返回 null（而不是 AI 容易脑补的空字符串）
+- `errMsg` 包含具体的 key 和 version，是从源码里读出来的消息格式。
 
-review 重点（最关键）：
+这三个细节恰好是 AI 最容易"凭应该"写错的地方，提示词的硬约束把它们挡住了。
 
-#### (4) 断言是不是凭"实际"写的
+#### (3) review 重点
 
-打开测试文件看 `assertEquals(...)` 里的预期值。如果看到 AI 写 `assertEquals(100, result.getXxx())` 这种，追问"100 这个值是从哪来的？是跑现有代码跑出来的，还是你猜的？"。AI 经常会用业务直觉补断言，这是第 15 篇讲过的最大隐性偏差。
+| 盯什么                                                       | 出错说明什么                                                                                                     |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| <span style="color: red; font-weight: bold;">关注 `assertEquals(...)` 里的预期值（比如 `assertEquals(100, ...)`）</span> | 追问"100 这个值从哪来？跑出来的还是猜的？" —— <span style="color: red; font-weight: bold;">AI 常用业务直觉补断言，是特征化测试的最大隐性偏差</span> |
+| <span style="color: red; font-weight: bold;">跑一遍，测试是否真的能跑通</span>                                             | 测试逻辑没问题但<span style="color: red; font-weight: bold;">跑不过，说明开发者对现有行为的认知错了</span> —— 这反而是 Characterization Test 的价值，暴露"以为"和"实际"的差距                               |
+| <span style="color: red; font-weight: bold;">测试场景是否和待测方法真实分支对齐</span>                                         | <span style="color: red; font-weight: bold;">AI 可能凭假设加场景</span>（比如方法不做状态过滤却加了"状态过滤"场景），多余场景要删                                                                  |
 
-#### (5) 测试能跑通
+**commit 前必查**
 
-如果有测试失败，先不要修测试，先确认是不是测试逻辑写错了。如果测试逻辑没问题但跑不过，那是开发者对现有行为的认知错了。这反而是 Characterization Test 的价值——让开发者看到代码"实际做什么"和开发者"以为它做什么"的差距。
+- 改造方案已审核定稿，P01-P06 改造点对应明确代码改动
+- `getByPromptKeyAndVersion` 已识别为待复用方法
+- Characterization Test 全过，建立了"行为不变"基线
+- 测试模块路径在 server-start（能访问 `PromptVersionServiceImpl` 和 `StudioException`）
+- 项目确认无 Testcontainers，测试走 Mockito 路线
 
-### 6.2 Step 2：建 DTO（P01-P03）
+这一节的几条硬约束（断言凭实际、只做这一批、不重构现有方法）后面会反复出现。**首次讲透后，后续步骤只引用，不再展开论证**。
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/2847131ee9b7a1530f4d88f38bf7edad_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+### 3.3 Step 2：建 DTO（P01-P03）
 
-锁住现有行为后，正式开始改造。第一批是建三个 DTO：`PromptVersionDiffResult`、`VersionMeta`、`DiffItem`。
+<img src="imgs/aicmigr-19-dev-03-backend-development/51aa044b972b7dd9e09a6bfdc94ff059_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-提示词：
+锁住现有行为后，正式开始改造。第一批把方案里的三个 DTO 建出来：`PromptVersionDiffResult`、`VersionMeta`、`DiffItem`，给后面的 Service 和 Controller 提供类型基础。
+
+**提示词**
 
 ```
 基于 docs/requirements/prompt-version-diff-solution.md 的 P01-P03，
 建三个 DTO 类：PromptVersionDiffResult、VersionMeta、DiffItem。
 
 要求：
+
 - 严格按 solution.md 第 7 节的最终决策（D1 null 视同空字符串等）
 - 字段名、类型、注释和 solution.md 对齐
 - 对齐项目现有 DTO 风格（lombok 注解、字段命名、null 处理）
@@ -349,34 +275,48 @@ review 重点（最关键）：
 只做 P01-P03 这三个 DTO，做完汇报，不要继续做 P04-P05。
 ```
 
-最后一句"只做 P01-P03，不要继续 P04-P05"是关键约束。AI 默认会一口气改完，明确告诉它停在这一步。产出是 3 个新建的 DTO 文件（具体代码可查看代码仓库，这里就不展开细讲了），全部加 `@Data @Builder @NoArgsConstructor @AllArgsConstructor`，字段对齐 solution.md 文件的内容。
+**最后一句**"<span style="color: red; font-weight: bold;">只做 P01-P03，不要继续 P04-P05</span>"是这一步的关键约束。
 
-为什么这条"只做这一批"的约束每一步都要写？因为 AI 有"显得能干"的倾向——看到方案文档列了 P01-P06 六个改造点，会默认全部做完汇报，让开发者觉得它效率高。但分批执行的真正价值是"出错可定位、回退可回滚"。如果 AI 一把梭改完六个改造点，某一处出错，开发者不知道是哪一步引入的；git diff 也很难精细回退。每批 review + commit 后再下一批，每一步都是干净的提交，回退和定位都简单。
+**为什么"只做这一批"必须每步都写？** AI 有"显得能干"的倾向 —— 看到方案列了 P01-P06 六个改造点，会默认一口气全做完来展示效率。但<span style="color: red; font-weight: bold;">分批执行的真正价值是"出错可定位、回退可回滚"</span>。
 
-review 重点：
+这和传统版本控制里的小步提交是同一个道理：
 
-#### (1) 字段是不是和 solution.md 对得上
+- 每批 review + commit 之后再下一批，每一步都是干净提交
+- 出问题就退回上一步
+-
+<span style="color: red; font-weight: bold;">如果 AI 一把梭改完六个改造点，某一处出错时开发者根本不知道是哪一步引入的，`git diff` 也无法精细回退。</span>这条原则后面 Step 3/4/5 都会以"只做这一批"的形式重复，不再展开论证。
 
-打开 solution.md 第 3 节改造点表格 + 第 6 节决策点，逐字段对照 AI 写的 DTO。重点是 `createTime` 是否用 epoch ms（与现有 `PromptVersionDetail.createTime` 一致），null 处理是否符合 D1 决策。
+**产出**：三个新建的 DTO 文件，全部加 `@Data @Builder @NoArgsConstructor @AllArgsConstructor`，字段对齐 solution.md。
 
-#### (2) 有没有顺手改其他文件
+**review 重点**
 
-git status 看一下，应该只有三个新建的 java 文件。如果发现 AI 还动了别的文件，让它解释为什么改，然后让它撤销不必要的改动。AI 的"顺手优化"哪怕看起来真的更好，也不要在这次改造里做——优化是另一个改造任务，单独走流程。
+| 盯什么                                         | 出错说明什么                                           |
+| ------------------------------------------- | ------------------------------------------------ |
+| 字段是不是和 solution.md 第 3 节改造点表格 + 第 6 节决策点对得上 | 重点核对 `createTime` 是否用 epoch ms、null 处理<span style="color: red; font-weight: bold;">是否符合 D1 决策</span> |
+| `git status` 是否只有三个新建 Java 文件               | <span style="color: red; font-weight: bold;">顺手改了别的文件</span>就要让 AI 撤销——优化是另一个改造任务，单独走流程              |
 
-### 6.3 Step 3：实现 Service（P04-P05）
+**commit 前必查**
 
-第二批是 Service 接口和实现。
+- AI 只改了 P01-P03 这一批改造点（`git status` / `git diff` 看文件清单）
+- 没有顺手重构现有方法
+- 新增 DTO 对齐项目现有风格（lombok、命名、null 处理）
+- `createTime` 用 epoch ms（与现有 `PromptVersionDetail.createTime` 一致）
 
-提示词：
+### 3.4 Step 3：实现 Service（P04-P05）
+
+DTO 建好后，第二批是 Service 接口和实现，复用 `getByPromptKeyAndVersion`，但绝不能重构它。
+
+**提示词**
 
 ```
 基于 solution.md 的 P04-P05，给 PromptVersionService 加 diffVersions 方法
 + 在 PromptVersionServiceImpl 里实现。
 
 要求：
+
 - 严格按 solution.md 步骤 2 的设计：调 Mapper 两次 → 校验 → 内存比较三字段 → 组装返回
 - null 处理用 Objects.equals(nullToEmpty(a), nullToEmpty(b))，对应 D1 决策
-- 复用 getByPromptKeyAndVersion 现有方法（18 讲 solution.md 影响范围第 2 条
+- 复用 getByPromptKeyAndVersion 现有方法（solution.md 影响范围第 2 条
   已确认该方法只有 log.info 无 metrics 副作用，不需要抽 getVersionInternal）
 - 不要重构 getByPromptKeyAndVersion 任何细节，只调用它
 - 异常用 StudioException + INVALID_PARAM/NOT_FOUND 错误码
@@ -387,11 +327,11 @@ git status 看一下，应该只有三个新建的 java 文件。如果发现 AI
 只做 P04-P05，不要做 P06。
 ```
 
-注意提示词最后一段：让 AI 跑 Step 1 的 Characterization Test，有失败就 stop，这是兜底机制。Characterization Test 失败，说明改造意外破坏了现有行为，必须人介入判断。
+提示词**最后一段**把 "<span style="color: red; font-weight: bold;">跑 Step 1 的 Characterization Test</span>" 写成了硬约束——有失败就 stop。
 
-为什么把"跑 Characterization Test"写进提示词而不是只靠开发者事后检查？因为这是把"行为不变"做成 AI 的硬约束。如果只靠开发者事后 git diff 看，AI 偷偷改了 `getByPromptKeyAndVersion` 的某个细节（比如调整空值处理），开发者可能看不出来——但 Characterization Test 会立刻失败。把测试跑通作为"完成 P04-P05"的前置条件，等于让 AI 自己卡住自己，不会带着失败的测试往下走。
+为什么把跑测试写进提示词，而不是只靠开发者事后 `git diff` 检查？因为 AI 如果偷偷改了 `getByPromptKeyAndVersion` 的某个细节（比如调整空值处理），`git diff` 里很难一眼看出来，但 Characterization Test 会立刻失败。把测试跑通作为"完成 P04-P05"的前置条件，等于让 AI 自己卡住自己，不会带着失败的测试往下走。<span style="color: red; font-weight: bold;">这就是把"行为不变"做成 AI 硬约束的关键设计</span>。
 
-这里实际有 3 个实现要点（执行后记录）：
+**产出**（实现要点，执行后记录）
 
 ```
 diffVersions 先校验 versionA == versionB（抛 INVALID_PARAM），再查 promptMapper 确认 promptKey 存在（抛 NOT_FOUND），再两次调 Mapper 查版本（各自抛 NOT_FOUND），最后内存比较组装返回。
@@ -403,30 +343,34 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
-review 重点：
+**review 重点**
 
-#### (1) 有没有动 `getByPromptKeyAndVersion`
+| 盯什么                                                                                                          | 出错说明什么                                                                                      |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `git diff` 看 `PromptVersionServiceImpl` 是否只有新增 `diffVersions` + 两个私有辅助方法（`toVersionMeta`、`diffItem`），原方法一行不动 | AI 哪怕只动了格式化也要让它撤销——<span style="color: red; font-weight: bold;">"顺手优化"的口子不能开</span>         |
+| `diffItem` 里 null 处理是不是 `a != null ? a : ""` 后再 `Objects.equals` 比较                                          | AI 容易凭直觉写成 `a == null && b == null`，语义完全不同：<span style="color: red; font-weight: bold;">D1 决策</span>是"null 视同空字符串"，两者在 valueA/valueB 字段填充值上完全不同 |
+| Step 1 的 Characterization Test 全过                                                                            | 这是硬指标，证明 `getByPromptKeyAndVersion` <span style="color: red; font-weight: bold;">现有行为没被破坏</span>                                                |
 
-git diff 看 `PromptVersionServiceImpl`，应该只有新增 `diffVersions` 方法以及两个私有辅助方法（`toVersionMeta`、`diffItem`），原方法一行不动。如果 AI 动了原方法（哪怕只是格式化），让它撤销。
+**commit 前必查**
 
-#### (2) null 处理对不对
+- AI 只改了 P04-P05 这一批（`git status` 核对文件清单）
+- null 处理符合 D1 决策（`nullToEmpty` 语义）
+- 异常用 `StudioException` + `INVALID_PARAM`/`NOT_FOUND` 错误码
+- Step 1 的 Characterization Test 全过（行为没偏移）
 
-打开 `diffItem` 实现，确认空值处理是 `a != null ? a : ""` 后再 `Objects.equals` 比较，而不是 AI 凭直觉用的 `a == null && b == null`（后者语义完全不同）。这是 AI 最容易写错的地方——它会凭直觉认为"两个 null 就是没变"，但方案的 D1 决策是"null 视同空字符串"，两者在 valueA/valueB 字段的填充值上完全不同。
+### 3.5 Step 4：加 Controller（P06）
 
-#### (3) Characterization Test 全过
+<img src="imgs/aicmigr-19-dev-03-backend-development/54bce4f61cec35c688ae1fe344b4e049_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-这是硬指标。Step 1 的两个测试和改造前完全一致，证明 `getByPromptKeyAndVersion` 现有行为没被破坏。
+Service 跑通后，第三批是 Controller 接口，对外暴露新功能。
 
-### 6.4 Step 4：加 Controller（P06）
-
-<img src="imgs/aicmigr-19-dev-03-backend-development/0241f362e4b5c5a83abc00b413022110_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-提示词：
+**提示词**
 
 ```
 基于 solution.md 的 P06，给 PromptController 加 GET /api/prompt/version/diff 接口。
 
 要求：
+
 - 三个入参：promptKey、versionA、versionB，全部 @RequestParam，加 @NotBlank
 - 正常路径返回 Result.success(data)，对齐 PromptController 现有接口写法
 - 异常处理走全局 GlobalExceptionHandler（@RestControllerAdvice），
@@ -440,9 +384,15 @@ git diff 看 `PromptVersionServiceImpl`，应该只有新增 `diffVersions` 方�
 只做 P06，不要继续做集成测试，那是下一步。
 ```
 
-产出：`PromptController` 新增一个方法，import 新增 `PromptVersionDiffResult`，其余接口零改动。Characterization Test 继续全过。
+**为什么不能在 Controller 里 try-catch（要求三）？** 
 
-实际加进去的接口签名：
+因为老项目已经有了全局异常处理切面（`@RestControllerAdvice`）相当于一个统一错误响应拦截器，把项目里所有 `StudioException` 接住并统一包装成标准错误响应结构，前端只需要按一套结构解析。
+
+如果让 AI 在 Controller 里自己 try-catch + 包装错误响应，就会出现两套并存的错误响应结构——一套全局的、一套这个 Controller 自己的，前端联调时不知道该按哪套解析。
+
+提示词把这一条写死，强制 AI 走全局异常处理，保持错误响应结构统一。
+
+**产出**（接口签名）
 
 ```java
 @GetMapping("/prompt/version/diff")
@@ -460,29 +410,32 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
-为什么提示词要明确"不要在 Controller 里 try-catch"？因为项目有全局 `@RestControllerAdvice`（`GlobalExceptionHandler`），统一处理 `StudioException` 并包装成标准的错误响应结构。如果 AI 在 Controller 里自己 try-catch + 包装错误响应，会出现两套错误响应结构——一套是全局的，一套是这个 Controller 自己的，前端联调时不知道按哪套解析。提示词把这一条写死，强制 AI 走全局异常处理，保持错误响应结构统一。
+**review 重点**
 
-review 重点：
+| 盯什么                                                                                      | 出错说明什么                                                                                  |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| <span style="color: red; font-weight: bold;">接口签名和</span> solution.md 第 3 节 P06 描述是否完全一致 | 三个 `@RequestParam` + `@NotBlank`，返回 `Result<PromptVersionDiffResult>`                   |
+| `git diff` 看 `PromptController.java` 是否只有新增方法 + 一行 import                                | <span style="color: red; font-weight: bold;">其余接口一字不动</span>（同 3.3 节"不重构现有方法"原则）                                                            |
+| Controller 里是否出现 try-catch                                                               | 出现就让 AI 撤销 —— 异常必须用老代码的全局切面，<span style="color: red; font-weight: bold;">AI不擅自添加</span> |
+| 手动 curl 返回的<span style="color: red; font-weight: bold;"> JSON 结构是否和接口契约对得上</span>        | AI 报告"接口跑通了"不可信，这一步人来跑最稳                                                                |
 
-#### (1) 接口签名对
+**commit 前必查**
 
-和 solution.md 第 3 节里 P06 的描述完全一致：三个 `@RequestParam` + `@NotBlank`，返回 `Result<PromptVersionDiffResult>`。
+- AI 只改了 P06（`git status` 核对）
+- 异常走全局 `@RestControllerAdvice`，不在 Controller 里 try-catch
+- 接口路径 `/api/prompt/version/diff` 不与现有 `/api/prompt/version` 冲突
+- mvn test 全部通过（含 Step 1 的 Characterization Test）
 
-#### (2) 没有重构其他接口
+### 3.6 Step 5：补单元测试 + curl 验证返回结构
 
-git diff `PromptController.java`，应该只有新增方法 + 一行 import，其余内容一字不动。
+新接口跑通后，验证分两部分：
 
-#### (3) curl 返回结构对
+- Service 层单元测试验证逻辑正确
+- Curl 验证真实 HTTP 响应结构对得上接口契约
+ 
+两者不能互相替代——单元测试发现不了 JSON 字段名拼错、类型序列化异常这类问题。
 
-手动 curl 一下，看返回 JSON 结构和 solution.md 第 3 节的接口契约对得上。这一步人来做：AI 报告"接口跑通了"不一定可信，自己跑一次最稳。
-
-### 6.5 Step 5：补单元测试 + curl 验证返回结构
-
-新接口跑通了，分两部分：先补 Service 层单元测试，再 curl 验证真实 HTTP 响应结构。
-
-两者不能互相替代：单元测试验证 Service 逻辑正确，curl 验证序列化到 JSON 的结构对得上接口契约。JSON 字段名拼错、类型序列化异常这类问题单元测试发现不了。
-
-提示词（单元测试）：
+**提示词**（单元测试），其中 prompt-version-diff.md 是之前建立 safe guard 时挖掘的出关键边界
 
 ```
 给 diffVersions 补单元测试，测试加在 server-start 模块下（原因同 Step 1：
@@ -493,7 +446,8 @@ PromptVersionServiceDiffTest.java（如果不存在就新建）。
 用 @ExtendWith(MockitoExtension.class) + Mockito mock PromptVersionMapper 和 PromptMapper
 （diffVersions 内部调了两个 Mapper，两个都要 mock）。
 
-覆盖需求文档 prompt-version-diff.md 第 4 节的关键边界：
+覆盖需求文档 prompt-version-diff.md 
+
 * E01 versionA == versionB → 抛 StudioException(INVALID_PARAM)
 * E02 versionA 不存在 → 抛 StudioException(NOT_FOUND)，errMsg 含版本号
 * E04 template 为 null → valueA/valueB 返回 ""，changed=false（两个都是空字符串）
@@ -507,46 +461,35 @@ PromptVersionServiceDiffTest.java（如果不存在就新建）。
 汇报每个测试覆盖的场景和实际跑通的状态。
 ```
 
-产出：4 个单元测试，全部通过。
+断言约束和模块路径约束同 3.2 节，不再展开。
+
+**产出**（单测输出）
 
 ```
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.601 s
 BUILD SUCCESS
 ```
 
-四个场景的实际验证结果：
+这四个边界不是随便选的，每一条都对应 `diffVersions` 的一个核心决策点：
 
-```
-E01：diffVersions("key","v1","v1") → 抛 StudioException，errCode=400，无需查 DB
-E02：mock Mapper 返回 null for versionA → 抛 StudioException，errCode=404，errMsg 包含版本号 "v1"
-E04：两版本 template 均为 null → valueA=""、valueB=""、changed=false（空字符串相等）
-happy path：template 不同 → changed=true；variables 相同 → changed=false；promptKey/version/status字段值与 mock 数据一致
-```
+| 边界场景 | 实际验证结果 | 考查的核心决策点 |
+|---|---|---|
+| E01：`diffVersions("key","v1","v1")` | 抛 `StudioException`，errCode=400，无需查 DB | 参数校验顺序——先校验 `versionA == versionB`，避免无意义的 DB 查询 |
+| E02：mock Mapper 返回 null for versionA | 抛 `StudioException`，errCode=404，errMsg 包含版本号 "v1" | 版本不存在的错误码——`NOT_FOUND` 而不是 `INVALID_PARAM`，错误码语义要准确 |
+| E04：两版本 template 均为 null | valueA=""、valueB=""、changed=false（空字符串相等） | D1 决策"null 视同空字符串"——两个版本 template 都为 null 时 valueA/valueB 都是 `""`（不是 null），最容易写错 |
+| happy path：template 不同 | template changed=true；variables 相同 changed=false；promptKey/version/status 字段值与 mock 数据一致 | 内存比较逻辑——三字段分别比较、互不影响 |
 
-为什么这四个边界值得覆盖？因为它们对应了 `diffVersions` 的三个核心决策点：
+**review 重点**
 
-- E01 对应"参数校验顺序"——先校验 `versionA == versionB`，避免无意义的 DB 查询。
-- E02 对应"版本不存在的错误码"——`NOT_FOUND` 而不是 `INVALID_PARAM`，错误码语义要准确。
-- E04 对应 D1 决策"null 视同空字符串"——两个版本 template 都为 null 时，valueA/valueB 都是 `""`（不是 null），changed 是 false（两个空字符串相等）。这条最容易写错，是 D1 决策的真实落地。
-- happy path 对应"内存比较逻辑"——template 不同 changed=true，variables 相同 changed=false，证明三字段分别比较、互不影响。
+| 盯什么                                     | 出错说明什么                                                                                                                                                   |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assertEquals(...)` 追问"这个值是跑出来的还是猜的"    | AI 容易直接 `when(...).thenReturn(mock对象)` 后<span style="color: red; font-weight: bold;">凭直觉写断言</span>，而不是先想"这个 mock 会让 diffVersions 实际算出什么"                 |
+| 边界场景是否齐全（E01/E02/E04 + happy path 四条都有） | <span style="color: red; font-weight: bold;">边界场景缺失</span>，少一条就让 AI 补                                                                                    |
+| Mockito mock 范围对不对                      | mock `PromptVersionMapper` 和 `PromptMapper`，不要 mock `PromptVersionService` 自身 —— 测的是真实 `diffVersions` 实现，不是 mock 出来的壳。<span style="color: red; font-weight: bold;">AI 可能会偷懒、造一个空壳来替代测试对象、然后对着这个空壳跑测试</span>。 |
 
-review 重点：
+**curl 验证（人来做）**
 
-#### (1) 断言基于实际行为
-
-看到 `assertEquals(...)` 追问 AI"这个值是跑出来的还是猜的"。Mockito 测试里 AI 容易直接 `when(...).thenReturn(mock对象)`，然后凭直觉写断言，而不是先想"这个 mock 会让 diffVersions 实际算出什么"。
-
-#### (2) 边界场景齐全
-
-E01/E02/E04 + happy path 四条都有，少一条让 AI 补。
-
-#### (3) Mockito mock 范围对
-
-mock `PromptVersionMapper` 和 `PromptMapper`，不要 mock `PromptVersionService` 自身，测的是真实 `diffVersions` 实现，不是 mock 出来的壳。
-
-curl 验证（人来做）：
-
-启动应用后，用真实数据库里已有的两个版本手动 curl，看实际返回的 JSON 结构和接口契约对不对：
+启动应用后，用真实数据库里已有的两个版本手动 curl，看返回 JSON 结构和接口契约对不对：
 
 ```bash
 TOKEN=$(curl -s \
@@ -561,7 +504,7 @@ curl -s \
   | jq
 ```
 
-预期返回结构（对照 solution.md 第 2 节接口契约）：
+**预期返回结构**（对照 solution.md 第 2 节接口契约）
 
 ```json
 {
@@ -580,27 +523,28 @@ curl -s \
 }
 ```
 
-curl 这步不要让 AI 代劳：AI 报告"接口跑通了"不可信，自己眼睛看到 JSON 结构才算验证完。重点盯三件事：
+<span style="color: red; font-weight: bold;">curl 这步不要让 AI 代劳：AI 报告"接口跑通了"不可信，自己眼睛看到 JSON 结构才算验证完。</span>重点盯三件事：
 
-##### ① data 字段存在（不是 null）
+| 盯什么                                                 | 出错说明什么                                                                                |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `data` 字段存在（不是 null）                                | data 是 null 说明 Controller 返回结构有问题，或者序列化失败                                             |
+| `diffs` 下三个字段都有（template / variables / modelConfig） | 少一个字段说明 DTO 结构和接口契约不一致——可能漏字段或字段名拼错                                                   |
+| `changed` 是 boolean，valueA / valueB 是字符串（不是 null）   | `changed` 是字符串 `"true"` 或 valueA 是 null，说明类型序列化有问题，或者 D1 决策没落地（valueA 应该是空字符串不是 null） |
 
-如果 data 是 null，说明 Controller 返回结构有问题，或者序列化失败。
+**commit 前必查**
 
-##### ② diffs 下三个字段都有（template / variables / modelConfig）
+- 单元测试断言凭"实际跑出来"写（见 3.2 节硬约束）
+- mock 范围对（mock Mapper，不 mock 被测 Service 自身）
+- 边界场景齐全（E01/E02/E04 + happy path）
+- curl 由人来做，眼睛看到 JSON 结构才算验证完
 
-少一个字段说明 DTO 结构和接口契约不一致，可能是漏了字段或者字段名拼错。
+### 3.7 Step 6：跑通 mvn test 全套
 
-##### ③ changed 是 boolean，valueA / valueB 是字符串（不是 null）
+<img src="imgs/aicmigr-19-dev-03-backend-development/56b49711ac1aefbafbdf36fce05e769f_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-如果 changed 是字符串 `"true"` 或者 valueA 是 null，说明类型序列化有问题，或者 D1 决策没落地（valueA 应该是空字符串不是 null）。
+到这一步所有后端改造点（P01-P06）跑完了，最后跑一遍完整 mvn test，确认整体没问题。
 
-### 6.6 Step 6：跑通 mvn test 全套
-
-<img src="imgs/aicmigr-19-dev-03-backend-development/48f5dfecf68937dbe97d6a450afcdf3a_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-到这一步所有后端改造点（P01-P06）跑完了。最后跑一遍完整 mvn test，确认整体没问题。
-
-提示词：
+**提示词**
 
 ```
 跑一遍完整测试，含新增的 server-start 测试：
@@ -612,9 +556,11 @@ mvn test -pl spring-ai-alibaba-admin-server-runtime,spring-ai-alibaba-admin-serv
 失败的列出来，但不要试图修，只汇报。
 ```
 
-为什么提示词明确"不要试图修，只汇报"？因为 AI 看到 failing test 会自己上手改，最常见的是把测试改成"全过"而不是修代码——比如把 `assertEquals(expected, actual)` 改成 `assertEquals(actual, actual)`，测试永远过但根本没验证任何东西。提示词明确"只汇报"，让开发者拿到失败的清单后自己判断——是测试错了还是代码错了。
+**为什么要明确"不要试图修，只汇报"？** <span style="color: red; font-weight: bold;">AI 看到 failing test 会本能上手改，最常见的手法是把测试改成"全过"而不是修代码</span> —— 比如把 `assertEquals(expected, actual)` 改成 `assertEquals(actual, actual)`，测试永远过但根本没验证任何东西。
 
-产出：完整测试报告，0 失败。
+提示词明确"只汇报"，让开发者拿到失败清单后自己判断：是测试错了还是代码错了。`-fae`（<span style="color: red; font-weight: bold;">fail at end</span>）参数让 mvn 跑完全套再汇总，避免一个失败就停，把所有模块的问题一次性暴露出来。
+
+**产出**（完整测试报告）
 
 ```
 server-core:
@@ -636,25 +582,25 @@ Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
 内容：完整测试报告显示 server-core 14 个测试全过（改造前基线），server-start 新增 6 个测试全过（2 个 Characterization Test + 4 个 diffVersions 单元测试），合计 20 个测试 0 失败，BUILD SUCCESS。证明后端改造完成且未破坏现有行为。
 -->
 
-review 重点：
+**review 重点**
 
-#### (1) 失败数为 0
+| 盯什么                                          | 出错说明什么                                       |
+| -------------------------------------------- | -------------------------------------------- |
+| 失败数为 0                                       | 任何失败都不能进下一步                                  |
+| `PromptVersionServiceImplTest` 2 个测试和改造前完全一致 | 证明 `getByPromptKeyAndVersion` 现有行为没被破坏（兜底验证） |
+| 总测试数 = 改造前基线 + 新增（14 + 6 = 20）               | 总数不对说明有测试被意外删了或跳过了——这是 AI 偷偷删测试的常见信号，必须追查    |
 
-任何失败都不能进下一步。
+**commit 前必查**
 
-#### (2) Step 1 的 Characterization Test 全过
+- mvn test 全套失败数为 0
+- 总测试数 = 改造前基线（server-core 14）+ 新增（server-start 6）= 20
+- Step 1 的 Characterization Test 改造前后结果一致
 
-`PromptVersionServiceImplTest` 2 个测试和改造前完全一致，证明 `getByPromptKeyAndVersion` 现有行为没被破坏。
+### 3.8 Step 7：提交 + 文档自动更新
 
-#### (3) 总测试数 = 改造前 + 新增
+最后一步把改造方案落地的事实回灌到 docs/，让活资产闭环。这一步的本质是：<span style="color: red; font-weight: bold;">方案是改造前的预期，文档是改造后的现实</span>，两者一定会有差异，文档必须反映现实而不是照抄方案。
 
-改造前基线 14 个（server-core），新增 6 个（server-start：2 个 Characterization Test + 4 个 `diffVersions` 单元测试），合计 20 个。如果总数不对，说明有测试被意外删了或跳过了——这是 AI 偷偷删测试的常见信号，必须追查。
-
-### 6.7 Step 7：提交 + 文档自动更新
-
-最后一步：把改造方案落地的事实回灌到 docs/。
-
-提示词：
+**提示词**
 
 ```
 后端改造跑通了（P01-P06 + 测试）。更新相关 docs/ 资产：
@@ -672,127 +618,167 @@ review 重点：
 输出每份文件的改动 diff。
 ```
 
-产出：三份文档同步更新。
+**为什么强调"反映实际结构，不要照抄方案"？** 因为<span style="color: red; font-weight: bold;">方案是改造前的预期，文档是改造后的现实</span>，两者一定会有差异。实际执行时就遇到了一个：solution.md 第 3 节写的是"P03 新增 dto/DiffItem.java"，但实际实现里 `DiffFields` 没有独立成顶层类，而是 `PromptVersionDiffResult` 的静态内部类（`DiffFields` 只服务于 `PromptVersionDiffResult`，没必要独立）。文档必须反映这个实际选择，不然下次读文档的人会以为漏建了一个文件。
 
-实际执行时有一个细节要核对：`PromptVersionDiffResult` 里用了静态内部类 `DiffFields`，而不是独立顶层类。docs/data-model.md 里要把这个嵌套关系写清楚，不然会以为要新建四个文件（实际只有三个）。
+这一步最常见的差异可以归成三类：
 
-另外 solution.md 里第 3 节写的是"P03 新增 dto/DiffItem.java"，但实际实现里没有独立的 `DiffFields.java`，`DiffFields` 是 `PromptVersionDiffResult` 的内部类。文档标注时要反映这个实际结构，不要照抄 solution.md 里的预期描述。
+| 差异类型 | 典型表现 | 文档处理 |
+|---|---|---|
+| 嵌套关系变了 | 方案写"独立顶层类"，实际实现成"静态内部类"（如 `DiffFields` 是 `PromptVersionDiffResult` 的内部类） | 文档反映这个实际选择，说明嵌套关系 |
+| 文件数变了 | 方案列了 4 个文件（3 个 DTO + 1 个 DiffFields），实际只有 3 个（`DiffFields` 是其中一个 DTO 的内部类） | data-model.md 把嵌套关系写清楚，避免误以为漏建文件 |
+| 字段名/类型微调 | review 中把 `Long` 改成 `long`、把 `String` 改成更具体的类型 | 同步到 data-model.md，否则下次改造会基于过时的字段定义做决策 |
 
-为什么这一步要强调"反映实际结构，不要照抄方案"？因为方案是改造前的预期，文档是改造后的现实，两者会有差异。最常见的差异是：
+这一步呼应 docs-auto-sync 这类自动化回灌工具——可以直接调用 Skill 跑这一步，效果一样。跑完后开发者手里所有 docs/ 资产被这一轮深度思考反向丰富了一轮。
 
-#### (1) 嵌套关系变了
+**文档回灌 Check List**
 
-方案写"独立顶层类"，实际实现里发现"静态内部类"更紧凑（比如 `DiffFields` 只服务于 `PromptVersionDiffResult`，没必要独立成顶层类）。文档要反映这个实际选择。
+- `api-list.md`：新增接口状态从"开发中"改为"已上线（后端）"
+- `api-list.md`：入参和返回结构按实际实现校对
+- `data-model.md`：新 DTO 字段如有 review 调整，已同步
+- `data-model.md`：嵌套关系（如静态内部类 `DiffFields`）已写清楚
+- `solution.md`：每条改造点（P01-P06）已标注实际 commit hash 和文件路径
+- `solution.md`：文档反映实际结构，未照抄方案预期描述
 
-#### (2) 文件数变了
+整轮跑完，开发者手上的产出：三个新 DTO（`PromptVersionDiffResult` 含静态内部类 `DiffFields`、`VersionMeta`、`DiffItem`）、Service 新增 `diffVersions` + 两个私有辅助方法（原方法零改动）、Controller 新增 `GET /api/prompt/version/diff`、6 个测试（2 个 Characterization Test + 4 个 `diffVersions` 单元测试）、mvn test 全套 20 个测试 0 失败、三份文档同步更新。commit 后等前端联调。
 
-方案列了 4 个文件（3 个 DTO + 1 个 DiffFields），实际只有 3 个文件（`DiffFields` 是其中一个 DTO 的内部类）。文档要把嵌套关系写清楚，不然下次读文档的人会以为漏建了一个文件。
+贯穿这七步有两个翻车点：AI 顺手优化老代码、AI 用"应该"而不是"实际"写测试断言。这两个翻车点贯穿全程，下一章独立讲。
 
-#### (3) 字段名/类型微调
+## 4. 两个贯穿全程的翻车点
 
-review 中调整过的字段（比如把 `Long` 改成 `long`、把 `String` 改成更具体的类型）要同步到 data-model.md，否则下次改造会基于过时的字段定义做决策。
+后端改造里有两个翻车点贯穿全程：AI 顺手优化老代码、AI 用"应该"而不是"实际"写测试断言。把它们独立成章，是为了让你在每一步都能回来对照——它们不在某一步出现，而是每一步都可能复发。
 
-这一步呼应本系列前面挖的 docs-auto-sync Skill——可以直接调用 Skill 跑这一步，效果一样。跑完这一步，开发者手里所有 docs/ 资产被这一轮深度思考反向丰富了一轮。
+### 4.1 翻车一：AI 顺手优化老代码
 
-## 7. 怎么避免最常见的翻车
+<img src="imgs/aicmigr-19-dev-03-backend-development/8722563ed280f0db683e6abcf4f720ac_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/7f5b8ea6b7bb65009b4412fdacad8dcf_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+典型场景：你让 AI 加一个 `diffVersions` 方法复用 `getByPromptKeyAndVersion`，AI 改完一扫代码，"这个方法可以重构得更优雅"，顺手就把老方法也改了。<span style="color: red; font-weight: bold;">改造任务瞬间混入优化任务，review 成本飙升。</span>
 
-后端改造里两个翻车点贯穿全程，必须特别警惕。两个翻车点背后是同一个心法：AI 在数据 / 代码层面强，在判断 / 直觉层面弱。这一篇（执行改造）和第 15 篇（补测试）、第 17 篇（拆需求）、第 18 篇（拆方案）背后都是这一条。
+三层防御（细节做法见第 3 章各 Step）：
 
-### 7.1 翻车一：AI 顺手优化老代码
+| 层级 | 做法 | 为什么有效 | 失效场景 |
+|---|---|---|---|
+| 提示词层 | 每个提示词明确写"不要重构现有方法" | 把约束前置到 AI 的注意力里，挡住"顺手优化"的倾向 | AI 在长上下文里仍可能"忘"，不能只靠它 |
+| review 层 | 每步 commit 前 `git diff` 看一遍，超出范围的改动一律撤销 | 不依赖 AI 自觉，靠开发者主动把关 | 开发者疲劳、diff 太长扫漏 |
+| 兜底层 | Characterization Test 锁住现有行为 | 只要行为没变测试就过，行为一变立刻报警 | 没补测试的那部分代码失守 |
 
-最典型的场景：开发者让 AI 加 `diffVersions` 方法复用 `getByPromptKeyAndVersion`，AI 改完一看代码"这个方法可以重构得更优雅"，顺手就改了。
+一句话点评：<span style="color: red; font-weight: bold;">提示词是请求，review 是验证，测试是兜底——三层任意一层失守，另外两层还能接住，单层防御必翻车。</span>
 
-防止办法有三层：
+### 4.2 翻车二：AI 用"应该"而不是"实际"写断言
 
-#### (1) 每个提示词里明确写"不要重构现有方法"
+典型场景：AI 写 Characterization Test，看代码 `if (result == null) return Collections.emptyList()`，凭直觉写 `assertNotNull(result)`，但实际跑下来业务数据让结果返回了 null，测试反而失败。更隐蔽的是反向情况：断言基于"应该"写（比如把 `assertEquals(expected, actual)` 写成 `assertEquals(actual, actual)`），代码真被改坏了，测试还绿。
 
-这一篇所有提示词都加了这一条。这是第一道关，挡住 AI 的"顺手优化"倾向。
+你可能会问：翻车二和翻车一有什么关系？根子是同一个——<span style="color: red; font-weight: bold;">AI 在"判断"这件事上靠不住</span>。
 
-#### (2) 每步 commit 前 git diff 看一遍，超出范围的改动一律撤销
+三层防御（细节做法见第 3 章各 Step）：
 
-AI 的优化哪怕看起来真的更好，也不要在这次改造里做。优化是另一个改造任务，单独走流程。这一层是开发者主动把关，不依赖 AI 的自觉。
+| 层级 | 做法 | 为什么有效 | 失效场景 |
+|---|---|---|---|
+| 提示词层 | 写硬话——"不要凭'应该是什么'写断言，凭'实际跑出来是什么'写" | 把判断标准从"直觉"换成"运行结果"，掐掉偏差源头 | AI 仍可能凭代码长相猜，需 review 补 |
+| review 层 | 看到 `assertEquals(...)`、`assertTrue(...)` 就追问"这个值 / 这个判断从哪来的" | 把 AI 的隐性假设逼到显性，凭空猜的断言一眼露馅 | 断言太多 review 不过来 |
+| 兜底层 | 测试失败时先怀疑测试，不要先怀疑代码 | 基于"实际"的断言失败说明代码确实变了，是有效信号 | 开发者本能地先去改测试，把信号当噪音 |
 
-#### (3) Characterization Test 是最后兜底
+一句话点评：翻车二的根子和翻车一是同一个——<span style="color: red; font-weight: bold;">AI 在"判断"这件事上靠不住</span>，三层防御换成"把判断逼成数据"。
 
-哪怕 AI 偷偷改了什么，只要现有行为没变，测试会过。如果测试失败，立刻知道行为变了。这一层是最硬的保障，不依赖提示词也不依赖开发者的注意力。
+### 4.3 一个心法：AI 在数据层强、在判断层弱
 
-### 7.2 翻车二：AI 用"应该"而不是"实际"写测试断言
+<img src="imgs/aicmigr-19-dev-03-backend-development/f5d904ede6428393cd97ca51a53dd8ef_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-第 15 篇讲过的隐性偏差，这一篇是它在真实改造里的具体表现。
+两个翻车点背后是同一条心法：**AI 在数据 / 代码层面强，在判断 / 直觉层面弱**。
 
-最典型的场景：AI 写 Characterization Test 时，看代码 `if (result == null) return Collections.emptyList()`，凭直觉写 `assertNotNull(result)`，但实际跑代码可能因为业务数据导致返回 null，于是测试反而失败。
+打个类比：<span style="color: red; font-weight: bold;">AI 像一个手速极快、但判断力不稳定的实习生。</span>让它照着 spec 生成代码、照着方法签名补测试、照着字段定义补 DTO——这些"数据层"活它又快又准。但让它判断"这段老代码该不该顺手重构""这个断言该写 null 还是非 null"——这些"判断层"活它会自作主张，而且错得理直气壮。
 
-防止办法有三层：
+这条心法贯穿全系列：本篇（执行改造）的两个翻车点是它的具体表现；后续补测试、拆需求、拆方案几篇，本质都是在把"判断"从 AI 手里收回到开发者手里——用 spec 锁需求、用 Characterization Test 锁行为、用 review 锁范围。
 
-#### (1) 提示词里写硬话
+回看第 3 章七步，每一步都在印证这条心法：Step 1 让 AI 生成 data-model.md（数据层，放手），Step 3-7 每步 commit 前 `git diff` 人工 review（判断层，收紧），补 Characterization Test 更是把"行为是否变化"这件最需要判断的事，从 AI 的直觉换成测试的客观输出。<span style="color: red; font-weight: bold;">该放手时放手，该收手时收手——这是用 AI 改老项目的核心节奏。</span>
 
-不要凭"应该是什么"写断言，凭"实际跑出来是什么"写——这句话每次写测试相关提示词都要加。
+跑完整个流程，你手上会有哪些资产？下一章盘点。
 
-#### (2) review 时盯着断言看
+## 5. 跑完一遍流程，你手上有什么
 
-看到 `assertEquals(...)`、`assertTrue(...)` 就追问"这个值 / 这个判断是从哪来的"。
+<img src="imgs/aicmigr-19-dev-03-backend-development/96cc01fdece55029b8c9ff8f446efc6a_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-#### (3) 测试失败时先怀疑测试，不要先怀疑代码
+跑完整个流程，代码库里多出来的东西归为四类：代码、测试、测试结果、文档。下面按类盘点。
 
-如果测试断言是基于"实际"写的，那它失败就说明代码确实变了，这是有用的信号。如果断言是基于"应该"写的，那测试失败可能只是 AI 猜错了，真正破坏的代码反而没被检测到。
+### 5.1 代码资产
 
-## 8. 最终产出与小结
+| 层 | 改造点 | 产出 |
+|---|---|---|
+| DTO | P01-P03 | 三个新文件；`PromptVersionDiffResult` 含静态内部类 `DiffFields`、`VersionMeta`、`DiffItem` |
+| Service | P04-P05 | 接口新增 `diffVersions` 方法签名；实现类补上实现（含私有辅助方法 `toVersionMeta`、`diffItem`）；原方法 `getByPromptKeyAndVersion` 零改动 |
+| Controller | P06 | 新增 `GET /api/prompt/version/diff` 接口；异常走全局 `GlobalExceptionHandler` |
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/7d42cc321a0c31679ef64e5707996567_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+### 5.2 测试资产
 
-### 8.1 最终产出清单
+| 测试名 | 类型 | 测试数 |
+|---|---|---|
+| `getByPromptKeyAndVersion` 现有行为 | Characterization Test | 2 |
+| `diffVersions` 单元测试（E01/E02/E04 + happy path） | 单元测试 | 4 |
 
-整轮跑完，开发者手上的产出：
+合计 6 个新增测试，全部落在 server-start 模块：前 2 个锁住改造前行为，后 4 个覆盖新方法的三个异常分支与一条正常路径。
 
-- 三个新 DTO 文件（`PromptVersionDiffResult` 含静态内部类 `DiffFields`、`VersionMeta`、`DiffItem`）。
-- Service 接口新增 `diffVersions` 方法签名 + 实现类新增实现（含两个私有辅助方法 `toVersionMeta`、`diffItem`），原方法 `getByPromptKeyAndVersion` 零改动。
-- Controller 新增 `GET /api/prompt/version/diff` 接口，异常处理走全局 `GlobalExceptionHandler`。
-- 测试资产：2 个 Characterization Test（锁住 `getByPromptKeyAndVersion` 现有行为）+ 4 个 `diffVersions` 单元测试（覆盖 E01/E02/E04 + happy path）。
-- mvn test 全套 0 失败，总测试数 20（改造前 14 + 新增 6）。
-- 三份文档同步更新（api-list.md / data-model.md / solution.md），反映实际实现结构。
+### 5.3 测试结果
 
-### 8.2 核心要点回顾
+| 模块 | 测试数 | 说明 |
+|---|---|---|
+| server-core | 14 | 改造前基线 |
+| server-start（新增） | 6 | 2 个 Characterization Test + 4 个 `diffVersions` 单元测试 |
+| 合计 | 20 | 0 失败，BUILD SUCCESS |
 
-这一篇的核心就一句话：让 AI 小步改后端、开发者严格 review、Characterization Test 兜底。
+`mvn test` 全套 0 失败，总测试数 20 = 改造前基线 14 + 新增 6；Characterization Test 改造前后结果一致，现有行为没被破坏。
 
-本篇的内容整体分为七步走：
+### 5.4 文档资产
 
-1. 锁住改造前的行为（Characterization Test）
-2. 建 DTO（P01-P03）
-3. 实现 Service（P04-P05）
-4. 加 Controller（P06）
-5. 补单元测试 + curl 验证返回结构
-6. 跑通 mvn test 全套
-7. 提交 + 文档自动更新
+三份同步更新，反映实际实现结构（细节见 3.8 节）：
 
-四个原则贯穿七步：小步执行、自主修复 + 3 次兜底、复用现有结构、补测试不补到位不算完成。
+| 文档 | 更新要点 |
+|---|---|
+| `api-list.md` | 接口状态从"开发中"改为"已上线（后端）"；入参和返回结构按实际实现校对 |
+| `data-model.md` | 新 DTO 字段同步更新；嵌套关系（`DiffFields` 作为 `PromptVersionDiffResult` 的静态内部类）写清楚 |
+| `solution.md` | 每条改造点（P01-P06）后标注实际 commit hash 和文件路径，方便回溯 |
 
-最容易翻车的两点：AI "顺手"优化老代码（每步 git diff 兜底）、AI 用"应该"写断言（提示词硬约束 + review 时盯着断言）。
+这些资产背后是一个判断：慢就是快——下一章展开。
 
-### 8.3 慢就是快
+## 6. 慢就是快
 
-跑完这一篇，后端可运行（20 个测试全过）、有测试覆盖（Characterization Test + `diffVersions` 单元测试）、不破坏现有行为（Characterization Test 改造前后结果一致），commit 后等前端联调。
+<img src="imgs/aicmigr-19-dev-03-backend-development/9d451783797c9797ddf3ab9363dea32b_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-读者可能会有疑问：如果是我，我一步、一个提示词就搞定了，为什么要分这么多步？
+慢就是快——改造时多花的半天，远比上线后翻车的三天便宜。
 
-这就是新项目开发和老项目开发的区别。老项目开发需要步步为营，一步一步来，越细致越好。这么细不是浪费时间——出 bug 处理的时间、返工的时间，比做的时候因为细致花的时间多得多。所以老项目改造，慢就是快。别急，细致点，按照流程步骤来，反而会觉得真的很快，比想象中快。
+这句话是我在每个团队都会反复强调的，也是前面把改造拆成 Step 1 锁行为、Step 2 写 spec、Step 3 跑兜底测试、一步步走的根本原因。
 
-本系列下一篇做前端：接入新接口、改造 `VersionCompareModal`、加 loading 状态、和后端联调。
+你可能会问：一个提示词就能搞定的事，为什么非要分这么多步？答案藏在新项目和老项目的差别里。
 
-## 9. 思考
+### 6.1 为什么老项目不能一步到位
 
-### 9.1 两个反思问题
+新项目没包袱，一步到位，错了就错了，重构成本可控。老项目不一样，它有用户、有数据、有暗角——那些藏在历史代码里的边界条件，往往是多年前踩坑换来的。
 
-<img src="imgs/aicmigr-19-dev-03-backend-development/63385906ec270c084fd654379457161a_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+区别就在这：<span style="color: red; font-weight: bold;">你贪快这一步，行为没锁，接口换完，回头线上一个隐性 bug，定位起来不是十分钟，是三天。</span>
 
-#### (1) AI 顺手优化的真实经历
+> 新项目：一步到位，错了重构成本低。
+> 老项目：有用户、有数据、有暗角，错了就是线上事故。
 
-开发者最近一次让 AI 改老代码，有没有遇到 AI 顺手优化的情况？如果当时有 Characterization Test 兜底，会不会发现得更早？
+Characterization Test 是这个差别的时间放大器。改造前后结果不一致那一刻，你能当场发现；和上线后从用户工单倒回来排查，是两种完全不同的时间量级。
 
-#### (2) 七步走里哪一步最反直觉
+### 6.2 把账算清：慢是刻意的慢
 
-在这一篇的七步走里，读者觉得哪一步最反直觉？是 Step 1（改之前先写测试）、Step 3（不要重构 `getByPromptKeyAndVersion`）、还是 Step 5（断言凭实际不凭应该）？为什么？
+所以核心账必须算清楚：
 
-读者可以结合自己的实际场景思考每一步的反直觉点：对于习惯 TDD 的开发者，Step 1 最自然；对于习惯"顺手优化"的开发者，Step 3 最反直觉；对于习惯凭业务直觉写断言的开发者，Step 5 最反直觉。识别自己最反直觉的那一步，就是识别自己最容易翻车的那一步。
+**改造时因细致多花的时间 < 出 bug 处理 + 返工的时间**
+
+这里的"慢"不是磨蹭，是刻意的慢，是把判断层用流程兜住。<span style="color: red; font-weight: bold;">多花的半天买的是确定性，省下的是上线后翻车的三天和连带返工。</span>
+
+### 6.3 心法落地：护栏不是多余的动作
+
+这正是第 4 章心法的落地。
+
+AI 在数据层强——它能扫代码、能生成 spec、能补测试；但在判断层弱——它不知道哪个行为是业务命脉，哪个边界是历史踩坑换来的。
+
+判断层的兜底靠什么？三道护栏：
+
+- **Characterization Test** 锁住旧行为，让任何偏差当场暴露
+- **spec** 写清每一步，让 AI 在明确的契约下干活
+- **人工 review** 把关，让人的判断补上 AI 的盲区
+
+这些不是多余的动作，是把 AI 的数据层能力安全释放出来的护栏。<span style="color: red; font-weight: bold;">没有它们，AI 越能干，翻车越狠。</span>
+
+我的看法很直接：老项目改造，不要追求一次到位。**按流程走、细致点、Step by step，反而会觉得真的很快——比想象中快。**

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 160" width="500">
+  <!-- 整体背景 -->
+  <rect width="500" height="160" fill="#ffffff"/>
+
+  <!-- 表头背景 -->
+  <rect x="0" y="0" width="500" height="40" fill="#ffd1d1"/>
+  <line x1="0" y1="40" x2="500" y2="40" stroke="#d0d0d0" stroke-width="1"/>
+  <line x1="250" y1="0" x2="250" y2="160" stroke="#d0d0d0" stroke-width="1"/>
+
+  <!-- 表头文字 -->
+  <text x="125" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#333333" font-family="sans-serif">现象</text>
+  <text x="375" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#333333" font-family="sans-serif">归因</text>
+
+  <!-- 行分隔线 -->
+  <line x1="0" y1="80" x2="500" y2="80" stroke="#e8e8e8" stroke-width="1"/>
+  <line x1="0" y1="120" x2="500" y2="120" stroke="#e8e8e8" stroke-width="1"/>
+
+  <!-- 外边框 -->
+  <rect x="0" y="0" width="500" height="160" fill="none" stroke="#d0d0d0" stroke-width="1"/>
+
+  <!-- 数据行 -->
+  <text x="20" y="66" font-size="15" fill="#333333" font-family="sans-serif">不同 SDK 结果不一致</text>
+  <text x="270" y="66" font-size="15" fill="#333333" font-family="sans-serif">协议实现问题（Broker 端）</text>
+
+  <text x="20" y="106" font-size="15" fill="#333333" font-family="sans-serif">特定 SDK 版本失败，其他正常</text>
+  <text x="270" y="106" font-size="15" fill="#333333" font-family="sans-serif">SDK 版本兼容问题</text>
+
+  <text x="20" y="146" font-size="15" fill="#333333" font-family="sans-serif">所有 SDK 均失败</text>
+  <text x="270" y="146" font-size="15" fill="#333333" font-family="sans-serif">Broker 端问题</text>
+</svg>

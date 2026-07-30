@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif">
+  <!-- Background -->
+  <rect width="1200" height="780" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="60" y="55" font-size="26" font-weight="700" fill="#1a1a1a">任务需要的能力,对照 Hermes 现状</text>
+  <text x="60" y="88" font-size="16" fill="#7a7a7a">Hermes 的"白嫖"额度比预估的高,要写的核心收敛到工具函数</text>
+
+  <!-- Column headers -->
+  <!-- Column 1: 直接支持 -->
+  <text x="60" y="145" font-size="20" font-weight="700" fill="#0c7a4a">直接支持</text>
+  <text x="60" y="170" font-size="14" fill="#5a8a6e">不写代码</text>
+
+  <!-- Column 2: 半支持 -->
+  <text x="420" y="145" font-size="20" font-weight="700" fill="#9a4a14">半支持</text>
+  <text x="420" y="170" font-size="14" fill="#a87655">少量配置或工具拼装</text>
+
+  <!-- Column 3: 需要自己写 -->
+  <text x="780" y="145" font-size="20" font-weight="700" fill="#a52828">需要自己写</text>
+  <text x="780" y="170" font-size="14" fill="#a55555">这才是工程量所在</text>
+
+  <!-- Column 1 cards (green) -->
+  <g>
+    <!-- Card 1: 定时触发 -->
+    <rect x="60" y="190" width="340" height="75" rx="8" ry="8" fill="#dceedb" stroke="#8cc99e" stroke-width="1.5"/>
+    <text x="80" y="222" font-size="18" font-weight="700" fill="#0c7a4a">定时触发</text>
+    <text x="80" y="247" font-size="14" fill="#0c7a4a">Cron + 自然语言 prompt</text>
+
+    <!-- Card 2: 飞书通知 -->
+    <rect x="60" y="280" width="340" height="75" rx="8" ry="8" fill="#dceedb" stroke="#8cc99e" stroke-width="1.5"/>
+    <text x="80" y="312" font-size="18" font-weight="700" fill="#0c7a4a">飞书通知</text>
+    <text x="80" y="337" font-size="14" fill="#0c7a4a">Gateway feishu 适配</text>
+
+    <!-- Card 3: 手动触发 -->
+    <rect x="60" y="370" width="340" height="75" rx="8" ry="8" fill="#dceedb" stroke="#8cc99e" stroke-width="1.5"/>
+    <text x="80" y="402" font-size="18" font-weight="700" fill="#0c7a4a">手动触发</text>
+    <text x="80" y="427" font-size="14" fill="#0c7a4a">CLI / trigger_job / 飞书</text>
+
+    <!-- Card 4: LLM 调用循环 -->
+    <rect x="60" y="460" width="340" height="75" rx="8" ry="8" fill="#dceedb" stroke="#8cc99e" stroke-width="1.5"/>
+    <text x="80" y="492" font-size="18" font-weight="700" fill="#0c7a4a">LLM 调用循环</text>
+    <text x="80" y="517" font-size="14" fill="#0c7a4a">AIAgent + 重试退避</text>
+  </g>
+
+  <!-- Column 2 cards (orange) -->
+  <g>
+    <!-- Card 1: 调用工具函数 -->
+    <rect x="420" y="190" width="340" height="75" rx="8" ry="8" fill="#fbe5d1" stroke="#d49870" stroke-width="1.5"/>
+    <text x="440" y="222" font-size="18" font-weight="700" fill="#9a4a14">调用工具函数</text>
+    <text x="440" y="247" font-size="14" fill="#9a4a14">框架现成,工具自写</text>
+
+    <!-- Card 2: 多轮共享状态 -->
+    <rect x="420" y="280" width="340" height="75" rx="8" ry="8" fill="#fbe5d1" stroke="#d49870" stroke-width="1.5"/>
+    <text x="440" y="312" font-size="18" font-weight="700" fill="#9a4a14">多轮共享状态</text>
+    <text x="440" y="337" font-size="14" fill="#9a4a14">Session 内自然共享</text>
+
+    <!-- Card 3: 跨 Session 状态 -->
+    <rect x="420" y="370" width="340" height="75" rx="8" ry="8" fill="#fbe5d1" stroke="#d49870" stroke-width="1.5"/>
+    <text x="440" y="402" font-size="18" font-weight="700" fill="#9a4a14">跨 Session 状态</text>
+    <text x="440" y="427" font-size="14" fill="#9a4a14">外部 JSON 自己维护</text>
+  </g>
+
+  <!-- Column 3 cards (red) -->
+  <g>
+    <!-- Card 1: 故障注入工具 -->
+    <rect x="780" y="190" width="340" height="95" rx="8" ry="8" fill="#f8d8d8" stroke="#d49898" stroke-width="1.5"/>
+    <text x="800" y="222" font-size="18" font-weight="700" fill="#a52828">故障注入工具</text>
+    <text x="800" y="247" font-size="14" fill="#a52828">tools/chaos_tool.py</text>
+    <text x="800" y="269" font-size="14" fill="#a52828">~200 行</text>
+
+    <!-- Card 2: 集群管理工具 -->
+    <rect x="780" y="300" width="340" height="95" rx="8" ry="8" fill="#f8d8d8" stroke="#d49898" stroke-width="1.5"/>
+    <text x="800" y="332" font-size="18" font-weight="700" fill="#a52828">集群管理工具</text>
+    <text x="800" y="357" font-size="14" fill="#a52828">tools/cluster_tool.py</text>
+    <text x="800" y="379" font-size="14" fill="#a52828">~150 行</text>
+
+    <!-- Card 3: 报告生成工具 -->
+    <rect x="780" y="410" width="340" height="95" rx="8" ry="8" fill="#f8d8d8" stroke="#d49898" stroke-width="1.5"/>
+    <text x="800" y="442" font-size="18" font-weight="700" fill="#a52828">报告生成工具</text>
+    <text x="800" y="467" font-size="14" fill="#a52828">tools/report_tool.py</text>
+    <text x="800" y="489" font-size="14" fill="#a52828">~300 行</text>
+  </g>
+
+  <!-- Bottom dashed callout -->
+  <rect x="60" y="575" width="1060" height="90" rx="8" ry="8" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-dasharray="7,5"/>
+  <text x="82" y="612" font-size="18" font-weight="700" fill="#1a1a1a">这一轮跑完最让我意外的事</text>
+  <text x="82" y="642" font-size="14" fill="#3a3a3a">结构化报告不能交给 LLM 写。结构化的东西用代码,叙述性的东西交给 AI。</text>
+
+  <!-- Bottom summary -->
+  <text x="600" y="705" font-size="15" fill="#3a3a3a" text-anchor="middle">核心工程量 600-800 行 Python,集中在故障注入 + 报告生成。</text>
+  <text x="600" y="730" font-size="15" fill="#3a3a3a" text-anchor="middle">框架层(调度、循环、通道、并发、重试)全部白嫖,不用碰。</text>
+</svg>

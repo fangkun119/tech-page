@@ -2,8 +2,8 @@
 title: 传统项目迁AI：核心摘要（上）- 学习方法、了解项目
 author: fangkun119
 date: 2026-07-13 00:00:00 +0800
-categories: [AI编程, 传统项目迁AI]
-tags: [AI编程, 传统项目迁AI]
+categories: [AI编程, 传统项目AI编程]
+tags: [AI编程, 传统项目AI编程]
 pin: false
 math: true
 mermaid: true
@@ -429,9 +429,9 @@ Feathers《Working Effectively with Legacy Code》（2004）在 2024-2026 重新
 
 ### 3.1 从 README 到核心链路
 
-<img src="imgs/aicmigr-06-proj-rd-01-steps-readme-to-core-/cover.jpg" style="display: block; width: 800px;" alt="替换文字">
+<img src="imgs/aicmigr-06-proj-rd-01-steps-readme-to-core-flow/cover.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-**完整内容: [传统项目迁AI 06：了解项目 - 从README到核心链路]({% post_url 2026-07-04-aicmigr-06-proj-rd-01-steps-readme-to-core- %})**
+**完整内容: [传统项目迁AI 06：了解项目 - 从README到核心链路]({% post_url 2026-07-04-aicmigr-06-proj-rd-01-steps-readme-to-core-flow %})**
 
 #### (1) 一句话本质：先把项目"摸清"这件事做成一份可复用的锚点清单
 

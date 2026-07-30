@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <style>
+    .header-bg { fill: #ffcccc; }
+    .header-text { fill: #000000; font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; font-size: 14px; font-weight: 600; }
+    .row-even { fill: #f9f9f9; }
+    .row-odd { fill: #ffffff; }
+    .cell-text { fill: #000000; font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; font-size: 12.5px; }
+    .cell-text-mono { fill: #000000; font-family: "SF Mono", "Fira Code", "Cascadia Code", Menlo, monospace; font-size: 12px; }
+    .border { stroke: #dddddd; stroke-width: 1; fill: none; }
+  </style>
+
+  <!-- Background -->
+  <rect width="900" height="520" fill="#ffffff" rx="6" ry="6"/>
+
+  <!-- Column widths: 380, 200, 320 -->
+  <!-- Column starts: col1=0, col2=380, col3=580 -->
+  <!-- Row heights: header=40, data=36 each, 13 rows -->
+  <!-- Total: 40 + 13*36 = 508, pad to 520 -->
+
+  <!-- Header row -->
+  <rect x="0" y="0" width="900" height="40" class="header-bg" rx="6" ry="6"/>
+  <rect x="0" y="30" width="900" height="10" class="header-bg"/>
+  <text x="190" y="26" text-anchor="middle" class="header-text">目录</text>
+  <text x="480" y="26" text-anchor="middle" class="header-text">我们要放的文件</text>
+  <text x="740" y="26" text-anchor="middle" class="header-text">作用</text>
+
+  <!-- Row 1: even -->
+  <rect x="0" y="40" width="900" height="36" class="row-even"/>
+  <text x="12" y="63" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/</text>
+  <text x="392" y="63" class="cell-text-mono">SKILL.md</text>
+  <text x="592" y="63" class="cell-text">Agent 作战手册</text>
+
+  <!-- Row 2: odd -->
+  <rect x="0" y="76" width="900" height="36" class="row-odd"/>
+  <text x="12" y="99" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/</text>
+  <text x="392" y="99" class="cell-text-mono">config.yml</text>
+  <text x="592" y="99" class="cell-text">SDK 矩阵 / Chaosd 端点 / 报告仓库地址</text>
+
+  <!-- Row 3: even -->
+  <rect x="0" y="112" width="900" height="36" class="row-even"/>
+  <text x="12" y="135" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/tools/</text>
+  <text x="392" y="135" class="cell-text-mono">cluster.py</text>
+  <text x="592" y="135" class="cell-text">集群启停（spawn 多个 RobustMQ 进程）</text>
+
+  <!-- Row 4: odd -->
+  <rect x="0" y="148" width="900" height="36" class="row-odd"/>
+  <text x="12" y="171" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/tools/</text>
+  <text x="392" y="171" class="cell-text-mono">chaos.py</text>
+  <text x="592" y="171" class="cell-text">故障注入（Chaosd 主 + tc 补）</text>
+
+  <!-- Row 5: even -->
+  <rect x="0" y="184" width="900" height="36" class="row-even"/>
+  <text x="12" y="207" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/tools/</text>
+  <text x="392" y="207" class="cell-text-mono">client.py</text>
+  <text x="592" y="207" class="cell-text">多语言 SDK 调度</text>
+
+  <!-- Row 6: odd -->
+  <rect x="0" y="220" width="900" height="36" class="row-odd"/>
+  <text x="12" y="243" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/tools/</text>
+  <text x="392" y="243" class="cell-text-mono">observability.py</text>
+  <text x="592" y="243" class="cell-text">日志和 metrics 收集</text>
+
+  <!-- Row 7: even -->
+  <rect x="0" y="256" width="900" height="36" class="row-even"/>
+  <text x="12" y="279" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/tools/</text>
+  <text x="392" y="279" class="cell-text-mono">report.py</text>
+  <text x="592" y="279" class="cell-text">报告生成 + git push 到 GitHub</text>
+
+  <!-- Row 8: odd -->
+  <rect x="0" y="292" width="900" height="36" class="row-odd"/>
+  <text x="12" y="315" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/scenarios/</text>
+  <text x="392" y="315" class="cell-text-mono">mqtt/，mq9/</text>
+  <text x="592" y="315" class="cell-text">场景库自然语言描述</text>
+
+  <!-- Row 9: even -->
+  <rect x="0" y="328" width="900" height="36" class="row-even"/>
+  <text x="12" y="351" class="cell-text-mono">~/.hermes/skills/robustmq-chaos-test/templates/</text>
+  <text x="392" y="351" class="cell-text-mono">report.md.j2</text>
+  <text x="592" y="351" class="cell-text">报告 Markdown 模板</text>
+
+  <!-- Row 10: odd -->
+  <rect x="0" y="364" width="900" height="36" class="row-odd"/>
+  <text x="12" y="387" class="cell-text-mono">~/.hermes/</text>
+  <text x="392" y="387" class="cell-text-mono">cron.yml</text>
+  <text x="592" y="387" class="cell-text">P0 / P1 / P2 三档定时调度</text>
+
+  <!-- Row 11: even -->
+  <rect x="0" y="400" width="900" height="36" class="row-even"/>
+  <text x="12" y="423" class="cell-text-mono">~/.hermes/</text>
+  <text x="392" y="423" class="cell-text-mono">config.yaml</text>
+  <text x="592" y="423" class="cell-text">approvals 设置 + command_allowlist</text>
+
+  <!-- Row 12: odd -->
+  <rect x="0" y="436" width="900" height="36" class="row-odd"/>
+  <text x="12" y="459" class="cell-text-mono">~/.ssh/</text>
+  <text x="392" y="459" class="cell-text-mono">test-reports-deploy</text>
+  <text x="592" y="459" class="cell-text">GitHub Deploy Key（写权限单一仓库）</text>
+
+  <!-- Row 13: even -->
+  <rect x="0" y="472" width="900" height="36" class="row-even" rx="0" ry="0"/>
+  <rect x="0" y="496" width="900" height="12" class="row-even" rx="6" ry="6"/>
+  <text x="12" y="495" class="cell-text-mono">GitHub</text>
+  <text x="392" y="495" class="cell-text-mono">test-reports 仓库</text>
+  <text x="592" y="495" class="cell-text">报告归档，Quality Dashboard 静态读取</text>
+
+  <!-- Column dividers -->
+  <line x1="380" y1="0" x2="380" y2="508" class="border"/>
+  <line x1="580" y1="0" x2="580" y2="508" class="border"/>
+
+  <!-- Row dividers -->
+  <line x1="0" y1="40" x2="900" y2="40" class="border"/>
+  <line x1="0" y1="76" x2="900" y2="76" class="border"/>
+  <line x1="0" y1="112" x2="900" y2="112" class="border"/>
+  <line x1="0" y1="148" x2="900" y2="148" class="border"/>
+  <line x1="0" y1="184" x2="900" y2="184" class="border"/>
+  <line x1="0" y1="220" x2="900" y2="220" class="border"/>
+  <line x1="0" y1="256" x2="900" y2="256" class="border"/>
+  <line x1="0" y1="292" x2="900" y2="292" class="border"/>
+  <line x1="0" y1="328" x2="900" y2="328" class="border"/>
+  <line x1="0" y1="364" x2="900" y2="364" class="border"/>
+  <line x1="0" y1="400" x2="900" y2="400" class="border"/>
+  <line x1="0" y1="436" x2="900" y2="436" class="border"/>
+  <line x1="0" y1="472" x2="900" y2="472" class="border"/>
+
+  <!-- Outer border -->
+  <rect x="0" y="0" width="900" height="508" rx="6" ry="6" class="border"/>
+</svg>

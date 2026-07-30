@@ -2,8 +2,8 @@
 title: 传统项目迁AI 26：自动测试 - 跑通 Hermes Agent
 author: fangkun119
 date: 2026-07-05 06:00:00 +0800
-categories: [AI编程, 传统项目迁AI]
-tags: [AI编程, 传统项目迁AI]
+categories: [AI编程, 传统项目AI编程]
+tags: [AI编程, 传统项目AI编程]
 pin: false
 math: true
 mermaid: true
@@ -29,238 +29,47 @@ aicmigr-26-autotest-03-hermes-agent-setup
 传统项目迁AI 26：自动测试 - 跑通 Hermes Agent
 -->
 
-## 1. 开篇导读
+## 1. 开篇：拿到新工具的第一天该怎么办
 
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/2fd8ac50fc4e24ebf9d3dc994318303d_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/c8bca12ae326179c9edd59f144fd4fed_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-本篇是"自动测试"系列的第三篇。前一篇把一句话需求翻译成了完整设计文档和完整方案文档，手上拿着两份评审级文档。但纸面上的方案再清晰，在工具上跑不通就只是 PPT。本篇要做的事是把 Hermes 真正跑起来，验证那份方案里的每个扩展点都活着。
+工程师拿到一个新 AI Agent 工具 —— 不管是 Hermes、Claude Code 还是 Cursor —— 第一反应往往是把官方文档从头读一遍。<span style="color: red; font-weight: bold;">这条路看似稳妥，却是效率最低的入门方式</span>。
 
-本篇的真正主角不是 Hermes 的功能盘点，而是**接管一个新工具第一天该怎么走**的方法论。整篇文档分为两部分：第一部分是方法论提炼（参考手册风，不深入技术栈），第二部分是结合 Hermes/RobustMQ 的实战演示（讲清 why）。下面这张导读地图帮助两类读者快速定位。
+本篇给出一条更快的路径：先跑通最小闭环，再带着具体问题回头读文档。
 
-### 1.1 全文导读地图
+### 1.1 一个常见误区：先啃文档
 
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/f2d0b4163f46f47e2685ac55f194bfb8_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+为什么"先读文档"是慢路？<span style="color: red; font-weight: bold;">读完一整套文档，脑子里全是抽象概念，没一个动作落到键盘上</span>；等真要动手，又得回头翻文档，因为读的时候没有具体问题，记不住。
 
-<!--
-flowchart LR
-    ROOT["本篇<br/>接管新工具第一天"] --\> P1["第一部分 · 方法论提炼"]
-    ROOT --\> P2["第二部分 · 实战演示"]
-    ROOT --\> P3["小结与思考"]
+这条慢路传统工程师并不陌生 —— 很少有人会先把 Spring 全套源码读完，再写第一个 Controller。概念脱离了动手场景，注定留不下印记。
 
-    P1 --\> P1A["2.1 核心命题：先跑通再读文档<br/>[两类]"]
-    P1 --\> P1B["2.2 四步法总览<br/>[初学]"]
-    P1 --\> P1C["2.3 第一步：装上体验<br/>[初学]"]
-    P1 --\> P1D["2.4 第二步：写最简 Hello World<br/>[两类]"]
-    P1 --\> P1E["2.5 第三步：把卡过的坑记下来<br/>[两类]"]
-    P1 --\> P1F["2.6 第四步：对照真实项目<br/>[两类]"]
-    P1 --\> P1G["2.7 项目阶段 Check List<br/>[熟练]"]
+### 1.2 破解法：先跑通最小闭环，再带着问题读文档
 
-    P2 --\> P2A["3.1 装上 Hermes 跟它聊一聊<br/>[初学]"]
-    P2 --\> P2B["3.2 写两个最简 Hello World<br/>[两类]"]
-    P2 --\> P2C["3.3 把方案落到 Hermes 目录<br/>[两类]"]
-    P2 --\> P2D["3.4 触发链路怎么走<br/>[熟练]"]
-    P2 --\> P2E["3.5 第一行代码往哪里下<br/>[熟练]"]
+把顺序反过来：<span style="color: red; font-weight: bold;">先跑通最小闭环，然后带着具体问题去读对应章节</span>。跑通的过程会自然把人卡在一些点上，这些点就是最该读的地方，读起来效率比裸读高十倍。
 
-    P3 --\> P3A["4.1 四步法口诀<br/>[两类]"]
-    P3 --\> P3B["4.2 慢路与快路<br/>[两类]"]
-    P3 --\> P3C["4.3 思考<br/>[两类]"]
--->
+这其实就是传统软件工程师早已熟知的路径 —— <span style="color: red; font-weight: bold;">先写一个 hello world 跑起来，再回头补业务逻辑</span>。把这条路径平移到 AI Agent 工具上即可。
 
-### 1.2 两类读者的建议阅读路径
+本篇用 Hermes 实战演示这条快路：从一键安装开始，写两个最简 Hello World（一个 Tool、一个 Skill；因为要给 Hermes 添加 Tool 和 Skill 所以就选择这两个），跑通之后立刻对照真实项目方案，把每条决策落到 Hermes 用户目录的物理位置上。走完这一遍，"接管一个新 AI Agent 工具"就不再是一个抽象命题。
 
-| 读者类型 | 建议路径 |
-|---|---|
-| 初学 AI 编程工程师 | 1 → 2.1 → 2.2 → 2.3 → 2.4 → 3.1 → 3.2 → 3.3 → 4（系统学习全过程） |
-| 熟练 AI 编程工程师 | 1 → 2.7（Check List）→ 3.3 → 3.5（直接看落点）→ 按需查阅 2.4 / 3.2 细节 |
+## 2. 第一步：装上 Hermes 并建立手感
 
-## 2. 第一部分 · 方法论提炼：接管新工具的四步法
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/c91237dd4524f5a758994e5cb83fa227_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-### 2.1 核心命题：先跑通，再读文档
+这一章把 Hermes 装上、扔几条指令、记下坑、再对照真实项目的落点。<span style="color: red; font-weight: bold;">四步：装上体验、写 Hello World、把坑记下来、对照真实项目落点。</span>
 
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/f4e5c0c9bcc9bfb5a510fe895f20d36e_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+### 2.1 一键安装
 
-接到一个新工具，大多数人的第一反应是把官方文档从头读一遍。这是**慢路**。
-
-#### (1) 慢路慢在哪
-
-读完一整套文档，脑子里全是抽象概念，没一个动作落到键盘上。等真要动手，又得回头翻文档——读的时候没有具体问题，记不住。
-
-#### (2) 快路的姿势
-
-把顺序反过来：**先跑通最小闭环，然后带着具体问题去读对应章节**。跑通的过程会自然把人卡在一些点上，这些点就是最该读的地方，读起来效率比裸读高十倍。
-
-#### (3) 这条路为什么有效
-
-跑通最小闭环会产生两类高价值副产品：
-
-##### ① 建立对工具的"手感"
-知道工具怎么决定要不要调能力、调能力时会不会先确认、返回格式长什么样、慢不慢。这种手感是后续做任何扩展的基础。
-
-##### ② 精准定位阅读点
-卡过的每个点都是后续读文档的指路灯。撞坑的过程会精准告诉人下一步该读哪里，这种深度看文档读不出来。
-
-### 2.2 四步法总览
-
-接管一个新工具的第一天，按四步走：
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/e303eaf34fcc1ce574cc912e5742a2d5_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-<!--
-flowchart LR
-    S1["第一步<br/>装上体验"] --\> S2["第二步<br/>写 Hello World"]
-    S2 --\> S3["第三步<br/>跑通"]
-    S3 --\> S4["第四步<br/>对照真实项目"]
-    S4 --\> DONE["真正接管工具"]
--->
-
-前三步是**工具掌握**，工程师在任何工具上都该这么做。第四步是**项目落地**，把通用的工具能力对接到具体的工程任务——这一步走完，才真正接管了这个工具。
-
-### 2.3 第一步：装上体验，建立手感
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/b3168c21ad514d9ad45c1c747a1a12cb_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-#### (1) 安装本身不是重点
-
-装完能跑就行。如果中间踩坑（运行时版本、网络、依赖），花一两个小时解决就够了，不要为了把环境搞到完美而耗一整天。装到能跑的程度立刻进下一步，后面遇到问题再回来调。
-
-#### (2) 装完后最重要的一步是先聊一聊
-
-进入交互界面，扔几个真实指令试试。挑指令的原则是覆盖工具的几类典型能力：
-
-##### ① 让工具解释自己
-了解工具对外宣称的能力边界。
-
-##### ② 让工具跑一个 shell 或外部动作
-验证工具对真实环境的操作能力。
-
-##### ③ 看工具怎么处理简单查询
-观察工具的返回格式和决策方式。
-
-#### (3) 第一次对话的真正目的
-
-第一次对话的目的不是验证 LLM 能用——这件事 ChatGPT 早就证明过了。目的是验证**接下来要扩展的这个东西真的活着**，知道它的能力调用循环是怎么跑的。建立这个感觉之后，后面写扩展时才知道扩展点在工具那一侧是怎么被看到的。
-
-#### (4) 顺手玩玩内置命令
-
-花十分钟玩玩斜杠命令也值得：`/help` 看所有命令、`/tools` 看当前可用工具、`/model` 切模型。这些用一遍，大概知道工具给了哪些"开关"。
-
-### 2.4 第二步：写最简 Hello World 验证最复杂机制
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/1be377a328279ec29b3d41751e67f2c5_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-#### (1) 目标设定
-
-这一步的目标不是做个有用的东西，是**用最简任务验证最复杂机制**。
-
-#### (2) 双层扩展机制
-
-成熟 AI Agent 工具的扩展机制通常有两层，两层都得验证：
-
-| 层 | 形态 | 验证载体 |
-|---|---|---|
-| 能力层（Tool） | 代码写的能力 | 最简 Tool |
-| 指令层（Skill） | 文本写的指令 | 最简 Skill |
-
-两件事都跑通，就掌握了工具的全部扩展能力。剩下的差异只是：Tool 的逻辑更复杂、Skill 的指令更精细，**机制是一样的**。
-
-#### (3) 文件放哪要先说清
-
-扩展文件默认从用户目录加载（工具自动创建，不存在就 `mkdir -p` 自己建一下）。这里有一条重要的边界原则：
-
-##### ① 用户目录是用户的地盘
-所有自己写的扩展都放这里。
-
-##### ② 工具仓库源码目录是官方自带的
-不要把自己的代码放那里。原因有二：
-
-- 会跟着工具升级被覆盖。
-- 污染源码目录将来很难清理。
-
-### 2.5 第三步：跑通之后，把卡过的坑记下来
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/025d852ecf715e3c95719dd37bad0b0c_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-完美跑通是一种幸运，**卡几次才是常态**。把坑记下来比读十遍文档更有价值。
-
-#### (1) 三类典型坑
-
-##### ① 扩展没注册上
-工具启动后看不到新加的能力，大概率是文件没被扫到。
-
-##### ② 扩展没加载到
-工具收到指令后没按扩展里的流程走，而是自己临场发挥。
-
-##### ③ 调用扩展但参数错了
-大概率是扩展的描述写得不清楚，或者参数 schema 里没把约束写明白。
-
-#### (2) 通用排错三步
-
-| 步骤 | 检查项 |
-|---|---|
-| 1. 文件位置 | 文件名拼写是否对、文件是否真的在用户目录下、工具是否需要重启加载新扩展 |
-| 2. 目录结构 | 目录层级是否符合工具规定（如套件是否有专用子目录） |
-| 3. 描述清晰度 | frontmatter 字段是否写对、description 是否清晰到工具知道何时加载 |
-
-#### (3) 关键认知：扩展的描述是给工具看的
-
-Tool 的 description 是给 LLM 看的，不是给人看的。写得越清楚，LLM 调得越准。这一条认知撞过一次坑才能内化。
-
-### 2.6 第四步：对照真实项目，想清楚怎么放
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/2192c773bb7403300c2ac64538a3cdd2_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-练 Hello World 的目的不是好玩。目的是**跑完之后立刻能回头看真实项目方案，知道每个文件该往工具用户目录的哪个位置放、第一行代码该往哪里下**。
-
-#### (1) 这一步走完才算真正接管
-
-前三步是通用工具掌握，第四步是项目落地。把通用的工具能力对接到具体的工程任务，这一步走完，才真正接管了这个工具。
-
-#### (2) 对照动作的核心
-
-把项目方案里的每条决策，逐条对应到工具用户目录的某个位置：
-
-- 决策"几个能力函数放在一个套件下" → 用户目录下的某个套件目录。
-- 决策"调度规则分档" → 用户目录下的全局配置文件。
-- 决策"凭据怎么管" → 用户目录外的独立位置（如 SSH 目录）。
-
-#### (3) 对照之后会有的踏实感
-
-跑完 Hello World 之后再回头看项目方案文档，会有一种"这件事能干"的踏实感。不是因为方案变简单了，是因为**对工具的理解更进一步了**。
-
-### 2.7 项目阶段 Check List（可裁剪）
-
-下表把"接管新工具第一天"的整套动作做成可裁剪的 Check List，供项目阶段快速查阅。每行带一个反问点，落到具体可判断的标准上。
-
-| 项目阶段 | 关键动作 | 产物 | 反问点 |
-|---|---|---|---|
-| 接到新工具第一天 | 不裸读官方文档；先跑通最小闭环 | 最小可运行实例 | 是否已经动手敲出了第一个能跑的命令？ |
-| 装上工具 | 装到能跑就停手，不为完美环境耗一天 | 可启动的工具进程 | 装到能跑的程度是否立刻进下一步？ |
-| 第一次对话 | 扔三类典型指令（解释自己 / 跑动作 / 简单查询） | 对工具手感的初印象 | 是否建立了"工具怎么决定调能力"的感觉？ |
-| 体验斜杠命令 | `/help`、`/tools`、`/model` 各过一遍 | 工具开关清单 | 知道工具给了哪些"开关"吗？ |
-| 写最简扩展（能力层） | 最简 Tool，20 行内 | 一个能被工具调用的扩展 | 工具是否真的扫描到并加载了？ |
-| 写最简扩展（指令层） | 最简 Skill，20 行内 | 一个能被工具按流程执行的指令 | 工具是否按 Skill 里的流程走？ |
-| 跑通 | 两层扩展都通过验证 | 验证记录 | 双层机制都跑通了吗？ |
-| 卡坑记录 | 把卡过的坑逐条记下来 | 排错清单 | 三类典型坑都内化了吗？ |
-| 对照真实项目 | 把项目方案逐条对应到工具用户目录 | 文件落点对照表 | 每条方案决策都有物理落点吗？ |
-| 第一行代码定位 | 找到依赖最少的那个扩展先写 | 代码起点 | 哪个扩展是后续所有扩展的前提？ |
-
-## 3. 第二部分 · 实战演示：把 Hermes Agent 跑通
-
-### 3.1 装上 Hermes，跟它聊一聊
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/39ec439ae280859187644e8e74b6c1a3_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-#### (1) 一键安装
-
-Hermes 中文社区把命令行版的一键安装脚本写得很清楚：
+Hermes 中文社区提供了命令行版的一键安装脚本：
 
 ```bash
 curl -fsSL https://res1.hermesagent.org.cn/install.sh | bash
 ```
 
-完整的安装、模型配置、网络问题处理，直接看 hermesagent.org.cn 的快速入门，文档比本篇能讲得详细。
+完整的安装、模型配置、网络问题处理，直接看 hermesagent.org.cn 的快速入门文档，比本篇讲得细。
 
-#### (2) 进入交互界面
+安装本身不是重点 —— <span style="color: red; font-weight: bold;">装到能跑就停手</span>。中间踩坑（运行时版本、网络、依赖）花一两个小时解决就够了，别为把环境搞到完美耗上一整天，后面遇到问题再回来调。
+
+### 2.2 第一次对话：扔三类典型指令
 
 ```text
 $ hermes
@@ -274,26 +83,51 @@ $ hermes
 > 现在几点了
 ```
 
-第一条让 Hermes 解释自己，第二条让它跑 shell，第三条看简单查询它怎么处理。这三个指令五分钟就能跑完，但会迅速建立对这个工具的"手感"：
+挑指令的原则是覆盖工具的几类典型能力：
 
-- 它怎么决定要不要调工具
-- 调工具的时候它会不会先确认
-- 返回的格式长什么样
-- 慢不慢
+- <span style="color: red; font-weight: bold;">第一条让 Hermes 解释自己（了解能力边界）</span>
+- <span style="color: red; font-weight: bold;">第二条让它跑 shell（验证对真实环境的操作能力）</span>
+- <span style="color: red; font-weight: bold;">第三条看简单查询它怎么处理（观察返回格式和决策方式）</span>
 
-#### (3) 第一次对话的目的
+这三条指令五分钟就能跑完，但能迅速建立对这个工具的"手感"：
 
-第一次对话的目的不是验证 LLM 能用，而是验证接下来要扩展的这个东西真的活着——知道它的工具调用循环是怎么跑的。建立这个感觉之后，后面写 Tool 时才知道 Tool 在 Agent 那一侧是怎么被看到的。
+| 观察维度 | 要建立的感觉            |
+| ---- | ----------------- |
+| 能力决策 | 它**怎么决定要不要调工具**   |
+| 确认机制 | 调工具的时候它**会不会先确认** |
+| 返回格式 | **返回结果长什么样**      |
+| 响应速度 | 慢不慢               |
 
-#### (4) 体验斜杠命令
+第一次对话的目的不是验证 LLM 能用 —— 这件事 ChatGPT 早就证明过了。目的是验证**接下来要扩展的这个东西真的活着**，看清它的工具调用循环是怎么跑的。这个感觉建立起来，后面写扩展时才知道扩展点在工具那一侧是怎么被看到的。
 
-花十分钟玩玩斜杠命令也值得：`/help` 看所有命令、`/tools` 看当前可用工具、`/model` 切模型。这些用一遍，大概知道 Hermes 给了哪些"开关"。
+### 2.3 顺手玩玩斜杠命令
 
-### 3.2 写两个最简 Hello World：Tool 与 Skill
+花十分钟玩玩斜杠命令也值得：
 
-体验完该动手了。Hermes 的扩展机制有两层：Tool 是 Python 写的能力，Skill 是 Markdown 写的指令。两层都得验证，所以 Hello World 也分两件事。
+- `/help` 看所有命令
+- `/tools` 看当前可用工具
+- `/model` 切模型
 
-#### (1) 文件放哪
+用一遍，大概就知道 Hermes 给了哪些"开关"。
+
+## 3. 第二步：写两个 Hello World 验证双层扩展
+
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/37f8b46a06c3bc3bd4e0f87a9a505383_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+
+体验完该动手了。Hermes 的扩展机制有两层，这一章就做两件事：分别写一个最简 Tool 和一个最简 Skill，把两层机制都跑通。
+
+### 3.1 双层扩展机制：Tool 与 Skill
+
+成熟 AI Agent 工具的扩展机制通常有两层，这两层构成了工具的全部扩展能力：<span style="color: red; font-weight: bold;">Hermes 的扩展机制有两层：Tool 是 Python 写的能力，Skill 是 Markdown 写的指令。</span>两层都得验证，所以 Hello World 也分两件事。
+
+| 层          | 形态     | 验证载体     | 传统工程类比                     |
+| ---------- | ------ | -------- | -------------------------- |
+| 能力层（Tool）  | 代码写的能力 | 最简 Tool  | Controller / Service（代码逻辑） |
+| 指令层（Skill） | 文本写的指令 | 最简 Skill | 配置文件 / 流程编排                |
+
+类比传统 Web 工程：<span style="color: red; font-weight: bold;">Tool 相当于 Controller/Service，是真正的代码逻辑，决定"能做什么"；Skill 相当于配置文件和流程编排，是一段文本指令，决定"什么时候做、怎么做"</span>。理解了这个类比，后面写扩展时就知道该往哪层落。
+
+### 3.2 文件放哪：用户目录是用户的地盘
 
 Hermes 默认从两个地方加载扩展：
 
@@ -302,11 +136,20 @@ Hermes 默认从两个地方加载扩展：
 | Tool | `~/.hermes/tools/` |
 | Skill | `~/.hermes/skills/` |
 
-装完 Hermes 自动创建，不存在就 `mkdir -p` 自己建一下。Hermes 仓库源码里也有 `tools/` 和 `skills/` 目录，那是官方自带的工具和技能，**不要把自己的代码放那里**——会跟着 `hermes update` 被覆盖，而且污染源码目录将来很难清理。用户目录是用户的地盘，放自己的扩展。
+装完 Hermes 自动创建，不存在就 `mkdir -p` 自己建一下。
 
-#### (2) 一个最简 Tool：get_current_time
+这里有一条重要的边界原则：
 
-在 `~/.hermes/tools/` 下新建 `time_tool.py`（这是 Tool 平铺的最简形态，正式项目里多个相关 Tool 会放在 Skill 套件下，第三部分第 3.3 节讲清楚）：
+| 目录 | 归属 | 为什么 |
+|---|---|---|
+| `~/.hermes/` 用户目录 | 用户的地盘，放自己写的扩展 | 自己的扩展自己管 |
+| Hermes 仓库源码里的 `tools/`、`skills/` | 官方自带的工具和技能 | 会跟着 `hermes update` 被覆盖；污染源码目录将来很难清理 |
+
+<span style="color: red; font-weight: bold;">自己的扩展只往用户目录放，不要碰仓库源码</span> —— 这条边界守住了，后面升级和清理都不会有坑。
+
+### 3.3 最简 Tool：get_current_time
+
+在 `~/.hermes/tools/` 下新建 `time_tool.py`（这是 Tool 平铺的最简形态，正式项目里多个相关 Tool 会放在 Skill 套件下，后面的章节会讲清楚）：
 
 ```python
 import json
@@ -342,7 +185,7 @@ $ hermes
 
 如果一切正常，会看到 Agent 调用了 `get_current_time`，返回 UTC 时间。Tool 注册机制就这么简单。
 
-#### (3) 一个最简 Skill：hello-world
+### 3.4 最简 Skill：hello-world
 
 在 `~/.hermes/skills/hello-world/` 目录下新建 `SKILL.md`，内容如下：
 
@@ -371,60 +214,72 @@ $ hermes
 
 Agent 加载 Skill，按 Procedure 调 `get_current_time`，然后用 Skill 里规定的格式回复。
 
-#### (4) 两件事都跑通意味着什么
+### 3.5 跑通意味着什么
 
-两件事都跑通，就已经掌握了 Hermes 的全部扩展能力。剩下的差异只是：Tool 的逻辑更复杂、Skill 的指令更精细。机制是一样的。
+<span style="color: red; font-weight: bold;">两件事都跑通，就已经掌握了 Hermes 的全部扩展能力</span>。剩下的差异只是：Tool 的逻辑更复杂、Skill 的指令更精细。**机制是一样的** —— 后面把真实项目的 7 个 Tool 落到 Hermes 上时，用的就是这两个机制。
 
-#### (5) 跑通之后把卡过的坑也记下来
+Hello World 的价值不在那 20 行代码本身，而在于它一次性验证了全部扩展机制。跑完之后再看真实项目的方案，剩下的就只是业务逻辑怎么写，不会再有"Hermes 能不能扩展"这种工具层面的疑问。
 
-完美跑通是一种幸运，卡几次才是常态。下面三类坑卡过一次，对 Hermes 的理解就深一层。
+## 4. 第三步：把卡过的坑记下来
 
-##### ① Tool 没注册上
-Hermes 启动后看不到 `get_current_time`，大概率是文件没被扫到。检查文件名拼写、检查文件是否真的在 `~/.hermes/tools/` 目录下、检查 Hermes 是否需要重启加载新 Tool。
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/fa98ba04dcbd79a62e7c6720f92c6320_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-##### ② Skill 没加载到
-Agent 收到指令后没按 Skill 里的 Procedure 走，而是自己临场发挥。检查目录结构是不是 `~/.hermes/skills/hello-world/SKILL.md`（不是 `~/.hermes/skills/hello-world.md`）、检查 frontmatter 的 `name` 字段是不是写对、检查 `description` 是否清晰到 Agent 知道何时加载。
+完美跑通是一种幸运，<span style="color: red; font-weight: bold;">卡几次才是常态</span>。把坑记下来比读十遍文档更有价值 —— 下面三类坑每卡过一次，对 Hermes 的理解就深一层。
 
-##### ③ Agent 调 Tool 但参数错了
-大概率是 Tool 的 `description` 写得不清楚，或者 `parameters` schema 里没把参数约束写明白。Tool 的 `description` 是给 LLM 看的，不是给人看的，写得越清楚 LLM 调得越准。
+### 4.1 三类典型坑
 
-这种深度看文档读不出来，只能自己撞出来。这就是"先跑通再读文档"的价值：撞坑的过程会精准地告诉人下一步该读哪里。
+| 坑 | 现象 | 大概率原因 |
+|---|---|---|
+| Tool 没注册上 | Hermes 启动后看不到 `get_current_time` | 文件没被扫到 |
+| Skill 没加载到 | Agent 收到指令后没按 Procedure 走，而是自己临场发挥 | 目录结构或 frontmatter 写错 |
+| Agent 调 Tool 但参数错了 | Tool 被调了但参数不对 | description 写得不清楚，或 parameters schema 没把约束写明白 |
 
-### 3.3 把 25 篇的方案落到 Hermes 用户目录
+### 4.2 通用排错三步
 
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/126cece82da5c15793f9cffccc90507b_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+| 步骤 | 检查项 |
+|---|---|
+| 1. 文件位置 | 文件名拼写是否对、文件是否真的在用户目录下、Hermes 是否需要重启加载新扩展 |
+| 2. 目录结构 | 目录层级是否符合规定（如 Skill 是否有专用子目录 `~/.hermes/skills/hello-world/SKILL.md`，不是 `~/.hermes/skills/hello-world.md`） |
+| 3. 描述清晰度 | frontmatter 字段是否写对、description 是否清晰到 Agent 知道何时加载 |
 
-这是本篇真正的终点。回顾 25 篇第二次翻译拍过的几个关键决策：
+### 4.3 关键认知：description 是给 LLM 看的
 
-- 7 个 Tool 函数全部放在一个 Skill 套件下（共享上下文）。
-- 集群直接 spawn 进程不引入 Docker，SDK 隔离用本地版本管理。
-- 报告 push 到 GitHub 公开仓库（Deploy Key）。
-- 第一期通道仅 CLI。
+上面第三类坑背后藏着一条反直觉认知：<span style="color: red; font-weight: bold;">Tool 的 description 是给 LLM 看的，不是给人看的</span>。
 
-这些决策直接决定了要往 Hermes 用户目录的哪些位置放哪些文件。
+写文档时，人习惯用"够用就行"的简短注释；写 Tool 的 description 时这套习惯会直接埋坑 —— 。description 越清晰，LLM 越知道何时调、参数怎么传，调用就越准。
 
-#### (1) 文件分布全景
+这一条认知撞过一次坑才能内化。<span style="color: red; font-weight: bold;">这就是"先跑通再读文档"的真正价值：撞坑的过程会精准地告诉人下一步该读哪里，比通读文档高效得多</span>。
 
-把 25 篇的方案落到 Hermes 上，文件分布是这样：
+## 5. 第四步：把项目方案落到 Hermes 用户目录
 
-<!-- 
-图片内容说明
-路径：imgs/26_自动测试_03：跑通 Hermes Agent/9638e36c8ea63a0418f0d61ce4cce8b6_MD5.jpg
-用途：展示 Hermes 用户目录下各文件的物理分布
-内容：把项目方案里的三类内容（Skill 套件本体 / Hermes 全局配置 / 外部凭据和仓库）映射到 ~/.hermes 下的具体位置，对应 25 篇拍过的几条关键决策
--->
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/5ff1be746680a7ef7cd171d09c370a11_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/9638e36c8ea63a0418f0d61ce4cce8b6_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/9229a5c607f4ccf4091e54d0cd88dd00_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-整张表里有三类内容。
+前面三步走的是"工具掌握"——装上、写 Hello World、跑通。第四步是**项目落地**：把真实项目方案拍过的决策，对应到 Hermes 用户目录的哪些位置放哪些文件。这是本篇真正的终点。
 
-#### (2) Skill 套件本体
+项目方案拍过的几个关键决策：
 
-`~/.hermes/skills/robustmq-chaos-test/` 下面的全部：核心代码、场景描述、报告模板全在这里。
+- 7 个 Tool 函数全部放在一个 Skill 套件下（共享上下文）
+- 集群直接 spawn 进程不引入 Docker，SDK 隔离用本地版本管理
+- 报告 push 到 GitHub 公开仓库（Deploy Key）
+- 第一期通道仅 CLI
 
-这是 25 篇拍过的"1 个套件 + 多个 Tool"决策的物理体现——所有相关 Tool 共享同一个上下文，Agent 串联调用最自然。Skill 套件目录跟 Hello World 那个 `~/.hermes/skills/hello-world/` 是同级关系，只是套件内部多了 `tools/`、`scenarios/`、`templates/` 几个子目录。
+这些决策直接决定了文件怎么放。
 
-#### (3) Hermes 全局配置
+### 5.1 文件分布全景
+
+把项目方案落到 Hermes 上，文件分布是这样：
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/file-structure-table.svg" style="display: block; width: 800px;" alt="替换文字">
+下面逐类拆解。
+
+### 5.2 Skill 套件本体
+
+`~/.hermes/skills/robustmq-chaos-test/` 下面的全部内容：核心代码、场景描述、报告模板都在这里。
+
+这是"1 个套件 + 多个 Tool"决策的物理体现 —— 所有相关 Tool 共享同一个上下文，Agent 串联调用最自然。这个目录跟 Hello World 那个 `~/.hermes/skills/hello-world/` 是**同级关系**，只是套件内部多了 `tools/`、`scenarios/`、`templates/` 几个子目录。
+
+### 5.3 Hermes 全局配置
 
 `~/.hermes/cron.yml` 和 `~/.hermes/config.yaml`：
 
@@ -433,21 +288,22 @@ Agent 收到指令后没按 Skill 里的 Procedure 走，而是自己临场发�
 | `cron.yml` | P0/P1/P2 三档调度规则 |
 | `config.yaml` | approvals 模式 + command_allowlist |
 
-这两份是 7×24 无人值守的安全护栏，跟 Skill 套件是松耦合的：Skill 不知道自己被谁触发的，只管按 Procedure 走。
+这两份是 7×24 无人值守的**安全护栏**，跟 Skill 套件是松耦合的：Skill 不知道自己被谁触发，只管按 Procedure 走。
 
-#### (4) 外部凭据和仓库
+### 5.4 外部凭据和仓库
 
 `~/.ssh/test-reports-deploy` 和 GitHub `test-reports` 仓库：
 
-- Deploy Key 私钥放在 `~/.ssh`，只授写权限到单一仓库。
-- Skill 里通过 `GIT_SSH_COMMAND` 环境变量指定使用，不进 Hermes 的 `.env`，也不进版本库。
+- Deploy Key 私钥放在 `~/.ssh`，只授写权限到单一仓库
+- Skill 里通过 `GIT_SSH_COMMAND` 环境变量指定使用，不进 Hermes 的 `.env`，也不进版本库
 
-这是 25 篇反问那一轮收紧的硬规则。
+这是反问那一轮收紧的硬规则——**凭据不进版本库，是底线**。
 
-#### (5) 看清楚两件事：机制是一致的
+### 5.5 机制一致性：Hello World 已经走过这条路
 
-##### ① 5 个 .py 文件的 Tool 注册机制跟 get_current_time 是同一个机制
-注册方式一样、扫描机制一样、Agent 调用方式一样。区别只是 Tool 内部要做的事更复杂：
+看清楚两件事，真实项目的落点就不神秘了。
+
+第一件事：<span style="color: red; font-weight: bold;">5 个 `.py` 文件的 Tool 注册机制跟 `get_current_time` 是同一个机制——注册方式一样、扫描机制一样、Agent 调用方式一样</span>。区别只是 Tool 内部要做的事更复杂：
 
 | Tool | 要做的事 |
 |---|---|
@@ -455,26 +311,19 @@ Agent 收到指令后没按 Skill 里的 Procedure 走，而是自己临场发�
 | `chaos.py` | 调 Chaosd HTTP API 注入故障 |
 | `report.py` | 程序化渲染 Markdown 加 git push |
 
-注册到 Hermes 的方式是同一个 `registry.register` 调用。
+注册到 Hermes 的方式都是<span style="color: red; font-weight: bold;">同一个 `registry.register` 调用</span>。
 
-##### ② robustmq-chaos-test Skill 跟 hello-world Skill 也是同一个机制
-`SKILL.md` frontmatter 一样、Procedure 写法一样、Hermes 加载机制一样。区别只是 Procedure 写得更长——前置检查、单场景执行五步、通过失败判断、熔断逻辑，以及套件下多了 `tools/` 这层子目录。Hermes 加载 Skill 时会把 `tools/` 下的 Python 文件作为 Skill 私有的 Tool 注册进来。
+第二件事：<span style="color: red; font-weight: bold;">`robustmq-chaos-test` Skill 跟 `hello-world` Skill 也是同一个机制</span>。`SKILL.md` frontmatter 一样、Procedure 写法一样、Hermes 加载机制一样。区别只是 Procedure 写得更长——前置检查、单场景执行五步、通过失败判断、熔断逻辑，以及套件下多了 `tools/` 这层子目录。Hermes 加载 Skill 时会把 `tools/` 下的 Python 文件作为 Skill 私有的 Tool 注册进来。
 
-#### (6) 跑完之后的踏实感
+### 5.6 触发链路在项目里怎么走
 
-跑完 Hello World 之后再看 25 篇的方案文档，会有一种"这件事能干"的踏实感。不是因为方案变简单了，是因为对工具的理解更进一步了。
-
-### 3.4 触发链路在项目里怎么走
-
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/deb6c3c96de45b23425d35b4ad099c95_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
-
-把触发链路再走一遍，会发现这条路在 Hello World 时已经走过了。
+把项目的触发链路再走一遍，会发现这条路在 Hello World 时已经走过了。
 
 #### (1) Cron 触发
 
-`cron.yml` 写 P0/P1/P2 三档调度，每档触发的 prompt 是自然语言（比如 P0 是"按 P0 跑一轮 MQTT 基础场景"）。Agent 收到 prompt 加载 `robustmq-chaos-test` Skill 后，按 Procedure 调 Tool。
+`cron.yml` 写 P0/P1/P2 三档调度，每档触发的 prompt 是自然语言（比如 P0 是"按 P0 跑一轮 MQTT 基础场景"）。Agent 收到 prompt 后加载 `robustmq-chaos-test` Skill，按 Procedure 调 Tool。
 
-这套流程跟刚才用 `hermes "用 hello-world skill 跟我打招呼"` 没本质区别，只是触发源从手动命令换成了 cron。
+<span style="color: red; font-weight: bold;">这套流程跟刚才用 `hermes "用 hello-world skill 跟我打招呼"` 没本质区别，只是触发源从手动命令换成了 cron。</span>
 
 #### (2) 手动触发
 
@@ -484,7 +333,7 @@ Agent 收到指令后没按 Skill 里的 Procedure 走，而是自己临场发�
 hermes "按 P1 跑一轮 mq9 故障场景"
 ```
 
-这条路刚才已经走过一次了——Hello World 那段就是手动触发。25 篇拍过决策"第一期通道仅 CLI"，飞书等到第二期再做，先把核心闭环跑稳。
+这条路刚才已经走过一次了——Hello World 那段就是手动触发。项目决策"第一期通道仅 CLI"，飞书等到第二期再做，先把核心闭环跑稳。
 
 #### (3) 报告归档
 
@@ -492,9 +341,9 @@ hermes "按 P1 跑一轮 mq9 故障场景"
 
 这一步是要新写的，但 `git push` 是系统命令，不需要 Hermes 给特殊支持，只要在 Skill 的 allowlist 里加上 `git push` 即可。
 
-#### (4) 整个项目要做的全部新事情
+#### (4) 项目要做的"新事情"其实很少
 
-整个项目里要做的全部新事情，都建立在 Hello World 验证过的两个机制上：**Tool 注册 + Skill 加载**。其余的 Cron、AI Agent 调用循环、command_allowlist 安全沙箱，Hermes 全部白嫖。
+整个项目里要做的全部新事情，<span style="color: red; font-weight: bold;">都建立在 Hello World 验证过的两个机制上：Tool 注册 + Skill 加载</span>。<span style="color: red; font-weight: bold;">其余的 Cron、AI Agent 调用循环、command_allowlist 安全沙箱，Hermes 全部白嫖</span>。
 
 | 能力 | 来源 |
 |---|---|
@@ -503,11 +352,13 @@ hermes "按 P1 跑一轮 mq9 故障场景"
 | AI Agent 调用循环 | Hermes 自带 |
 | command_allowlist 安全沙箱 | Hermes 自带 |
 
-### 3.5 第一行代码该往哪里下
+### 5.7 第一行代码该往哪里下
+
+落地路径清楚了，下一个问题自然就来了：第一行代码写哪个文件？
 
 #### (1) Tool 依赖顺序
 
-回到 25 篇实施步骤的 Tool 依赖顺序：
+项目方案的 Tool 依赖顺序是这样的：
 
 ```text
 cluster → observability → run_client → inject_fault → push_report
@@ -515,7 +366,7 @@ cluster → observability → run_client → inject_fault → push_report
 
 #### (2) 第一个要写的是 cluster.py
 
-理由是后面所有 Tool 的动作都假设集群在跑：
+理由很简单：后面所有 Tool 的动作都假设集群在跑。
 
 - `chaos.py` 要在集群上注入故障
 - `client.py` 要连集群跑 SDK 测试
@@ -525,15 +376,62 @@ cluster → observability → run_client → inject_fault → push_report
 
 #### (3) Hello World 已经把"工具准备好了"确认过
 
-下一篇就开始写 `cluster.py`。但在写之前，本篇的 Hello World 已经把"工具准备好了"这件事确认过了。下一篇一上来不会有任何关于"Hermes 能不能扩展"的疑问，所有精力都用在集群启停的业务逻辑怎么实现上。
+写 `cluster.py` 之前，本篇的 Hello World 已经把"工具准备好了"这件事确认过了。开始写业务逻辑时，不会有任何"Hermes 能不能扩展"的疑问，所有精力都用在集群启停的业务逻辑怎么实现上。
 
-这就是练 Hello World 的真正价值。
+跑完 Hello World 再看项目方案文档，会有一种"这件事能干"的踏实感。不是因为方案变简单了，是因为**对工具的理解更进一步了**——这就是练 Hello World 的真正价值。
 
-## 4. 小结与思考
+## 6. 方法论沉淀：接管新工具的四步法
 
-<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/45929cb4bbd40df50933c8899d2e9b38_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/55e52b0ac108c0cc83b5606d1312ad20_MD5.jpg" style="display: block; width: 800px;" alt="替换文字">
 
-### 4.1 四步法口诀
+第 2~5 章用 Hermes 真刀真枪走完了完整流程：装上工具、写 Hello World、踩坑、把项目方案落到用户目录。把这一遍里反复出现的动作抽出来，就是一套可以迁移到任何 AI Agent 工具的方法论。
+
+### 6.1 为什么"先跑通"比"先读文档"高效
+
+第 1 章已经讲过"先跑通 vs 先读文档"的取舍，这里不再重复。这一节回答的是更深一层的问题：<span style="color: red; font-weight: bold;">为什么"先跑通最小闭环"这条路会这么高效？</span>
+
+答案藏在跑通过程中自然产生的两类副产品里。这两类副产品，靠裸读文档读不出来：
+
+| 副产品 | 内容 |
+|---|---|
+| 对工具的"手感" | 知道工具怎么决定要不要调能力、调能力时会不会先确认、返回格式长什么样、慢不慢 |
+| 精准定位阅读点 | 卡过的每个点都是后续读文档的指路灯，这种深度看文档读不出来 |
+
+第一类副产品是"手感"。手感是肌肉记忆，必须动手才能建立。读十遍"Hermes 会先确认再调 Tool"，不如自己撞一次"它居然先问我要不要执行"——这一撞，就记住了。
+
+第二类副产品更值钱：**精准定位阅读点**。文档是按作者思路组织的，但读者带着的具体问题往往和作者思路对不上。跑通最小闭环会把人卡在一些点上，这些点就是最该读的地方。带着这些点回头读对应章节，效率比从头裸读高十倍。
+
+### 6.2 四步法总览
+
+接管一个新工具的第一天，按四步走：
+
+<img src="imgs/aicmigr-26-autotest-03-hermes-agent-setup/four-steps-flowchart.svg" style="display: block; width: 800px;" alt="四步法流程图">
+<!-- 
+图片内容说明
+路径：imgs/aicmigr-26-autotest-03-hermes-agent-setup/four-steps-flowchart.svg
+用途：展示接管新工具四步法的整体流程
+内容：横向流程图，从左到右四个步骤依次为"装上体验/写Hello World/跑通/对照真实项目"，四步走完后到达终点"真正接管工具"；前三步属于工具掌握，第四步属于项目落地。
+对应的mermaid如下：
+flowchart LR
+    S1["第一步<br/>装上体验"] --\> S2["第二步<br/>写HelloWorld"]
+    S2 --\> S3["第三步<br/>跑通"]
+    S3 --\> S4["第四步<br/>对照真实项目"]
+    S4 --\> DONE["真正接管工具"]
+-->
+
+前三步是**工具掌握**——装上、写 Hello World、跑通。这三步对任何 AI Agent 工具都通用，工程师换一个工具也得这样做。第四步是**项目落地**——把通用的工具能力对接到具体的工程任务（本篇里就是把 RobustMQ 的测试方案落到 Hermes 用户目录）。
+
+<span style="color: red; font-weight: bold;">这一步走完，才真正接管了这个工具。否则只是"用过"，不是"会用了"</span>。
+
+### 6.3 关键认知：扩展描述是给 LLM 看的
+
+还有一条认知贯穿全文，值得在这里再强调一次：<span style="color: red; font-weight: bold;">Tool 的 description 是给 LLM 看的，不是给人看的</span>。
+
+第 4 章已经展开讲过为什么这一条只能撞坑才能内化。这里只点一句：这是贯穿本篇的核心认知——写得越清楚，LLM 调得越准；很多"Agent 调 Tool 但参数错了"的问题，根因都是描述没写明白。
+
+## 7. 小结与思考题
+
+### 7.1 四步法口诀
 
 接管一个新工具的第一天，四步走：
 
@@ -541,16 +439,27 @@ cluster → observability → run_client → inject_fault → push_report
 装上体验 → 写 Hello World → 跑通 → 对照真实项目想清楚怎么放
 ```
 
-前三步是工具掌握，工程师在任何工具上都该这么做。第四步是项目落地，把通用的工具能力对接到具体的工程任务，这一步走完，才真正接管了这个工具。
+前三步是工具掌握，工程师在任何工具上都该这么做；第四步是项目落地，把通用的工具能力对接到具体的工程任务——这一步走完，才真正接管了这个工具。
 
-### 4.2 慢路与快路
+### 7.2 慢路与快路
 
 很多人第一天卡在前两步——把环境装得完美、文档读得透彻，但没动手写过任何扩展，这是慢路。
 
 先跑通最小闭环，再带着具体问题读对应章节——这条路上每一步都有反馈，每一次卡壳都是下一步的指路灯。
 
-下一篇，开始写下 `cluster.py` 的第一行代码。
+### 7.3 项目阶段 Check List（可裁剪）
 
-### 4.3 思考
+把"接管新工具第一天"的动作做成可裁剪的 Check List，供项目阶段快速查阅。每行带一个反问点，落到具体可判断的标准上。
 
-回想最近接手的一个开源框架或库，如果用本篇的"四步法"重做一遍接管过程，会在哪一步发现自己当时其实是跳过的？这一步跳过让后面付出了什么代价？
+| 项目阶段 | 关键动作 | 反问点 |
+|---|---|---|
+| 装上工具 | 装到能跑就停手，立刻进下一步 | 是否已经敲出了第一个能跑的命令？ |
+| 建立手感 | 扔几类典型指令 + 把 `/help`、`/tools`、`/model` 各过一遍 | 知道工具给了哪些"开关"吗？ |
+| 写最简扩展 | 一个最简 Tool + 一个最简 Skill，各 20 行内 | 双层机制都跑通了吗？ |
+| 卡坑记录 | 把卡过的坑逐条记下来 | 三类典型坑都内化了吗？ |
+| 对照真实项目 | 把项目方案逐条对应到工具用户目录 | 每条方案决策都有物理落点吗？ |
+| 定第一行代码 | 找到依赖最少的那个扩展先写 | 哪个扩展是后续所有扩展的前提？ |
+
+### 7.4 思考题
+
+回想最近接手的一个开源框架或库，如果用本篇的四步法重做一遍接管过程，会在哪一步发现自己当时其实是跳过的？这一步跳过让后面付出了什么代价？

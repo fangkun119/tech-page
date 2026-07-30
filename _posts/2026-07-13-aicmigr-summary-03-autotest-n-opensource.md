@@ -2,8 +2,8 @@
 title: 传统项目迁AI：核心摘要（下）- 自动测试、参与开源
 author: fangkun119
 date: 2026-07-13 00:02:00 +0800
-categories: [AI编程, 传统项目迁AI]
-tags: [AI编程, 传统项目迁AI]
+categories: [AI编程, 传统项目AI编程]
+tags: [AI编程, 传统项目AI编程]
 pin: false
 math: true
 mermaid: true

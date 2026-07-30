@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 200" width="800">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="940" height="200" fill="#ffffff"/>
+
+  <!-- 节点1：一句话需求 -->
+  <rect x="10" y="60" width="110" height="70" rx="10" ry="10" fill="#a8d1f0" stroke="#555" stroke-width="1.5"/>
+  <text x="65" y="100" text-anchor="middle" font-size="15" fill="#333" font-family="sans-serif">一句话需求</text>
+
+  <!-- 箭头 1→2 -->
+  <line x1="120" y1="95" x2="155" y2="95" stroke="#333" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- 节点2：第一次翻译 -->
+  <rect x="165" y="60" width="120" height="70" rx="10" ry="10" fill="#f8c1d9" stroke="#555" stroke-width="1.5"/>
+  <text x="225" y="88" text-anchor="middle" font-size="15" fill="#333" font-family="sans-serif">第一次翻译</text>
+  <text x="225" y="110" text-anchor="middle" font-size="13" fill="#555" font-family="sans-serif">人与 AI 协作</text>
+
+  <!-- 箭头 2→3 -->
+  <line x1="285" y1="95" x2="320" y2="95" stroke="#333" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- 节点3：完整设计文档（加宽） -->
+  <rect x="330" y="50" width="220" height="90" rx="10" ry="10" fill="#c1e8c1" stroke="#555" stroke-width="1.5"/>
+  <text x="440" y="78" text-anchor="middle" font-size="15" fill="#333" font-family="sans-serif">完整设计文档</text>
+  <text x="440" y="98" text-anchor="middle" font-size="13" fill="#555" font-family="sans-serif">与技术栈无关</text>
+  <text x="440" y="118" text-anchor="middle" font-size="12" fill="#555" font-family="sans-serif">讲清为什么做/做什么/不做什么</text>
+
+  <!-- 箭头 3→4 -->
+  <line x1="550" y1="95" x2="585" y2="95" stroke="#333" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- 节点4：第二次翻译 -->
+  <rect x="595" y="60" width="120" height="70" rx="10" ry="10" fill="#f8c1d9" stroke="#555" stroke-width="1.5"/>
+  <text x="655" y="88" text-anchor="middle" font-size="15" fill="#333" font-family="sans-serif">第二次翻译</text>
+  <text x="655" y="110" text-anchor="middle" font-size="13" fill="#555" font-family="sans-serif">人与 AI 协作</text>
+
+  <!-- 箭头 4→5 -->
+  <line x1="715" y1="95" x2="750" y2="95" stroke="#333" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+
+  <!-- 节点5：完整方案文档 -->
+  <rect x="760" y="55" width="170" height="80" rx="10" ry="10" fill="#f9c784" stroke="#555" stroke-width="1.5"/>
+  <text x="845" y="82" text-anchor="middle" font-size="15" fill="#333" font-family="sans-serif">完整方案文档</text>
+  <text x="845" y="100" text-anchor="middle" font-size="13" fill="#555" font-family="sans-serif">落到具体技术栈</text>
+  <text x="845" y="118" text-anchor="middle" font-size="12" fill="#555" font-family="sans-serif">可分配给工程师开干</text>
+
+  <!-- 虚线：因果链（节点3 → 节点5，上方弧线） -->
+  <path d="M 550 45 Q 695 5 845 50" stroke="#333" stroke-width="1.5" stroke-dasharray="6,4" fill="none"/>
+  <text x="697" y="18" text-anchor="middle" font-size="13" fill="#333" font-family="sans-serif">因果链</text>
+</svg>
